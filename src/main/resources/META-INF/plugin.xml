@@ -43,5 +43,11 @@
         <completion.contributor
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileCompletionContributor"/>
+        <lang.commenter
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileCommenter"/>
+        <spellchecker.support
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileSpellcheckingStrategy"/>
     </extensions>
 </idea-plugin>
