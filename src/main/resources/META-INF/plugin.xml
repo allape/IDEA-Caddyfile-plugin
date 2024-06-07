@@ -1,0 +1,47 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>cc.allape.caddyfile</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Caddyfile</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <!--    <vendor email="allensnape@gmail.com" url="https://allape.cc">allape</vendor>-->
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+    Support for Caddyfile, highlight, code suggestion, etc.<br>
+  ]]></description>
+
+    <vendor>allape</vendor>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+                name="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileFileType"
+                fieldName="INSTANCE"
+                language="Caddyfile"
+                extensions="Caddyfile;caddyfile"/>
+        <lang.parserDefinition
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileParserDefinition"/>
+        <lang.syntaxHighlighterFactory
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileSyntaxHighlighterFactory"/>
+        <colorSettingsPage
+                implementation="cc.allape.caddyfile.CaddyfileColorSettingsPage"/>
+        <completion.contributor
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileCompletionContributor"/>
+    </extensions>
+</idea-plugin>

@@ -1,0 +1,38 @@
+{
+  parserClass="cc.allape.caddyfile.language.parser.CaddyfileParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Caddyfile"
+  psiImplClassSuffix="Impl"
+  psiPackage="cc.allape.caddyfile.language.psi"
+  psiImplPackage="cc.allape.caddyfile.language.psi.impl"
+
+  elementTypeHolderClass="cc.allape.caddyfile.language.psi.CaddyfileTypes"
+  elementTypeClass="cc.allape.caddyfile.CaddyfileElementType"
+  tokenTypeClass="cc.allape.caddyfile.CaddyfileTokenType"
+
+  psiImplUtilClass="cc.allape.caddyfile.CaddyfilePsiImplUtil"
+}
+
+caddyfileFile ::= item_*
+private item_ ::= (property|COMMENT|CRLF)
+
+colon ::= ":"
+port_with_colon ::= (colon PORT)
+host ::= (HOSTNAME port_with_colon?)
+
+variable ::= ("{host}"|"{port}")
+
+property ::= binding group
+{
+  methods=[getKey getValue]
+}
+binding ::= (BINDING_HOSTNAME port_with_colon?) | port_with_colon
+group ::= (LEFT_CURLY_BRACE directive* RIGHT_CURLY_BRACE)
+
+directive ::= (tls|redir|reverse_proxy|respond)
+tls ::= ("tls" FILEPATH FILEPATH)
+redir ::= ("redir" PROTOCOL (host|variable+))
+respond ::= ("respond" STATUS_CODE)
+reverse_proxy ::= ("reverse_proxy" PROTOCOL host)
