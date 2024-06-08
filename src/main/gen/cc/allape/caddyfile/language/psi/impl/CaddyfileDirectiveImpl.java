@@ -48,6 +48,18 @@ public class CaddyfileDirectiveImpl extends ASTWrapperPsiElement implements Cadd
 
   @Override
   @Nullable
+  public CaddyfileBind getBind() {
+    return findChildByClass(CaddyfileBind.class);
+  }
+
+  @Override
+  @Nullable
+  public CaddyfileEncode getEncode() {
+    return findChildByClass(CaddyfileEncode.class);
+  }
+
+  @Override
+  @Nullable
   public CaddyfileRedir getRedir() {
     return findChildByClass(CaddyfileRedir.class);
   }

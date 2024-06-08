@@ -101,6 +101,43 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // "bind" (IPV4|IPV6|UNIX_SOCKET)+
+  public static boolean bind(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bind")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, BIND, "<bind>");
+    r = consumeToken(b, "bind");
+    r = r && bind_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // (IPV4|IPV6|UNIX_SOCKET)+
+  private static boolean bind_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bind_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = bind_1_0(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!bind_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "bind_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // IPV4|IPV6|UNIX_SOCKET
+  private static boolean bind_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bind_1_0")) return false;
+    boolean r;
+    r = consumeToken(b, IPV4);
+    if (!r) r = consumeToken(b, IPV6);
+    if (!r) r = consumeToken(b, UNIX_SOCKET);
+    return r;
+  }
+
+  /* ********************************************************** */
   // (starred_hostname port_with_colon?) | port_with_colon
   public static boolean binding(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "binding")) return false;
@@ -157,6 +194,8 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   // abort|
   //     acme_server|
   //     basic_auth|
+  //     bind|
+  //     encode|
   //     tls|
   //     redir|
   //     reverse_proxy|
@@ -168,11 +207,312 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     r = abort(b, l + 1);
     if (!r) r = acme_server(b, l + 1);
     if (!r) r = basic_auth(b, l + 1);
+    if (!r) r = bind(b, l + 1);
+    if (!r) r = encode(b, l + 1);
     if (!r) r = tls(b, l + 1);
     if (!r) r = redir(b, l + 1);
     if (!r) r = reverse_proxy(b, l + 1);
     if (!r) r = respond(b, l + 1);
-    if (!r) r = consumeToken(b, DIRECTIVE_7_0);
+    if (!r) r = consumeToken(b, DIRECTIVE_9_0);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "encode" starred_path? COMPRESSION_METHOD+ (LEFT_CURLY_BRACE encode_arg* RIGHT_CURLY_BRACE)?
+  public static boolean encode(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE, "<encode>");
+    r = consumeToken(b, "encode");
+    r = r && encode_1(b, l + 1);
+    r = r && encode_2(b, l + 1);
+    r = r && encode_3(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // starred_path?
+  private static boolean encode_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_1")) return false;
+    starred_path(b, l + 1);
+    return true;
+  }
+
+  // COMPRESSION_METHOD+
+  private static boolean encode_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_2")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMPRESSION_METHOD);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, COMPRESSION_METHOD)) break;
+      if (!empty_element_parsed_guard_(b, "encode_2", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (LEFT_CURLY_BRACE encode_arg* RIGHT_CURLY_BRACE)?
+  private static boolean encode_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_3")) return false;
+    encode_3_0(b, l + 1);
+    return true;
+  }
+
+  // LEFT_CURLY_BRACE encode_arg* RIGHT_CURLY_BRACE
+  private static boolean encode_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LEFT_CURLY_BRACE);
+    r = r && encode_3_0_1(b, l + 1);
+    r = r && consumeToken(b, RIGHT_CURLY_BRACE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // encode_arg*
+  private static boolean encode_3_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_3_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!encode_arg(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "encode_3_0_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // encode_arg_gzip|
+  //     encode_arg_zstd|
+  //     encode_arg_minimum_length|
+  //     encode_arg_match|
+  public static boolean encode_arg(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG, "<encode arg>");
+    r = encode_arg_gzip(b, l + 1);
+    if (!r) r = encode_arg_zstd(b, l + 1);
+    if (!r) r = encode_arg_minimum_length(b, l + 1);
+    if (!r) r = encode_arg_match(b, l + 1);
+    if (!r) r = consumeToken(b, ENCODE_ARG_4_0);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "gzip" GZIP_LEVEL?
+  public static boolean encode_arg_gzip(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_gzip")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG_GZIP, "<encode arg gzip>");
+    r = consumeToken(b, "gzip");
+    r = r && encode_arg_gzip_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // GZIP_LEVEL?
+  private static boolean encode_arg_gzip_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_gzip_1")) return false;
+    consumeToken(b, GZIP_LEVEL);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // "match" (encode_arg_match_one|encode_arg_match_two)
+  public static boolean encode_arg_match(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG_MATCH, "<encode arg match>");
+    r = consumeToken(b, "match");
+    r = r && encode_arg_match_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // encode_arg_match_one|encode_arg_match_two
+  private static boolean encode_arg_match_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_1")) return false;
+    boolean r;
+    r = encode_arg_match_one(b, l + 1);
+    if (!r) r = encode_arg_match_two(b, l + 1);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // encode_arg_match_arg_status|encode_arg_match_arg_header
+  public static boolean encode_arg_match_arg(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_arg")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG_MATCH_ARG, "<encode arg match arg>");
+    r = encode_arg_match_arg_status(b, l + 1);
+    if (!r) r = encode_arg_match_arg_header(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "header" HEADER HEADER_VALUE?
+  public static boolean encode_arg_match_arg_header(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_arg_header")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG_MATCH_ARG_HEADER, "<encode arg match arg header>");
+    r = consumeToken(b, "header");
+    r = r && consumeToken(b, HEADER);
+    r = r && encode_arg_match_arg_header_2(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // HEADER_VALUE?
+  private static boolean encode_arg_match_arg_header_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_arg_header_2")) return false;
+    consumeToken(b, HEADER_VALUE);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // "status" STATUS_CODE+
+  public static boolean encode_arg_match_arg_status(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_arg_status")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG_MATCH_ARG_STATUS, "<encode arg match arg status>");
+    r = consumeToken(b, "status");
+    r = r && encode_arg_match_arg_status_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // STATUS_CODE+
+  private static boolean encode_arg_match_arg_status_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_arg_status_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, STATUS_CODE);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, STATUS_CODE)) break;
+      if (!empty_element_parsed_guard_(b, "encode_arg_match_arg_status_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // ("header" HEADER HEADER_VALUE?)? "|" ("status" STATUS_CODE*)?
+  public static boolean encode_arg_match_one(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_one")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG_MATCH_ONE, "<encode arg match one>");
+    r = encode_arg_match_one_0(b, l + 1);
+    r = r && consumeToken(b, "|");
+    r = r && encode_arg_match_one_2(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // ("header" HEADER HEADER_VALUE?)?
+  private static boolean encode_arg_match_one_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_one_0")) return false;
+    encode_arg_match_one_0_0(b, l + 1);
+    return true;
+  }
+
+  // "header" HEADER HEADER_VALUE?
+  private static boolean encode_arg_match_one_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_one_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, "header");
+    r = r && consumeToken(b, HEADER);
+    r = r && encode_arg_match_one_0_0_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // HEADER_VALUE?
+  private static boolean encode_arg_match_one_0_0_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_one_0_0_2")) return false;
+    consumeToken(b, HEADER_VALUE);
+    return true;
+  }
+
+  // ("status" STATUS_CODE*)?
+  private static boolean encode_arg_match_one_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_one_2")) return false;
+    encode_arg_match_one_2_0(b, l + 1);
+    return true;
+  }
+
+  // "status" STATUS_CODE*
+  private static boolean encode_arg_match_one_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_one_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, "status");
+    r = r && encode_arg_match_one_2_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // STATUS_CODE*
+  private static boolean encode_arg_match_one_2_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_one_2_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, STATUS_CODE)) break;
+      if (!empty_element_parsed_guard_(b, "encode_arg_match_one_2_0_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // LEFT_CURLY_BRACE encode_arg_match_arg* RIGHT_CURLY_BRACE
+  public static boolean encode_arg_match_two(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_two")) return false;
+    if (!nextTokenIs(b, LEFT_CURLY_BRACE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LEFT_CURLY_BRACE);
+    r = r && encode_arg_match_two_1(b, l + 1);
+    r = r && consumeToken(b, RIGHT_CURLY_BRACE);
+    exit_section_(b, m, ENCODE_ARG_MATCH_TWO, r);
+    return r;
+  }
+
+  // encode_arg_match_arg*
+  private static boolean encode_arg_match_two_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_match_two_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!encode_arg_match_arg(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "encode_arg_match_two_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // "minimum_length" MINIMUM_LENGTH
+  public static boolean encode_arg_minimum_length(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_minimum_length")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG_MINIMUM_LENGTH, "<encode arg minimum length>");
+    r = consumeToken(b, "minimum_length");
+    r = r && consumeToken(b, MINIMUM_LENGTH);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "zstd"
+  public static boolean encode_arg_zstd(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "encode_arg_zstd")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG_ZSTD, "<encode arg zstd>");
+    r = consumeToken(b, "zstd");
     exit_section_(b, l, m, r, false, null);
     return r;
   }

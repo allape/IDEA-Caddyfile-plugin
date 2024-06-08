@@ -36,6 +36,8 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             CaddyfileTypes.ABORT,
             CaddyfileTypes.ACME_SERVER,
             CaddyfileTypes.BASIC_AUTH,
+            CaddyfileTypes.BIND,
+            CaddyfileTypes.ENCODE,
             CaddyfileTypes.TLS,
             CaddyfileTypes.REDIR,
             CaddyfileTypes.RESPOND,
@@ -60,6 +62,8 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             }
             CaddyfileTypes.USERNAME,
             CaddyfileTypes.PASSWORD,
+            CaddyfileTypes.ENCODE_ARG_MATCH_ARG_STATUS,
+            CaddyfileTypes.ENCODE_ARG_MATCH_ARG_HEADER,
             CaddyfileTypes.TEXT,
             CaddyfileTypes.PROTOCOL -> {
                 return STRING_KEYS

@@ -13,10 +13,12 @@ public interface CaddyfileProperty extends PsiElement {
   @NotNull
   CaddyfileGroup getGroup();
 
-  @Nullable
-  String getKey();
+  //WARNING: getKey(...) is skipped
+  //matching getKey(CaddyfileProperty, ...)
+  //methods are not found in CaddyfilePsiImplUtil
 
-  @Nullable
-  String getValue();
+  //WARNING: getValue(...) is skipped
+  //matching getValue(CaddyfileProperty, ...)
+  //methods are not found in CaddyfilePsiImplUtil
 
 }

@@ -12,14 +12,14 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import cc.allape.caddyfile.language.psi.*;
 import cc.allape.caddyfile.CaddyfilePsiImplUtil;
 
-public class CaddyfilePropertyImpl extends ASTWrapperPsiElement implements CaddyfileProperty {
+public class CaddyfileEncodeArgImpl extends ASTWrapperPsiElement implements CaddyfileEncodeArg {
 
-  public CaddyfilePropertyImpl(@NotNull ASTNode node) {
+  public CaddyfileEncodeArgImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CaddyfileVisitor visitor) {
-    visitor.visitProperty(this);
+    visitor.visitEncodeArg(this);
   }
 
   @Override
@@ -30,14 +30,26 @@ public class CaddyfilePropertyImpl extends ASTWrapperPsiElement implements Caddy
 
   @Override
   @Nullable
-  public CaddyfileBinding getBinding() {
-    return findChildByClass(CaddyfileBinding.class);
+  public CaddyfileEncodeArgGzip getEncodeArgGzip() {
+    return findChildByClass(CaddyfileEncodeArgGzip.class);
   }
 
   @Override
-  @NotNull
-  public CaddyfileGroup getGroup() {
-    return findNotNullChildByClass(CaddyfileGroup.class);
+  @Nullable
+  public CaddyfileEncodeArgMatch getEncodeArgMatch() {
+    return findChildByClass(CaddyfileEncodeArgMatch.class);
+  }
+
+  @Override
+  @Nullable
+  public CaddyfileEncodeArgMinimumLength getEncodeArgMinimumLength() {
+    return findChildByClass(CaddyfileEncodeArgMinimumLength.class);
+  }
+
+  @Override
+  @Nullable
+  public CaddyfileEncodeArgZstd getEncodeArgZstd() {
+    return findChildByClass(CaddyfileEncodeArgZstd.class);
   }
 
 }

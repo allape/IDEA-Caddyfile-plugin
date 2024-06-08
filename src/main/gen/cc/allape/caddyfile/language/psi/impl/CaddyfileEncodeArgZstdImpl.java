@@ -12,32 +12,20 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import cc.allape.caddyfile.language.psi.*;
 import cc.allape.caddyfile.CaddyfilePsiImplUtil;
 
-public class CaddyfilePropertyImpl extends ASTWrapperPsiElement implements CaddyfileProperty {
+public class CaddyfileEncodeArgZstdImpl extends ASTWrapperPsiElement implements CaddyfileEncodeArgZstd {
 
-  public CaddyfilePropertyImpl(@NotNull ASTNode node) {
+  public CaddyfileEncodeArgZstdImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CaddyfileVisitor visitor) {
-    visitor.visitProperty(this);
+    visitor.visitEncodeArgZstd(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof CaddyfileVisitor) accept((CaddyfileVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public CaddyfileBinding getBinding() {
-    return findChildByClass(CaddyfileBinding.class);
-  }
-
-  @Override
-  @NotNull
-  public CaddyfileGroup getGroup() {
-    return findNotNullChildByClass(CaddyfileGroup.class);
   }
 
 }

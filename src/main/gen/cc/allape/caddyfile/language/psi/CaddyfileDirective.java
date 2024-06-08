@@ -17,6 +17,12 @@ public interface CaddyfileDirective extends PsiElement {
   CaddyfileBasicAuth getBasicAuth();
 
   @Nullable
+  CaddyfileBind getBind();
+
+  @Nullable
+  CaddyfileEncode getEncode();
+
+  @Nullable
   CaddyfileRedir getRedir();
 
   @Nullable

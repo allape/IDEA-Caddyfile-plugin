@@ -23,6 +23,12 @@ import java.util.Stack;
     private void _popState() {
         yybegin(_stateStack.pop());
     }
+    private void _clearStack() {
+        _stateStack.clear();
+    }
+%}
+%{
+    private boolean __IN_GROUP_DIRECTIVE_ENCODE_ARGS = false;
 %}
 %function advance
 %type IElementType
@@ -48,8 +54,9 @@ PORT=\d+
 %state STARRED_HOSTNAME
 %state PORT
 %state STARRED_PATH
+%state MATCH
 
-%state BINDING
+%state BINDING_HOSTNAME
 
 %state VARIABLE
 %state VARIABLE_STRING
@@ -61,15 +68,30 @@ PORT=\d+
 %state GROUP_DIRECTIVE_BASIC_AUTH
 %state GROUP_DIRECTIVE_BASIC_AUTH_SERECTS
 %state GROUP_DIRECTIVE_BASIC_AUTH_PASSWORD
+%state GROUP_DIRECTIVE_BIND
+%state GROUP_DIRECTIVE_ENCODE
 %state GROUP_DIRECTIVE_TLS
 %state GROUP_DIRECTIVE_REDIR
 %state GROUP_DIRECTIVE_RESPOND
 %state GROUP_DIRECTIVE_REVERSE_PROXY
 
+%state GROUP_DIRECTIVE_ENCODE_ARGS
+%state GROUP_DIRECTIVE_ENCODE_ARGS_GZIP
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MINIMUM_LENGTH
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MATCH
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE_HEADER
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE_HEADER_VALUE
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE_STATUS
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS_STATUS
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS_HEADER
+%state GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS_HEADER_VALUE
+
 %%
 
 <YYINITIAL> {
-    [^\s#]+             { yybegin(BINDING); yypushback(yylength()); }
+    [^\s#]+            { yybegin(BINDING_HOSTNAME); yypushback(yylength()); }
     {EMPTY_LINE}       { return TokenType.WHITE_SPACE; }
 }
 
@@ -97,7 +119,7 @@ PORT=\d+
     [^\s\{\}]+ { return CaddyfileTypes.VARIABLE_NAME; }
 }
 
-<BINDING> {
+<BINDING_HOSTNAME> {
     "{"             { yybegin(GROUP); return CaddyfileTypes.LEFT_CURLY_BRACE; }
     [^\s\{]+        { _pushState(STARRED_HOSTNAME); yypushback(yylength()); }
 }
@@ -112,6 +134,8 @@ PORT=\d+
     abort             { yybegin(GROUP_DIRECTIVE_ABORT); return CaddyfileTypes.ABORT; }
     acme_server       { yybegin(GROUP_DIRECTIVE_ACME_SERVER); return CaddyfileTypes.ACME_SERVER; }
     basic_auth        { yybegin(GROUP_DIRECTIVE_BASIC_AUTH); return CaddyfileTypes.BASIC_AUTH; }
+    bind              { yybegin(GROUP_DIRECTIVE_BIND); return CaddyfileTypes.BIND; }
+    encode            { yybegin(GROUP_DIRECTIVE_ENCODE); return CaddyfileTypes.ENCODE; }
     tls               { yybegin(GROUP_DIRECTIVE_TLS); return CaddyfileTypes.TLS; }
     redir             { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.REDIR; }
     respond           { yybegin(GROUP_DIRECTIVE_RESPOND); return CaddyfileTypes.RESPOND; }
@@ -139,6 +163,18 @@ PORT=\d+
 <GROUP_DIRECTIVE_BASIC_AUTH_PASSWORD> {
     [^\s\}]+           { _popState(); return CaddyfileTypes.PASSWORD; }
 }
+<GROUP_DIRECTIVE_BIND> {
+    (\d{1,3}\.){3}\d{1,3}                         { return CaddyfileTypes.IPV4; }
+    \[([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}\]  { return CaddyfileTypes.IPV6; }
+    unix\/[^\s]+                                  { return CaddyfileTypes.UNIX_SOCKET; }
+    {NEW_LINE}                                    { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_ENCODE> {
+    (zstd|gzip)                                   { return CaddyfileTypes.COMPRESSION_METHOD; }
+    "{"                                           { __IN_GROUP_DIRECTIVE_ENCODE_ARGS = true; _pushState(GROUP_DIRECTIVE_ENCODE_ARGS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    "}"                                           { __IN_GROUP_DIRECTIVE_ENCODE_ARGS = false; yybegin(GROUP); return CaddyfileTypes.RIGHT_CURLY_BRACE;}
+    {NEW_LINE}                                    { if (!__IN_GROUP_DIRECTIVE_ENCODE_ARGS) yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
 <GROUP_DIRECTIVE_TLS> {
     {COMBINED_FILEPATH} { return CaddyfileTypes.FILEPATH; }
     {NEW_LINE}          { yybegin(GROUP); return TokenType.WHITE_SPACE; }
@@ -158,6 +194,65 @@ PORT=\d+
     {HOSTNAME}       { return CaddyfileTypes.HOSTNAME; }
     {COLON}          { return CaddyfileTypes.COLON; }
     {NEW_LINE}       { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+
+
+<GROUP_DIRECTIVE_ENCODE_ARGS> {
+    gzip                { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_GZIP); return CaddyfileTypes.ENCODE_ARG_GZIP;}
+    zstd                { return CaddyfileTypes.ENCODE_ARG_ZSTD;}
+    minimum_length      { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MINIMUM_LENGTH); return CaddyfileTypes.ENCODE_ARG_MINIMUM_LENGTH;}
+    match               { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MATCH); return CaddyfileTypes.ENCODE_ARG_MATCH;}
+    "}"                 { _popState(); yypushback(yylength()); }
+    {NEW_LINE}          { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_GZIP> {
+    \d+        { _popState(); return CaddyfileTypes.GZIP_LEVEL; }
+    {NEW_LINE} { _popState(); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MINIMUM_LENGTH> {
+    \d+        { _popState(); return CaddyfileTypes.MINIMUM_LENGTH; }
+    {NEW_LINE} { _popState(); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MATCH> {
+    "{"        { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    [^\s\{]+   { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE); yypushback(yylength()); }
+    {NEW_LINE} { _popState(); yypushback(yylength()); }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE> {
+    "|"        { return CaddyfileTypes.TEXT; }
+    "header"   { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE_HEADER); return CaddyfileTypes.TEXT; }
+    "status"   { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE_STATUS); return CaddyfileTypes.TEXT; }
+    {NEW_LINE} { _popState(); yypushback(yylength()); }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE_HEADER> {
+    [^\s\|]+   { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE_HEADER_VALUE); return CaddyfileTypes.HEADER; }
+    "|"|{NEW_LINE} { _popState(); yypushback(yylength()); }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE_STATUS> {
+    \d+        { return CaddyfileTypes.STATUS_CODE; }
+    {NEW_LINE} { _popState(); yypushback(yylength()); }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ONE_LINE_HEADER_VALUE> {
+    [^\s]+     { _popState(); return CaddyfileTypes.HEADER_VALUE; }
+    "|"|{NEW_LINE} { _popState(); yypushback(yylength()); }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS> {
+    status     { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS_STATUS); return CaddyfileTypes.ENCODE_ARG_MATCH_ARG_STATUS; }
+    header     { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS_HEADER); return CaddyfileTypes.ENCODE_ARG_MATCH_ARG_HEADER; }
+    "}"        { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    {NEW_LINE} { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS_STATUS> {
+    \d+        { return CaddyfileTypes.STATUS_CODE; }
+    {NEW_LINE} { _popState(); yypushback(yylength()); }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS_HEADER> {
+    [^\s]+     { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS_HEADER_VALUE); return CaddyfileTypes.HEADER; }
+    {NEW_LINE} { _popState(); yypushback(yylength()); }
+}
+<GROUP_DIRECTIVE_ENCODE_ARGS_MATCH_ARGS_HEADER_VALUE> {
+    [^\s]+     { _popState(); return CaddyfileTypes.HEADER_VALUE; }
+    {NEW_LINE} { _popState(); yypushback(yylength()); }
 }
 
 {WHITE_SPACE}+     { return TokenType.WHITE_SPACE; }
