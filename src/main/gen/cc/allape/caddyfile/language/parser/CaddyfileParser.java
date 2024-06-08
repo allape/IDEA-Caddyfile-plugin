@@ -36,6 +36,71 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // "abort"
+  public static boolean abort(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "abort")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ABORT, "<abort>");
+    r = consumeToken(b, "abort");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "acme_server"
+  public static boolean acme_server(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "acme_server")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ACME_SERVER, "<acme server>");
+    r = consumeToken(b, "acme_server");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "basic_auth" starred_path? LEFT_CURLY_BRACE (USERNAME PASSWORD)* RIGHT_CURLY_BRACE
+  public static boolean basic_auth(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "basic_auth")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, BASIC_AUTH, "<basic auth>");
+    r = consumeToken(b, "basic_auth");
+    r = r && basic_auth_1(b, l + 1);
+    r = r && consumeToken(b, LEFT_CURLY_BRACE);
+    r = r && basic_auth_3(b, l + 1);
+    r = r && consumeToken(b, RIGHT_CURLY_BRACE);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // starred_path?
+  private static boolean basic_auth_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "basic_auth_1")) return false;
+    starred_path(b, l + 1);
+    return true;
+  }
+
+  // (USERNAME PASSWORD)*
+  private static boolean basic_auth_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "basic_auth_3")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!basic_auth_3_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "basic_auth_3", c)) break;
+    }
+    return true;
+  }
+
+  // USERNAME PASSWORD
+  private static boolean basic_auth_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "basic_auth_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokens(b, 0, USERNAME, PASSWORD);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // (starred_hostname port_with_colon?) | port_with_colon
   public static boolean binding(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "binding")) return false;
@@ -89,15 +154,25 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // tls|redir|reverse_proxy|respond
+  // abort|
+  //     acme_server|
+  //     basic_auth|
+  //     tls|
+  //     redir|
+  //     reverse_proxy|
+  //     respond|
   public static boolean directive(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "directive")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, DIRECTIVE, "<directive>");
-    r = tls(b, l + 1);
+    r = abort(b, l + 1);
+    if (!r) r = acme_server(b, l + 1);
+    if (!r) r = basic_auth(b, l + 1);
+    if (!r) r = tls(b, l + 1);
     if (!r) r = redir(b, l + 1);
     if (!r) r = reverse_proxy(b, l + 1);
     if (!r) r = respond(b, l + 1);
+    if (!r) r = consumeToken(b, DIRECTIVE_7_0);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -171,15 +246,22 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // binding group
+  // binding? group
   public static boolean property(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, PROPERTY, "<property>");
-    r = binding(b, l + 1);
+    r = property_0(b, l + 1);
     r = r && group(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
+  }
+
+  // binding?
+  private static boolean property_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "property_0")) return false;
+    binding(b, l + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -295,6 +377,63 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, TEXT);
     if (!r) r = consumeToken(b, STAR);
     return r;
+  }
+
+  /* ********************************************************** */
+  // (SLASH? (TEXT|STAR))* SLASH?
+  public static boolean starred_path(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_path")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, STARRED_PATH, "<starred path>");
+    r = starred_path_0(b, l + 1);
+    r = r && starred_path_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // (SLASH? (TEXT|STAR))*
+  private static boolean starred_path_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_path_0")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!starred_path_0_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "starred_path_0", c)) break;
+    }
+    return true;
+  }
+
+  // SLASH? (TEXT|STAR)
+  private static boolean starred_path_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_path_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = starred_path_0_0_0(b, l + 1);
+    r = r && starred_path_0_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // SLASH?
+  private static boolean starred_path_0_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_path_0_0_0")) return false;
+    consumeToken(b, SLASH);
+    return true;
+  }
+
+  // TEXT|STAR
+  private static boolean starred_path_0_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_path_0_0_1")) return false;
+    boolean r;
+    r = consumeToken(b, TEXT);
+    if (!r) r = consumeToken(b, STAR);
+    return r;
+  }
+
+  // SLASH?
+  private static boolean starred_path_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_path_1")) return false;
+    consumeToken(b, SLASH);
+    return true;
   }
 
   /* ********************************************************** */

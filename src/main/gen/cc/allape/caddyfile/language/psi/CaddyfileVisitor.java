@@ -7,6 +7,18 @@ import com.intellij.psi.PsiElement;
 
 public class CaddyfileVisitor extends PsiElementVisitor {
 
+  public void visitAbort(@NotNull CaddyfileAbort o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAcmeServer(@NotNull CaddyfileAcmeServer o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBasicAuth(@NotNull CaddyfileBasicAuth o) {
+    visitPsiElement(o);
+  }
+
   public void visitBinding(@NotNull CaddyfileBinding o) {
     visitPsiElement(o);
   }
@@ -48,6 +60,10 @@ public class CaddyfileVisitor extends PsiElementVisitor {
   }
 
   public void visitStarredHostname(@NotNull CaddyfileStarredHostname o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStarredPath(@NotNull CaddyfileStarredPath o) {
     visitPsiElement(o);
   }
 

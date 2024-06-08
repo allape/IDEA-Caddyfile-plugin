@@ -33,6 +33,9 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             CaddyfileTypes.VARIABLE_NAME,
             CaddyfileTypes.STAR,
             // directives
+            CaddyfileTypes.ABORT,
+            CaddyfileTypes.ACME_SERVER,
+            CaddyfileTypes.BASIC_AUTH,
             CaddyfileTypes.TLS,
             CaddyfileTypes.REDIR,
             CaddyfileTypes.RESPOND,
@@ -55,6 +58,8 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             CaddyfileTypes.LEFT_CURLY_BRACE -> {
                 return BRACKETS_KEYS
             }
+            CaddyfileTypes.USERNAME,
+            CaddyfileTypes.PASSWORD,
             CaddyfileTypes.TEXT,
             CaddyfileTypes.PROTOCOL -> {
                 return STRING_KEYS

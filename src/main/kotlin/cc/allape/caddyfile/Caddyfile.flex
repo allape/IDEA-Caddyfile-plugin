@@ -1,10 +1,13 @@
 package cc.allape.caddyfile.language;
 
+// DO NOT OPTIMIZE IMPORT
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import cc.allape.caddyfile.language.psi.CaddyfileTypes;
 import com.intellij.psi.TokenType;
-import java.util.ArrayList;import java.util.Stack;
+import java.util.ArrayList;
+import java.util.Stack;
+// DO NOT OPTIMIZE IMPORT
 
 %%
 
@@ -42,15 +45,22 @@ PROTOCOL=(\w+{COLON}\/\/)
 HOSTNAME=([\w\-]+\.)*[\w\-]+
 PORT=\d+
 
+%state STARRED_HOSTNAME
+%state PORT
+%state STARRED_PATH
+
 %state BINDING
-%state BINDING_STARRED_HOSTNAME
-%state BINDING_PORT
 
 %state VARIABLE
 %state VARIABLE_STRING
 %state QUOTED_VARIABLE_STRING
 
 %state GROUP
+%state GROUP_DIRECTIVE_ABORT
+%state GROUP_DIRECTIVE_ACME_SERVER
+%state GROUP_DIRECTIVE_BASIC_AUTH
+%state GROUP_DIRECTIVE_BASIC_AUTH_SERECTS
+%state GROUP_DIRECTIVE_BASIC_AUTH_PASSWORD
 %state GROUP_DIRECTIVE_TLS
 %state GROUP_DIRECTIVE_REDIR
 %state GROUP_DIRECTIVE_RESPOND
@@ -59,70 +69,97 @@ PORT=\d+
 %%
 
 <YYINITIAL> {
-    {ONE_LINE_COMMENT} { yybegin(YYINITIAL); return CaddyfileTypes.COMMENT; }
-    [^\s]+ { yybegin(BINDING); yypushback(yylength()); }
+    [^\s#]+             { yybegin(BINDING); yypushback(yylength()); }
+    {EMPTY_LINE}       { return TokenType.WHITE_SPACE; }
+}
+
+<STARRED_HOSTNAME> {
+    "*"             { return CaddyfileTypes.STAR; }
+    "."             { return CaddyfileTypes.DOT; }
+    ":"             { _pushState(PORT); return CaddyfileTypes.COLON; }
+    [^\s:*.]+       { return CaddyfileTypes.TEXT; }
+    {WHITE_SPACE}+  { _popState(); return TokenType.WHITE_SPACE; }
+}
+<PORT> {
+    \d+             { _popState(); return CaddyfileTypes.PORT; }
+}
+
+<STARRED_PATH> {
+    "*"             { return CaddyfileTypes.STAR; }
+    "/"             { return CaddyfileTypes.SLASH; }
+    [^\s\*\/]+      { return CaddyfileTypes.TEXT; }
+    {WHITE_SPACE}+  { _popState(); return TokenType.WHITE_SPACE; }
+}
+
+<VARIABLE> {
+    "{"        { return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    "}"        { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    [^\s\{\}]+ { return CaddyfileTypes.VARIABLE_NAME; }
 }
 
 <BINDING> {
-    "{" { yybegin(GROUP); return CaddyfileTypes.LEFT_CURLY_BRACE; }
-    [^\s\{]+ { _pushState(BINDING_STARRED_HOSTNAME); yypushback(yylength()); }
-    {WHITE_SPACE}+ { yybegin(BINDING); return TokenType.WHITE_SPACE; }
-}
-<BINDING_STARRED_HOSTNAME> {
-    "*" { return CaddyfileTypes.STAR; }
-    "." { return CaddyfileTypes.DOT; }
-    ":" { _pushState(BINDING_PORT); return CaddyfileTypes.COLON; }
-    [^\s:*.]+ { return CaddyfileTypes.TEXT; }
-    {WHITE_SPACE}+ { _popState(); return TokenType.WHITE_SPACE; }
-}
-<BINDING_PORT> {
-    \d+ { _popState(); return CaddyfileTypes.PORT; }
+    "{"             { yybegin(GROUP); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    [^\s\{]+        { _pushState(STARRED_HOSTNAME); yypushback(yylength()); }
 }
 
 <VARIABLE_STRING> {
-    "{"  { _pushState(VARIABLE); return CaddyfileTypes.LEFT_CURLY_BRACE; }
-    [^\s\{]+ { yybegin(VARIABLE_STRING); return CaddyfileTypes.TEXT; }
-    {EMPTY_LINE} { _popState(); yypushback(yylength()); }
-}
-<VARIABLE> {
-    "}"  { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
-    [^\s\}]+ { yybegin(VARIABLE); return CaddyfileTypes.VARIABLE_NAME; }
+    "{"            { _pushState(VARIABLE); yypushback(yylength()); }
+    [^\s\{]+       { return CaddyfileTypes.TEXT; }
+    {EMPTY_LINE}   { _popState(); yypushback(yylength()); }
 }
 
 <GROUP> {
-    tls { yybegin(GROUP_DIRECTIVE_TLS); return CaddyfileTypes.TLS; }
-    redir { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.REDIR; }
-    respond { yybegin(GROUP_DIRECTIVE_RESPOND); return CaddyfileTypes.RESPOND; }
-    reverse_proxy { yybegin(GROUP_DIRECTIVE_REVERSE_PROXY); return CaddyfileTypes.REVERSE_PROXY; }
+    abort             { yybegin(GROUP_DIRECTIVE_ABORT); return CaddyfileTypes.ABORT; }
+    acme_server       { yybegin(GROUP_DIRECTIVE_ACME_SERVER); return CaddyfileTypes.ACME_SERVER; }
+    basic_auth        { yybegin(GROUP_DIRECTIVE_BASIC_AUTH); return CaddyfileTypes.BASIC_AUTH; }
+    tls               { yybegin(GROUP_DIRECTIVE_TLS); return CaddyfileTypes.TLS; }
+    redir             { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.REDIR; }
+    respond           { yybegin(GROUP_DIRECTIVE_RESPOND); return CaddyfileTypes.RESPOND; }
+    reverse_proxy     { yybegin(GROUP_DIRECTIVE_REVERSE_PROXY); return CaddyfileTypes.REVERSE_PROXY; }
 
-    {ONE_LINE_COMMENT} { yybegin(GROUP); return CaddyfileTypes.COMMENT; }
-    {EMPTY_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
-    "}" { yybegin(YYINITIAL); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    {EMPTY_LINE}       { return TokenType.WHITE_SPACE; }
+    "}"                { yybegin(YYINITIAL); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+}
+<GROUP_DIRECTIVE_ABORT> {
+    {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_ACME_SERVER> {
+    {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_BASIC_AUTH> {
+    "{"            { _pushState(GROUP_DIRECTIVE_BASIC_AUTH_SERECTS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    [^\s\{]+       { _pushState(STARRED_PATH); yypushback(yylength()); }
+    {NEW_LINE}     { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_BASIC_AUTH_SERECTS> {
+    "}"              { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    [\w\-\}]+        { _pushState(GROUP_DIRECTIVE_BASIC_AUTH_PASSWORD); return CaddyfileTypes.USERNAME; }
+    {NEW_LINE}       { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_BASIC_AUTH_PASSWORD> {
+    [^\s\}]+           { _popState(); return CaddyfileTypes.PASSWORD; }
 }
 <GROUP_DIRECTIVE_TLS> {
-    {COMBINED_FILEPATH} { yybegin(GROUP_DIRECTIVE_TLS); return CaddyfileTypes.FILEPATH; }
-    {WHITE_SPACE}+ { yybegin(GROUP_DIRECTIVE_TLS); return TokenType.WHITE_SPACE; }
-    {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+    {COMBINED_FILEPATH} { return CaddyfileTypes.FILEPATH; }
+    {NEW_LINE}          { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
 <GROUP_DIRECTIVE_REDIR> {
-    {PROTOCOL} { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.PROTOCOL; }
-    [^\s] { _pushState(VARIABLE_STRING); yypushback(yylength()); }
-    {WHITE_SPACE}+ { yybegin(GROUP_DIRECTIVE_REDIR); return TokenType.WHITE_SPACE; }
-    {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+    {PROTOCOL}       { return CaddyfileTypes.PROTOCOL; }
+    [^\s]            { _pushState(VARIABLE_STRING); yypushback(yylength()); }
+    {NEW_LINE}       { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
 <GROUP_DIRECTIVE_RESPOND> {
-    \d+ { yybegin(GROUP_DIRECTIVE_RESPOND); return CaddyfileTypes.STATUS_CODE; }
-    {WHITE_SPACE}+ { yybegin(GROUP_DIRECTIVE_RESPOND); return TokenType.WHITE_SPACE; }
-    {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+    \d+             { return CaddyfileTypes.STATUS_CODE; }
+    {NEW_LINE}      { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
 <GROUP_DIRECTIVE_REVERSE_PROXY> {
-    {PORT} { yybegin(GROUP_DIRECTIVE_REVERSE_PROXY); return CaddyfileTypes.PORT; }
-    {PROTOCOL} { yybegin(GROUP_DIRECTIVE_REVERSE_PROXY); return CaddyfileTypes.PROTOCOL; }
-    {HOSTNAME} { yybegin(GROUP_DIRECTIVE_REVERSE_PROXY); return CaddyfileTypes.HOSTNAME; }
-    {COLON} { yybegin(GROUP_DIRECTIVE_REVERSE_PROXY); return CaddyfileTypes.COLON; }
-    {WHITE_SPACE}+ { yybegin(GROUP_DIRECTIVE_REVERSE_PROXY); return TokenType.WHITE_SPACE; }
-    {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+    {PORT}           { return CaddyfileTypes.PORT; }
+    {PROTOCOL}       { return CaddyfileTypes.PROTOCOL; }
+    {HOSTNAME}       { return CaddyfileTypes.HOSTNAME; }
+    {COLON}          { return CaddyfileTypes.COLON; }
+    {NEW_LINE}       { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
 
-<YYINITIAL> {EMPTY_LINE} { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
-[^] { return TokenType.BAD_CHARACTER; }
+{WHITE_SPACE}+     { return TokenType.WHITE_SPACE; }
+{ONE_LINE_COMMENT} { return CaddyfileTypes.COMMENT; }
+[^]                { return TokenType.BAD_CHARACTER; }

@@ -19,21 +19,35 @@ caddyfileFile ::= item_*
 private item_ ::= (property|COMMENT|CRLF)
 
 colon ::= ":"
-port_with_colon ::= (colon PORT)
-host ::= (HOSTNAME port_with_colon?)
+port_with_colon ::= colon PORT
+host ::= HOSTNAME port_with_colon?
 
 starred_hostname ::= (TEXT|STAR)(DOT (TEXT|STAR))*
+starred_path ::= (SLASH? (TEXT|STAR))* SLASH?
+
 variable ::= (LEFT_CURLY_BRACE VARIABLE_NAME RIGHT_CURLY_BRACE)
 
-property ::= binding group
+property ::= binding? group
 {
   methods=[getKey getValue]
 }
 binding ::= (starred_hostname port_with_colon?) | port_with_colon
-group ::= (LEFT_CURLY_BRACE directive* RIGHT_CURLY_BRACE)
+group ::= LEFT_CURLY_BRACE directive* RIGHT_CURLY_BRACE
 
-directive ::= (tls|redir|reverse_proxy|respond)
-tls ::= ("tls" FILEPATH FILEPATH)
-redir ::= ("redir" PROTOCOL (TEXT|variable)+)
-respond ::= ("respond" STATUS_CODE)
-reverse_proxy ::= ("reverse_proxy" PROTOCOL host)
+directive ::=
+    abort|
+    acme_server|
+    basic_auth|
+    tls|
+    redir|
+    reverse_proxy|
+    respond|
+
+abort ::= "abort"
+// not support acme_server for now
+acme_server ::= "acme_server"
+basic_auth ::= "basic_auth" starred_path? LEFT_CURLY_BRACE (USERNAME PASSWORD)* RIGHT_CURLY_BRACE
+tls ::= "tls" FILEPATH FILEPATH
+redir ::= "redir" PROTOCOL (TEXT|variable)+
+respond ::= "respond" STATUS_CODE
+reverse_proxy ::= "reverse_proxy" PROTOCOL host

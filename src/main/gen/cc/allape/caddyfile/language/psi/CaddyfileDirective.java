@@ -8,6 +8,15 @@ import com.intellij.psi.PsiElement;
 public interface CaddyfileDirective extends PsiElement {
 
   @Nullable
+  CaddyfileAbort getAbort();
+
+  @Nullable
+  CaddyfileAcmeServer getAcmeServer();
+
+  @Nullable
+  CaddyfileBasicAuth getBasicAuth();
+
+  @Nullable
   CaddyfileRedir getRedir();
 
   @Nullable
