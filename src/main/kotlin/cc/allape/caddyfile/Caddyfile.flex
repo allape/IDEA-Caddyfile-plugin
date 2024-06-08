@@ -4,12 +4,23 @@ import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import cc.allape.caddyfile.language.psi.CaddyfileTypes;
 import com.intellij.psi.TokenType;
+import java.util.ArrayList;import java.util.Stack;
 
 %%
 
 %public %class CaddyfileLexer
 %implements FlexLexer
 %unicode
+%{
+    private Stack<Integer> _stateStack = new Stack<Integer>();
+    private void _pushState(int state) {
+        _stateStack.push(zzLexicalState);
+        yybegin(state);
+    }
+    private void _popState() {
+        yybegin(_stateStack.pop());
+    }
+%}
 %function advance
 %type IElementType
 %eof{  return;
@@ -17,8 +28,6 @@ import com.intellij.psi.TokenType;
 
 NEW_LINE=[\r\n]
 WHITE_SPACE=[ \t]
-LEFT_CURLY_BRACE="{"
-RIGHT_CURLY_BRACE="}"
 
 EMPTY_LINE=({NEW_LINE}|{WHITE_SPACE})+
 
@@ -34,6 +43,13 @@ HOSTNAME=([\w\-]+\.)*[\w\-]+
 PORT=\d+
 
 %state BINDING
+%state BINDING_STARRED_HOSTNAME
+%state BINDING_PORT
+
+%state VARIABLE
+%state VARIABLE_STRING
+%state QUOTED_VARIABLE_STRING
+
 %state GROUP
 %state GROUP_DIRECTIVE_TLS
 %state GROUP_DIRECTIVE_REDIR
@@ -44,14 +60,33 @@ PORT=\d+
 
 <YYINITIAL> {
     {ONE_LINE_COMMENT} { yybegin(YYINITIAL); return CaddyfileTypes.COMMENT; }
-    [^\s]+ { yybegin(BINDING); return CaddyfileTypes.BINDING_HOSTNAME; }
+    [^\s]+ { yybegin(BINDING); yypushback(yylength()); }
 }
 
 <BINDING> {
-    {COLON} { yybegin(BINDING); return CaddyfileTypes.COLON; }
-    {PORT} { yybegin(BINDING); return CaddyfileTypes.PORT; }
+    "{" { yybegin(GROUP); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    [^\s\{]+ { _pushState(BINDING_STARRED_HOSTNAME); yypushback(yylength()); }
     {WHITE_SPACE}+ { yybegin(BINDING); return TokenType.WHITE_SPACE; }
-    {LEFT_CURLY_BRACE} { yybegin(GROUP); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+}
+<BINDING_STARRED_HOSTNAME> {
+    "*" { return CaddyfileTypes.STAR; }
+    "." { return CaddyfileTypes.DOT; }
+    ":" { _pushState(BINDING_PORT); return CaddyfileTypes.COLON; }
+    [^\s:*.]+ { return CaddyfileTypes.TEXT; }
+    {WHITE_SPACE}+ { _popState(); return TokenType.WHITE_SPACE; }
+}
+<BINDING_PORT> {
+    \d+ { _popState(); return CaddyfileTypes.PORT; }
+}
+
+<VARIABLE_STRING> {
+    "{"  { _pushState(VARIABLE); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    [^\s\{]+ { yybegin(VARIABLE_STRING); return CaddyfileTypes.TEXT; }
+    {EMPTY_LINE} { _popState(); yypushback(yylength()); }
+}
+<VARIABLE> {
+    "}"  { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    [^\s\}]+ { yybegin(VARIABLE); return CaddyfileTypes.VARIABLE_NAME; }
 }
 
 <GROUP> {
@@ -62,7 +97,7 @@ PORT=\d+
 
     {ONE_LINE_COMMENT} { yybegin(GROUP); return CaddyfileTypes.COMMENT; }
     {EMPTY_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
-    {RIGHT_CURLY_BRACE} { yybegin(YYINITIAL); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    "}" { yybegin(YYINITIAL); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
 }
 <GROUP_DIRECTIVE_TLS> {
     {COMBINED_FILEPATH} { yybegin(GROUP_DIRECTIVE_TLS); return CaddyfileTypes.FILEPATH; }
@@ -70,11 +105,8 @@ PORT=\d+
     {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
 <GROUP_DIRECTIVE_REDIR> {
-    \{(host|port)\} { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.VARIABLE; }
-    {PORT} { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.PORT; }
     {PROTOCOL} { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.PROTOCOL; }
-    {HOSTNAME} { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.HOSTNAME; }
-    {COLON} { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.COLON; }
+    [^\s] { _pushState(VARIABLE_STRING); yypushback(yylength()); }
     {WHITE_SPACE}+ { yybegin(GROUP_DIRECTIVE_REDIR); return TokenType.WHITE_SPACE; }
     {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }

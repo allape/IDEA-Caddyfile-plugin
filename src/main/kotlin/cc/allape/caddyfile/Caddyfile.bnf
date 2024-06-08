@@ -22,17 +22,18 @@ colon ::= ":"
 port_with_colon ::= (colon PORT)
 host ::= (HOSTNAME port_with_colon?)
 
-variable ::= ("{host}"|"{port}")
+starred_hostname ::= (TEXT|STAR)(DOT (TEXT|STAR))*
+variable ::= (LEFT_CURLY_BRACE VARIABLE_NAME RIGHT_CURLY_BRACE)
 
 property ::= binding group
 {
   methods=[getKey getValue]
 }
-binding ::= (BINDING_HOSTNAME port_with_colon?) | port_with_colon
+binding ::= (starred_hostname port_with_colon?) | port_with_colon
 group ::= (LEFT_CURLY_BRACE directive* RIGHT_CURLY_BRACE)
 
 directive ::= (tls|redir|reverse_proxy|respond)
 tls ::= ("tls" FILEPATH FILEPATH)
-redir ::= ("redir" PROTOCOL (host|variable+))
+redir ::= ("redir" PROTOCOL (TEXT|variable)+)
 respond ::= ("respond" STATUS_CODE)
 reverse_proxy ::= ("reverse_proxy" PROTOCOL host)

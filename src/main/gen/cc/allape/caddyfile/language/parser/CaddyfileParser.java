@@ -36,7 +36,7 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (BINDING_HOSTNAME port_with_colon?) | port_with_colon
+  // (starred_hostname port_with_colon?) | port_with_colon
   public static boolean binding(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "binding")) return false;
     boolean r;
@@ -47,12 +47,12 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BINDING_HOSTNAME port_with_colon?
+  // starred_hostname port_with_colon?
   private static boolean binding_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "binding_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, BINDING_HOSTNAME);
+    r = starred_hostname(b, l + 1);
     r = r && binding_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -183,7 +183,7 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // "redir" PROTOCOL (host|variable+)
+  // "redir" PROTOCOL (TEXT|variable)+
   public static boolean redir(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "redir")) return false;
     boolean r;
@@ -195,29 +195,27 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // host|variable+
+  // (TEXT|variable)+
   private static boolean redir_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "redir_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = host(b, l + 1);
-    if (!r) r = redir_2_1(b, l + 1);
+    r = redir_2_0(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!redir_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "redir_2", c)) break;
+    }
     exit_section_(b, m, null, r);
     return r;
   }
 
-  // variable+
-  private static boolean redir_2_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "redir_2_1")) return false;
+  // TEXT|variable
+  private static boolean redir_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "redir_2_0")) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = variable(b, l + 1);
-    while (r) {
-      int c = current_position_(b);
-      if (!variable(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "redir_2_1", c)) break;
-    }
-    exit_section_(b, m, null, r);
+    r = consumeToken(b, TEXT);
+    if (!r) r = variable(b, l + 1);
     return r;
   }
 
@@ -247,6 +245,59 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // (TEXT|STAR)(DOT (TEXT|STAR))*
+  public static boolean starred_hostname(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_hostname")) return false;
+    if (!nextTokenIs(b, "<starred hostname>", STAR, TEXT)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, STARRED_HOSTNAME, "<starred hostname>");
+    r = starred_hostname_0(b, l + 1);
+    r = r && starred_hostname_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // TEXT|STAR
+  private static boolean starred_hostname_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_hostname_0")) return false;
+    boolean r;
+    r = consumeToken(b, TEXT);
+    if (!r) r = consumeToken(b, STAR);
+    return r;
+  }
+
+  // (DOT (TEXT|STAR))*
+  private static boolean starred_hostname_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_hostname_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!starred_hostname_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "starred_hostname_1", c)) break;
+    }
+    return true;
+  }
+
+  // DOT (TEXT|STAR)
+  private static boolean starred_hostname_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_hostname_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, DOT);
+    r = r && starred_hostname_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // TEXT|STAR
+  private static boolean starred_hostname_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "starred_hostname_1_0_1")) return false;
+    boolean r;
+    r = consumeToken(b, TEXT);
+    if (!r) r = consumeToken(b, STAR);
+    return r;
+  }
+
+  /* ********************************************************** */
   // "tls" FILEPATH FILEPATH
   public static boolean tls(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tls")) return false;
@@ -259,14 +310,14 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // "{host}"|"{port}"
+  // LEFT_CURLY_BRACE VARIABLE_NAME RIGHT_CURLY_BRACE
   public static boolean variable(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "variable")) return false;
+    if (!nextTokenIs(b, LEFT_CURLY_BRACE)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, VARIABLE, "<variable>");
-    r = consumeToken(b, "{host}");
-    if (!r) r = consumeToken(b, "{port}");
-    exit_section_(b, l, m, r, false, null);
+    Marker m = enter_section_(b);
+    r = consumeTokens(b, 0, LEFT_CURLY_BRACE, VARIABLE_NAME, RIGHT_CURLY_BRACE);
+    exit_section_(b, m, VARIABLE, r);
     return r;
   }
 

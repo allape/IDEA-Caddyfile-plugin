@@ -20,19 +20,23 @@ public interface CaddyfileTypes {
   IElementType REDIR = new CaddyfileElementType("REDIR");
   IElementType RESPOND = new CaddyfileElementType("RESPOND");
   IElementType REVERSE_PROXY = new CaddyfileElementType("REVERSE_PROXY");
+  IElementType STARRED_HOSTNAME = new CaddyfileElementType("STARRED_HOSTNAME");
   IElementType TLS = new CaddyfileElementType("TLS");
   IElementType VARIABLE = new CaddyfileElementType("VARIABLE");
 
-  IElementType BINDING_HOSTNAME = new CaddyfileTokenType("BINDING_HOSTNAME");
   IElementType COMMENT = new CaddyfileTokenType("COMMENT");
   IElementType CRLF = new CaddyfileTokenType("CRLF");
+  IElementType DOT = new CaddyfileTokenType("DOT");
   IElementType FILEPATH = new CaddyfileTokenType("FILEPATH");
   IElementType HOSTNAME = new CaddyfileTokenType("HOSTNAME");
   IElementType LEFT_CURLY_BRACE = new CaddyfileTokenType("LEFT_CURLY_BRACE");
   IElementType PORT = new CaddyfileTokenType("PORT");
   IElementType PROTOCOL = new CaddyfileTokenType("PROTOCOL");
   IElementType RIGHT_CURLY_BRACE = new CaddyfileTokenType("RIGHT_CURLY_BRACE");
+  IElementType STAR = new CaddyfileTokenType("STAR");
   IElementType STATUS_CODE = new CaddyfileTokenType("STATUS_CODE");
+  IElementType TEXT = new CaddyfileTokenType("TEXT");
+  IElementType VARIABLE_NAME = new CaddyfileTokenType("VARIABLE_NAME");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
@@ -66,6 +70,9 @@ public interface CaddyfileTypes {
       }
       else if (type == REVERSE_PROXY) {
         return new CaddyfileReverseProxyImpl(node);
+      }
+      else if (type == STARRED_HOSTNAME) {
+        return new CaddyfileStarredHostnameImpl(node);
       }
       else if (type == TLS) {
         return new CaddyfileTlsImpl(node);

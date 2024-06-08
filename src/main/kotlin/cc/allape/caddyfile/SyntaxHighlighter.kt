@@ -29,29 +29,35 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
 
     override fun getTokenHighlights(tokenType: IElementType): @NotNull Array<TextAttributesKey?> {
         when (tokenType) {
+            // important keywords
+            CaddyfileTypes.VARIABLE_NAME,
+            CaddyfileTypes.STAR,
+            // directives
             CaddyfileTypes.TLS,
             CaddyfileTypes.REDIR,
             CaddyfileTypes.RESPOND,
-            CaddyfileTypes.REVERSE_PROXY,
-            CaddyfileTypes.BINDING_HOSTNAME,
+            CaddyfileTypes.REVERSE_PROXY -> {
+                return KEYWORD_KEYS
+            }
             CaddyfileTypes.HOSTNAME -> {
-                return HOSTNAME_KEYS
+                return LABEL_KEYS
+            }
+            CaddyfileTypes.DOT,
+            CaddyfileTypes.COLON -> {
+                return SEMICOLON_KEYS
             }
             CaddyfileTypes.STATUS_CODE,
-            CaddyfileTypes.COLON,
             CaddyfileTypes.PORT,
             CaddyfileTypes.PORT_WITH_COLON -> {
-                return PORT_KEYS
+                return NUMBER_KEYS
             }
             CaddyfileTypes.RIGHT_CURLY_BRACE,
             CaddyfileTypes.LEFT_CURLY_BRACE -> {
                 return BRACKETS_KEYS
             }
+            CaddyfileTypes.TEXT,
             CaddyfileTypes.PROTOCOL -> {
-                return PROTOCOL_KEYS
-            }
-            CaddyfileTypes.FILEPATH -> {
-                return VALUE_KEYS
+                return STRING_KEYS
             }
             CaddyfileTypes.COMMENT -> {
                 return COMMENT_KEYS
@@ -64,29 +70,32 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
     }
 
     companion object {
-        val HOSTNAME: TextAttributesKey =
+        val SEMICOLON: TextAttributesKey =
+            createTextAttributesKey("CADDYFILE_SEMICOLON", DefaultLanguageHighlighterColors.SEMICOLON)
+        val LABEL: TextAttributesKey =
+            createTextAttributesKey("CADDYFILE_LABEL", DefaultLanguageHighlighterColors.LABEL)
+        val KEYWORD: TextAttributesKey =
             createTextAttributesKey("CADDYFILE_HOSTNAME", DefaultLanguageHighlighterColors.KEYWORD)
         val BRACKETS: TextAttributesKey =
             createTextAttributesKey("CADDYFILE_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS)
-        val PORT: TextAttributesKey =
+        val NUMBER: TextAttributesKey =
             createTextAttributesKey("CADDYFILE_PORT", DefaultLanguageHighlighterColors.NUMBER)
-        val PROTOCOL: TextAttributesKey =
+        val STRING: TextAttributesKey =
             createTextAttributesKey("CADDYFILE_PROTOCOL", DefaultLanguageHighlighterColors.STRING)
-        val VALUE: TextAttributesKey =
-            createTextAttributesKey("CADDYFILE_VALUE", DefaultLanguageHighlighterColors.STRING)
-        val COMMENT: TextAttributesKey =
+        val LINE_COMMENT: TextAttributesKey =
             createTextAttributesKey("CADDYFILE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
         val BAD_CHARACTER: TextAttributesKey =
             createTextAttributesKey("CADDYFILE_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
 
 
         private val BAD_CHAR_KEYS = arrayOf<TextAttributesKey?>(BAD_CHARACTER)
+        private val SEMICOLON_KEYS = arrayOf<TextAttributesKey?>(SEMICOLON)
         private val BRACKETS_KEYS = arrayOf<TextAttributesKey?>(BRACKETS)
-        private val HOSTNAME_KEYS = arrayOf<TextAttributesKey?>(HOSTNAME)
-        private val PORT_KEYS = arrayOf<TextAttributesKey?>(PORT)
-        private val PROTOCOL_KEYS = arrayOf<TextAttributesKey?>(PROTOCOL)
-        private val VALUE_KEYS = arrayOf<TextAttributesKey?>(VALUE)
-        private val COMMENT_KEYS = arrayOf<TextAttributesKey?>(COMMENT)
+        private val LABEL_KEYS = arrayOf<TextAttributesKey?>(LABEL)
+        private val KEYWORD_KEYS = arrayOf<TextAttributesKey?>(KEYWORD)
+        private val NUMBER_KEYS = arrayOf<TextAttributesKey?>(NUMBER)
+        private val STRING_KEYS = arrayOf<TextAttributesKey?>(STRING)
+        private val COMMENT_KEYS = arrayOf<TextAttributesKey?>(LINE_COMMENT)
         private val EMPTY_KEYS = arrayOfNulls<TextAttributesKey>(0)
     }
 }
@@ -145,11 +154,12 @@ internal class CaddyfileColorSettingsPage : ColorSettingsPage {
     companion object {
         private val DESCRIPTORS = arrayOf(
             AttributesDescriptor("Brackets", CaddyfileSyntaxHighlighter.BRACKETS),
-            AttributesDescriptor("Comment", CaddyfileSyntaxHighlighter.COMMENT),
-            AttributesDescriptor("Protocol", CaddyfileSyntaxHighlighter.PROTOCOL),
-            AttributesDescriptor("Hostname", CaddyfileSyntaxHighlighter.HOSTNAME),
-            AttributesDescriptor("Port", CaddyfileSyntaxHighlighter.PORT),
-            AttributesDescriptor("Value", CaddyfileSyntaxHighlighter.VALUE),
+            AttributesDescriptor("Comment", CaddyfileSyntaxHighlighter.LINE_COMMENT),
+            AttributesDescriptor("String", CaddyfileSyntaxHighlighter.STRING),
+            AttributesDescriptor("Keyword", CaddyfileSyntaxHighlighter.KEYWORD),
+            AttributesDescriptor("Number", CaddyfileSyntaxHighlighter.NUMBER),
+            AttributesDescriptor("Label", CaddyfileSyntaxHighlighter.LABEL),
+            AttributesDescriptor("Separator", CaddyfileSyntaxHighlighter.SEMICOLON),
             AttributesDescriptor("Bad value", CaddyfileSyntaxHighlighter.BAD_CHARACTER)
         )
     }

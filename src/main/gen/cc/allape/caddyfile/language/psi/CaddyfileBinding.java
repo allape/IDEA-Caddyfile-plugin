@@ -10,4 +10,7 @@ public interface CaddyfileBinding extends PsiElement {
   @Nullable
   CaddyfilePortWithColon getPortWithColon();
 
+  @Nullable
+  CaddyfileStarredHostname getStarredHostname();
+
 }

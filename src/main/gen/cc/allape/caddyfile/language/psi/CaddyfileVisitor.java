@@ -47,6 +47,10 @@ public class CaddyfileVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitStarredHostname(@NotNull CaddyfileStarredHostname o) {
+    visitPsiElement(o);
+  }
+
   public void visitTls(@NotNull CaddyfileTls o) {
     visitPsiElement(o);
   }

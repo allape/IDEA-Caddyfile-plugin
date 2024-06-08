@@ -34,4 +34,10 @@ public class CaddyfileBindingImpl extends ASTWrapperPsiElement implements Caddyf
     return findChildByClass(CaddyfilePortWithColon.class);
   }
 
+  @Override
+  @Nullable
+  public CaddyfileStarredHostname getStarredHostname() {
+    return findChildByClass(CaddyfileStarredHostname.class);
+  }
+
 }

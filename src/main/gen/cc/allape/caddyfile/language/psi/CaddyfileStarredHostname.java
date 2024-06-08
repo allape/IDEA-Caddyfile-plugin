@@ -5,9 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CaddyfileRedir extends PsiElement {
-
-  @NotNull
-  List<CaddyfileVariable> getVariableList();
+public interface CaddyfileStarredHostname extends PsiElement {
 
 }
