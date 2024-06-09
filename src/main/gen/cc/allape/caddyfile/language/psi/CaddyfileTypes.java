@@ -20,26 +20,37 @@ public interface CaddyfileTypes {
   IElementType ENCODE = new CaddyfileElementType("ENCODE");
   IElementType ENCODE_ARG = new CaddyfileElementType("ENCODE_ARG");
   IElementType ENCODE_ARG_GZIP = new CaddyfileElementType("ENCODE_ARG_GZIP");
-  IElementType ENCODE_ARG_MATCH = new CaddyfileElementType("ENCODE_ARG_MATCH");
-  IElementType ENCODE_ARG_MATCH_ARG = new CaddyfileElementType("ENCODE_ARG_MATCH_ARG");
-  IElementType ENCODE_ARG_MATCH_ARG_HEADER = new CaddyfileElementType("ENCODE_ARG_MATCH_ARG_HEADER");
-  IElementType ENCODE_ARG_MATCH_ARG_STATUS = new CaddyfileElementType("ENCODE_ARG_MATCH_ARG_STATUS");
-  IElementType ENCODE_ARG_MATCH_ONE = new CaddyfileElementType("ENCODE_ARG_MATCH_ONE");
-  IElementType ENCODE_ARG_MATCH_TWO = new CaddyfileElementType("ENCODE_ARG_MATCH_TWO");
   IElementType ENCODE_ARG_MINIMUM_LENGTH = new CaddyfileElementType("ENCODE_ARG_MINIMUM_LENGTH");
   IElementType ENCODE_ARG_ZSTD = new CaddyfileElementType("ENCODE_ARG_ZSTD");
   IElementType GROUP = new CaddyfileElementType("GROUP");
   IElementType HOST = new CaddyfileElementType("HOST");
+  IElementType HOSTNAME_MATCHER = new CaddyfileElementType("HOSTNAME_MATCHER");
+  IElementType MATCHER = new CaddyfileElementType("MATCHER");
+  IElementType MATCHER_ONE = new CaddyfileElementType("MATCHER_ONE");
+  IElementType MATCHER_THR = new CaddyfileElementType("MATCHER_THR");
+  IElementType MATCHER_TWO = new CaddyfileElementType("MATCHER_TWO");
+  IElementType MATCH_BODY = new CaddyfileElementType("MATCH_BODY");
+  IElementType MATCH_DECLARE = new CaddyfileElementType("MATCH_DECLARE");
+  IElementType MATCH_DECLARE_DIRECTIVE = new CaddyfileElementType("MATCH_DECLARE_DIRECTIVE");
+  IElementType MATCH_DECLARE_DIR_HEADER = new CaddyfileElementType("MATCH_DECLARE_DIR_HEADER");
+  IElementType MATCH_DECLARE_DIR_METHOD = new CaddyfileElementType("MATCH_DECLARE_DIR_METHOD");
+  IElementType MATCH_DECLARE_DIR_PATH = new CaddyfileElementType("MATCH_DECLARE_DIR_PATH");
+  IElementType MATCH_DECLARE_DIR_STATUS = new CaddyfileElementType("MATCH_DECLARE_DIR_STATUS");
+  IElementType MATCH_DECLARE_NOT = new CaddyfileElementType("MATCH_DECLARE_NOT");
+  IElementType MATCH_DECLARE_ONE = new CaddyfileElementType("MATCH_DECLARE_ONE");
+  IElementType MATCH_DECLARE_TWO = new CaddyfileElementType("MATCH_DECLARE_TWO");
+  IElementType MATCH_DECLARE_TWO_DIRECTIVE = new CaddyfileElementType("MATCH_DECLARE_TWO_DIRECTIVE");
+  IElementType MATCH_DECLARE_TWO_SEP = new CaddyfileElementType("MATCH_DECLARE_TWO_SEP");
+  IElementType MATCH_DIRECTIVE = new CaddyfileElementType("MATCH_DIRECTIVE");
   IElementType PORT_WITH_COLON = new CaddyfileElementType("PORT_WITH_COLON");
   IElementType PROPERTY = new CaddyfileElementType("PROPERTY");
   IElementType REDIR = new CaddyfileElementType("REDIR");
   IElementType RESPOND = new CaddyfileElementType("RESPOND");
   IElementType REVERSE_PROXY = new CaddyfileElementType("REVERSE_PROXY");
-  IElementType STARRED_HOSTNAME = new CaddyfileElementType("STARRED_HOSTNAME");
-  IElementType STARRED_PATH = new CaddyfileElementType("STARRED_PATH");
   IElementType TLS = new CaddyfileElementType("TLS");
   IElementType VARIABLE = new CaddyfileElementType("VARIABLE");
 
+  IElementType AT = new CaddyfileTokenType("AT");
   IElementType COMMENT = new CaddyfileTokenType("COMMENT");
   IElementType COMPRESSION_METHOD = new CaddyfileTokenType("COMPRESSION_METHOD");
   IElementType CRLF = new CaddyfileTokenType("CRLF");
@@ -54,6 +65,10 @@ public interface CaddyfileTypes {
   IElementType IPV4 = new CaddyfileTokenType("IPV4");
   IElementType IPV6 = new CaddyfileTokenType("IPV6");
   IElementType LEFT_CURLY_BRACE = new CaddyfileTokenType("LEFT_CURLY_BRACE");
+  IElementType MATCHER_NAME = new CaddyfileTokenType("MATCHER_NAME");
+  IElementType MATCH_DECLARE_DIRECTIVE_4_0 = new CaddyfileTokenType("match_declare_directive_4_0");
+  IElementType MATCH_NAME = new CaddyfileTokenType("MATCH_NAME");
+  IElementType METHOD = new CaddyfileTokenType("METHOD");
   IElementType MINIMUM_LENGTH = new CaddyfileTokenType("MINIMUM_LENGTH");
   IElementType PASSWORD = new CaddyfileTokenType("PASSWORD");
   IElementType PORT = new CaddyfileTokenType("PORT");
@@ -100,24 +115,6 @@ public interface CaddyfileTypes {
       else if (type == ENCODE_ARG_GZIP) {
         return new CaddyfileEncodeArgGzipImpl(node);
       }
-      else if (type == ENCODE_ARG_MATCH) {
-        return new CaddyfileEncodeArgMatchImpl(node);
-      }
-      else if (type == ENCODE_ARG_MATCH_ARG) {
-        return new CaddyfileEncodeArgMatchArgImpl(node);
-      }
-      else if (type == ENCODE_ARG_MATCH_ARG_HEADER) {
-        return new CaddyfileEncodeArgMatchArgHeaderImpl(node);
-      }
-      else if (type == ENCODE_ARG_MATCH_ARG_STATUS) {
-        return new CaddyfileEncodeArgMatchArgStatusImpl(node);
-      }
-      else if (type == ENCODE_ARG_MATCH_ONE) {
-        return new CaddyfileEncodeArgMatchOneImpl(node);
-      }
-      else if (type == ENCODE_ARG_MATCH_TWO) {
-        return new CaddyfileEncodeArgMatchTwoImpl(node);
-      }
       else if (type == ENCODE_ARG_MINIMUM_LENGTH) {
         return new CaddyfileEncodeArgMinimumLengthImpl(node);
       }
@@ -129,6 +126,60 @@ public interface CaddyfileTypes {
       }
       else if (type == HOST) {
         return new CaddyfileHostImpl(node);
+      }
+      else if (type == HOSTNAME_MATCHER) {
+        return new CaddyfileHostnameMatcherImpl(node);
+      }
+      else if (type == MATCHER) {
+        return new CaddyfileMatcherImpl(node);
+      }
+      else if (type == MATCHER_ONE) {
+        return new CaddyfileMatcherOneImpl(node);
+      }
+      else if (type == MATCHER_THR) {
+        return new CaddyfileMatcherThrImpl(node);
+      }
+      else if (type == MATCHER_TWO) {
+        return new CaddyfileMatcherTwoImpl(node);
+      }
+      else if (type == MATCH_BODY) {
+        return new CaddyfileMatchBodyImpl(node);
+      }
+      else if (type == MATCH_DECLARE) {
+        return new CaddyfileMatchDeclareImpl(node);
+      }
+      else if (type == MATCH_DECLARE_DIRECTIVE) {
+        return new CaddyfileMatchDeclareDirectiveImpl(node);
+      }
+      else if (type == MATCH_DECLARE_DIR_HEADER) {
+        return new CaddyfileMatchDeclareDirHeaderImpl(node);
+      }
+      else if (type == MATCH_DECLARE_DIR_METHOD) {
+        return new CaddyfileMatchDeclareDirMethodImpl(node);
+      }
+      else if (type == MATCH_DECLARE_DIR_PATH) {
+        return new CaddyfileMatchDeclareDirPathImpl(node);
+      }
+      else if (type == MATCH_DECLARE_DIR_STATUS) {
+        return new CaddyfileMatchDeclareDirStatusImpl(node);
+      }
+      else if (type == MATCH_DECLARE_NOT) {
+        return new CaddyfileMatchDeclareNotImpl(node);
+      }
+      else if (type == MATCH_DECLARE_ONE) {
+        return new CaddyfileMatchDeclareOneImpl(node);
+      }
+      else if (type == MATCH_DECLARE_TWO) {
+        return new CaddyfileMatchDeclareTwoImpl(node);
+      }
+      else if (type == MATCH_DECLARE_TWO_DIRECTIVE) {
+        return new CaddyfileMatchDeclareTwoDirectiveImpl(node);
+      }
+      else if (type == MATCH_DECLARE_TWO_SEP) {
+        return new CaddyfileMatchDeclareTwoSepImpl(node);
+      }
+      else if (type == MATCH_DIRECTIVE) {
+        return new CaddyfileMatchDirectiveImpl(node);
       }
       else if (type == PORT_WITH_COLON) {
         return new CaddyfilePortWithColonImpl(node);
@@ -144,12 +195,6 @@ public interface CaddyfileTypes {
       }
       else if (type == REVERSE_PROXY) {
         return new CaddyfileReverseProxyImpl(node);
-      }
-      else if (type == STARRED_HOSTNAME) {
-        return new CaddyfileStarredHostnameImpl(node);
-      }
-      else if (type == STARRED_PATH) {
-        return new CaddyfileStarredPathImpl(node);
       }
       else if (type == TLS) {
         return new CaddyfileTlsImpl(node);

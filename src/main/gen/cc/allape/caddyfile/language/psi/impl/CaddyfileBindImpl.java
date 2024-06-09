@@ -28,4 +28,10 @@ public class CaddyfileBindImpl extends ASTWrapperPsiElement implements Caddyfile
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public CaddyfileMatcher getMatcher() {
+    return findChildByClass(CaddyfileMatcher.class);
+  }
+
 }

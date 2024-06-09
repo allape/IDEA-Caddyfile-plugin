@@ -22,8 +22,8 @@
     	minimum_length 3
     	match header Content-Type application/atom+xml* | status 102
     	match header Content-Type application/atom+xml* | status 102 567
-    	match header Content-Type application/atom+xml* |
-    	match | status 102 567
+    	match header Content-Type application/atom+xml*
+    	match status 102 567
     	match {
     		status 1 23 456    #123
     		header Content-Type application/atom+xml*

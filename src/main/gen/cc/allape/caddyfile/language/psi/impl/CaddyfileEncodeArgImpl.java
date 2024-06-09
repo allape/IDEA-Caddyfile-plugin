@@ -36,12 +36,6 @@ public class CaddyfileEncodeArgImpl extends ASTWrapperPsiElement implements Cadd
 
   @Override
   @Nullable
-  public CaddyfileEncodeArgMatch getEncodeArgMatch() {
-    return findChildByClass(CaddyfileEncodeArgMatch.class);
-  }
-
-  @Override
-  @Nullable
   public CaddyfileEncodeArgMinimumLength getEncodeArgMinimumLength() {
     return findChildByClass(CaddyfileEncodeArgMinimumLength.class);
   }
@@ -50,6 +44,12 @@ public class CaddyfileEncodeArgImpl extends ASTWrapperPsiElement implements Cadd
   @Nullable
   public CaddyfileEncodeArgZstd getEncodeArgZstd() {
     return findChildByClass(CaddyfileEncodeArgZstd.class);
+  }
+
+  @Override
+  @Nullable
+  public CaddyfileMatchDirective getMatchDirective() {
+    return findChildByClass(CaddyfileMatchDirective.class);
   }
 
 }

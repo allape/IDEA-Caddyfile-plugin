@@ -12,32 +12,20 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import cc.allape.caddyfile.language.psi.*;
 import cc.allape.caddyfile.CaddyfilePsiImplUtil;
 
-public class CaddyfileEncodeArgMatchImpl extends ASTWrapperPsiElement implements CaddyfileEncodeArgMatch {
+public class CaddyfileHostnameMatcherImpl extends ASTWrapperPsiElement implements CaddyfileHostnameMatcher {
 
-  public CaddyfileEncodeArgMatchImpl(@NotNull ASTNode node) {
+  public CaddyfileHostnameMatcherImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CaddyfileVisitor visitor) {
-    visitor.visitEncodeArgMatch(this);
+    visitor.visitHostnameMatcher(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof CaddyfileVisitor) accept((CaddyfileVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public CaddyfileEncodeArgMatchOne getEncodeArgMatchOne() {
-    return findChildByClass(CaddyfileEncodeArgMatchOne.class);
-  }
-
-  @Override
-  @Nullable
-  public CaddyfileEncodeArgMatchTwo getEncodeArgMatchTwo() {
-    return findChildByClass(CaddyfileEncodeArgMatchTwo.class);
   }
 
 }

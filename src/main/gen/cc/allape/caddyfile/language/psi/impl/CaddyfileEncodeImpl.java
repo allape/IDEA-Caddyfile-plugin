@@ -36,8 +36,8 @@ public class CaddyfileEncodeImpl extends ASTWrapperPsiElement implements Caddyfi
 
   @Override
   @Nullable
-  public CaddyfileStarredPath getStarredPath() {
-    return findChildByClass(CaddyfileStarredPath.class);
+  public CaddyfileMatcher getMatcher() {
+    return findChildByClass(CaddyfileMatcher.class);
   }
 
 }

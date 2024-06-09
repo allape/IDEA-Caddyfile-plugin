@@ -28,4 +28,10 @@ public class CaddyfileAcmeServerImpl extends ASTWrapperPsiElement implements Cad
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public CaddyfileMatcher getMatcher() {
+    return findChildByClass(CaddyfileMatcher.class);
+  }
+
 }

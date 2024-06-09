@@ -5,6 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CaddyfileStarredPath extends PsiElement {
+public interface CaddyfileMatchDeclareOne extends PsiElement {
+
+  @NotNull
+  List<CaddyfileMatchDeclareDirective> getMatchDeclareDirectiveList();
 
 }

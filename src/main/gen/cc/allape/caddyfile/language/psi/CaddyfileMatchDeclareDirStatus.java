@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CaddyfileEncodeArgMatchArg extends PsiElement {
+public interface CaddyfileMatchDeclareDirStatus extends PsiElement {
 
   @Nullable
-  CaddyfileEncodeArgMatchArgHeader getEncodeArgMatchArgHeader();
-
-  @Nullable
-  CaddyfileEncodeArgMatchArgStatus getEncodeArgMatchArgStatus();
+  CaddyfileMatchDeclareNot getMatchDeclareNot();
 
 }

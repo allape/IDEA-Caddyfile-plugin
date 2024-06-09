@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface CaddyfileBasicAuth extends PsiElement {
 
   @Nullable
-  CaddyfileStarredPath getStarredPath();
+  CaddyfileMatcher getMatcher();
 
 }

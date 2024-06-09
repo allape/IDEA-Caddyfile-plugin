@@ -18,21 +18,59 @@
 caddyfileFile ::= item_*
 private item_ ::= (property|COMMENT|CRLF)
 
-colon ::= ":"
-port_with_colon ::= colon PORT
-host ::= HOSTNAME port_with_colon?
-
-starred_hostname ::= (TEXT|STAR)(DOT (TEXT|STAR))*
-starred_path ::= (SLASH? (TEXT|STAR))* SLASH?
-
-variable ::= (LEFT_CURLY_BRACE VARIABLE_NAME RIGHT_CURLY_BRACE)
-
 property ::= binding? group
 {
   methods=[getKey getValue]
 }
-binding ::= (starred_hostname port_with_colon?) | port_with_colon
-group ::= LEFT_CURLY_BRACE directive* RIGHT_CURLY_BRACE
+binding ::= (hostname_matcher port_with_colon?) | port_with_colon
+group ::= LEFT_CURLY_BRACE (match_declare|directive)* RIGHT_CURLY_BRACE
+
+colon ::= ":"
+port_with_colon ::= colon PORT
+host ::= HOSTNAME port_with_colon?
+
+hostname_matcher ::= (TEXT|STAR)(DOT (TEXT|STAR))*
+
+variable ::= (LEFT_CURLY_BRACE VARIABLE_NAME RIGHT_CURLY_BRACE)
+
+// region matcher
+
+matcher ::= matcher_one|matcher_two|matcher_thr
+matcher_one ::= STAR
+matcher_two ::= SLASH ((TEXT|STAR) SLASH?)*
+matcher_thr ::= AT MATCHER_NAME
+
+// endregion
+
+// region match declare
+
+match_body ::= (match_declare_one|match_declare_two*)
+match_directive ::= "match" match_body
+
+match_declare ::= "@" MATCH_NAME match_body
+
+match_declare_one ::= LEFT_CURLY_BRACE match_declare_directive* RIGHT_CURLY_BRACE
+
+match_declare_two ::= (match_declare_two_directive match_declare_two_sep)* match_declare_two_directive
+match_declare_two_sep ::= "|"
+match_declare_two_directive ::= match_declare_directive
+
+match_declare_not ::= "not"
+
+match_declare_directive ::=
+    match_declare_dir_header|
+    match_declare_dir_method|
+    match_declare_dir_path|
+    match_declare_dir_status|
+
+match_declare_dir_header ::= match_declare_not? "header" HEADER HEADER_VALUE?
+match_declare_dir_method ::= match_declare_not? "method" METHOD+
+match_declare_dir_path ::= match_declare_not? "path" matcher_two+
+match_declare_dir_status ::= match_declare_not? "status" STATUS_CODE+
+
+// endregion
+
+// region directive
 
 directive ::=
     abort|
@@ -45,16 +83,17 @@ directive ::=
     reverse_proxy|
     respond|
 
-abort ::= "abort"
-// not support acme_server for now
-acme_server ::= "acme_server"
-basic_auth ::= "basic_auth" starred_path? LEFT_CURLY_BRACE (USERNAME PASSWORD)* RIGHT_CURLY_BRACE
-bind ::= "bind" (IPV4|IPV6|UNIX_SOCKET)+
-encode ::= "encode" starred_path? COMPRESSION_METHOD+ (LEFT_CURLY_BRACE encode_arg* RIGHT_CURLY_BRACE)?
+abort ::= "abort" matcher?
+acme_server ::= "acme_server" matcher? // not support acme_server for now
+basic_auth ::= "basic_auth" matcher? LEFT_CURLY_BRACE (USERNAME PASSWORD)* RIGHT_CURLY_BRACE
+bind ::= "bind" matcher? (IPV4|IPV6|UNIX_SOCKET)+
+encode ::= "encode" matcher? COMPRESSION_METHOD+ (LEFT_CURLY_BRACE encode_arg* RIGHT_CURLY_BRACE)?
 tls ::= "tls" FILEPATH FILEPATH
 redir ::= "redir" PROTOCOL (TEXT|variable)+
 respond ::= "respond" STATUS_CODE
 reverse_proxy ::= "reverse_proxy" PROTOCOL host
+
+// endregion
 
 // region encode arguments
 
@@ -62,17 +101,10 @@ encode_arg ::=
     encode_arg_gzip|
     encode_arg_zstd|
     encode_arg_minimum_length|
-    encode_arg_match|
+    match_directive|
 
 encode_arg_gzip ::= "gzip" GZIP_LEVEL?
 encode_arg_zstd ::= "zstd"
 encode_arg_minimum_length ::= "minimum_length" MINIMUM_LENGTH
-encode_arg_match ::= "match" (encode_arg_match_one|encode_arg_match_two)
-encode_arg_match_one ::= (("header" HEADER HEADER_VALUE?)? "|" ("status" STATUS_CODE*)?)
-encode_arg_match_two ::= LEFT_CURLY_BRACE encode_arg_match_arg* RIGHT_CURLY_BRACE
-
-encode_arg_match_arg ::= encode_arg_match_arg_status|encode_arg_match_arg_header
-encode_arg_match_arg_status ::= "status" STATUS_CODE+
-encode_arg_match_arg_header ::= "header" HEADER HEADER_VALUE?
 
 // endregion

@@ -12,14 +12,14 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import cc.allape.caddyfile.language.psi.*;
 import cc.allape.caddyfile.CaddyfilePsiImplUtil;
 
-public class CaddyfileEncodeArgMatchArgImpl extends ASTWrapperPsiElement implements CaddyfileEncodeArgMatchArg {
+public class CaddyfileMatchDeclareDirectiveImpl extends ASTWrapperPsiElement implements CaddyfileMatchDeclareDirective {
 
-  public CaddyfileEncodeArgMatchArgImpl(@NotNull ASTNode node) {
+  public CaddyfileMatchDeclareDirectiveImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CaddyfileVisitor visitor) {
-    visitor.visitEncodeArgMatchArg(this);
+    visitor.visitMatchDeclareDirective(this);
   }
 
   @Override
@@ -30,14 +30,26 @@ public class CaddyfileEncodeArgMatchArgImpl extends ASTWrapperPsiElement impleme
 
   @Override
   @Nullable
-  public CaddyfileEncodeArgMatchArgHeader getEncodeArgMatchArgHeader() {
-    return findChildByClass(CaddyfileEncodeArgMatchArgHeader.class);
+  public CaddyfileMatchDeclareDirHeader getMatchDeclareDirHeader() {
+    return findChildByClass(CaddyfileMatchDeclareDirHeader.class);
   }
 
   @Override
   @Nullable
-  public CaddyfileEncodeArgMatchArgStatus getEncodeArgMatchArgStatus() {
-    return findChildByClass(CaddyfileEncodeArgMatchArgStatus.class);
+  public CaddyfileMatchDeclareDirMethod getMatchDeclareDirMethod() {
+    return findChildByClass(CaddyfileMatchDeclareDirMethod.class);
+  }
+
+  @Override
+  @Nullable
+  public CaddyfileMatchDeclareDirPath getMatchDeclareDirPath() {
+    return findChildByClass(CaddyfileMatchDeclareDirPath.class);
+  }
+
+  @Override
+  @Nullable
+  public CaddyfileMatchDeclareDirStatus getMatchDeclareDirStatus() {
+    return findChildByClass(CaddyfileMatchDeclareDirStatus.class);
   }
 
 }

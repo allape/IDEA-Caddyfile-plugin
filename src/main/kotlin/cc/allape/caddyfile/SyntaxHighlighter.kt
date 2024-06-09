@@ -62,8 +62,10 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             }
             CaddyfileTypes.USERNAME,
             CaddyfileTypes.PASSWORD,
-            CaddyfileTypes.ENCODE_ARG_MATCH_ARG_STATUS,
-            CaddyfileTypes.ENCODE_ARG_MATCH_ARG_HEADER,
+            CaddyfileTypes.MATCH_DECLARE_DIR_HEADER,
+            CaddyfileTypes.MATCH_DECLARE_DIR_METHOD,
+            CaddyfileTypes.MATCH_DECLARE_DIR_PATH,
+            CaddyfileTypes.MATCH_DECLARE_DIR_STATUS,
             CaddyfileTypes.TEXT,
             CaddyfileTypes.PROTOCOL -> {
                 return STRING_KEYS

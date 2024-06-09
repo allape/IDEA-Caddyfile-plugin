@@ -47,30 +47,6 @@ public class CaddyfileVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitEncodeArgMatch(@NotNull CaddyfileEncodeArgMatch o) {
-    visitPsiElement(o);
-  }
-
-  public void visitEncodeArgMatchArg(@NotNull CaddyfileEncodeArgMatchArg o) {
-    visitPsiElement(o);
-  }
-
-  public void visitEncodeArgMatchArgHeader(@NotNull CaddyfileEncodeArgMatchArgHeader o) {
-    visitPsiElement(o);
-  }
-
-  public void visitEncodeArgMatchArgStatus(@NotNull CaddyfileEncodeArgMatchArgStatus o) {
-    visitPsiElement(o);
-  }
-
-  public void visitEncodeArgMatchOne(@NotNull CaddyfileEncodeArgMatchOne o) {
-    visitPsiElement(o);
-  }
-
-  public void visitEncodeArgMatchTwo(@NotNull CaddyfileEncodeArgMatchTwo o) {
-    visitPsiElement(o);
-  }
-
   public void visitEncodeArgMinimumLength(@NotNull CaddyfileEncodeArgMinimumLength o) {
     visitPsiElement(o);
   }
@@ -84,6 +60,78 @@ public class CaddyfileVisitor extends PsiElementVisitor {
   }
 
   public void visitHost(@NotNull CaddyfileHost o) {
+    visitPsiElement(o);
+  }
+
+  public void visitHostnameMatcher(@NotNull CaddyfileHostnameMatcher o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchBody(@NotNull CaddyfileMatchBody o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclare(@NotNull CaddyfileMatchDeclare o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareDirHeader(@NotNull CaddyfileMatchDeclareDirHeader o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareDirMethod(@NotNull CaddyfileMatchDeclareDirMethod o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareDirPath(@NotNull CaddyfileMatchDeclareDirPath o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareDirStatus(@NotNull CaddyfileMatchDeclareDirStatus o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareDirective(@NotNull CaddyfileMatchDeclareDirective o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareNot(@NotNull CaddyfileMatchDeclareNot o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareOne(@NotNull CaddyfileMatchDeclareOne o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareTwo(@NotNull CaddyfileMatchDeclareTwo o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareTwoDirective(@NotNull CaddyfileMatchDeclareTwoDirective o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDeclareTwoSep(@NotNull CaddyfileMatchDeclareTwoSep o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchDirective(@NotNull CaddyfileMatchDirective o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatcher(@NotNull CaddyfileMatcher o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatcherOne(@NotNull CaddyfileMatcherOne o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatcherThr(@NotNull CaddyfileMatcherThr o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatcherTwo(@NotNull CaddyfileMatcherTwo o) {
     visitPsiElement(o);
   }
 
@@ -104,14 +152,6 @@ public class CaddyfileVisitor extends PsiElementVisitor {
   }
 
   public void visitReverseProxy(@NotNull CaddyfileReverseProxy o) {
-    visitPsiElement(o);
-  }
-
-  public void visitStarredHostname(@NotNull CaddyfileStarredHostname o) {
-    visitPsiElement(o);
-  }
-
-  public void visitStarredPath(@NotNull CaddyfileStarredPath o) {
     visitPsiElement(o);
   }
 

@@ -34,4 +34,10 @@ public class CaddyfileGroupImpl extends ASTWrapperPsiElement implements Caddyfil
     return PsiTreeUtil.getChildrenOfTypeAsList(this, CaddyfileDirective.class);
   }
 
+  @Override
+  @NotNull
+  public List<CaddyfileMatchDeclare> getMatchDeclareList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CaddyfileMatchDeclare.class);
+  }
+
 }

@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface CaddyfileBind extends PsiElement {
 
+  @Nullable
+  CaddyfileMatcher getMatcher();
+
 }

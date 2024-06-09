@@ -12,14 +12,14 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import cc.allape.caddyfile.language.psi.*;
 import cc.allape.caddyfile.CaddyfilePsiImplUtil;
 
-public class CaddyfileStarredPathImpl extends ASTWrapperPsiElement implements CaddyfileStarredPath {
+public class CaddyfileMatchDeclareNotImpl extends ASTWrapperPsiElement implements CaddyfileMatchDeclareNot {
 
-  public CaddyfileStarredPathImpl(@NotNull ASTNode node) {
+  public CaddyfileMatchDeclareNotImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CaddyfileVisitor visitor) {
-    visitor.visitStarredPath(this);
+    visitor.visitMatchDeclareNot(this);
   }
 
   @Override

@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CaddyfileGroup extends PsiElement {
+public interface CaddyfileMatchDeclareTwo extends PsiElement {
 
   @NotNull
-  List<CaddyfileDirective> getDirectiveList();
+  List<CaddyfileMatchDeclareTwoDirective> getMatchDeclareTwoDirectiveList();
 
   @NotNull
-  List<CaddyfileMatchDeclare> getMatchDeclareList();
+  List<CaddyfileMatchDeclareTwoSep> getMatchDeclareTwoSepList();
 
 }

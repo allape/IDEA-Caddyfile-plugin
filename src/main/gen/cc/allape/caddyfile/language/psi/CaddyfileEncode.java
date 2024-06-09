@@ -11,6 +11,6 @@ public interface CaddyfileEncode extends PsiElement {
   List<CaddyfileEncodeArg> getEncodeArgList();
 
   @Nullable
-  CaddyfileStarredPath getStarredPath();
+  CaddyfileMatcher getMatcher();
 
 }

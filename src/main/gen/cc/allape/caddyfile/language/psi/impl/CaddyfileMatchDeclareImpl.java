@@ -12,20 +12,26 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import cc.allape.caddyfile.language.psi.*;
 import cc.allape.caddyfile.CaddyfilePsiImplUtil;
 
-public class CaddyfileStarredHostnameImpl extends ASTWrapperPsiElement implements CaddyfileStarredHostname {
+public class CaddyfileMatchDeclareImpl extends ASTWrapperPsiElement implements CaddyfileMatchDeclare {
 
-  public CaddyfileStarredHostnameImpl(@NotNull ASTNode node) {
+  public CaddyfileMatchDeclareImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CaddyfileVisitor visitor) {
-    visitor.visitStarredHostname(this);
+    visitor.visitMatchDeclare(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof CaddyfileVisitor) accept((CaddyfileVisitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public CaddyfileMatchBody getMatchBody() {
+    return findNotNullChildByClass(CaddyfileMatchBody.class);
   }
 
 }

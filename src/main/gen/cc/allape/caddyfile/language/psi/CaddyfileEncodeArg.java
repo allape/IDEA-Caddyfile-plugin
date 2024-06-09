@@ -11,12 +11,12 @@ public interface CaddyfileEncodeArg extends PsiElement {
   CaddyfileEncodeArgGzip getEncodeArgGzip();
 
   @Nullable
-  CaddyfileEncodeArgMatch getEncodeArgMatch();
-
-  @Nullable
   CaddyfileEncodeArgMinimumLength getEncodeArgMinimumLength();
 
   @Nullable
   CaddyfileEncodeArgZstd getEncodeArgZstd();
+
+  @Nullable
+  CaddyfileMatchDirective getMatchDirective();
 
 }

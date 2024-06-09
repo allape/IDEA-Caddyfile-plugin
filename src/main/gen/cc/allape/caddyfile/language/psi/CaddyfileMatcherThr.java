@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CaddyfileBinding extends PsiElement {
-
-  @Nullable
-  CaddyfileHostnameMatcher getHostnameMatcher();
-
-  @Nullable
-  CaddyfilePortWithColon getPortWithColon();
+public interface CaddyfileMatcherThr extends PsiElement {
 
 }
