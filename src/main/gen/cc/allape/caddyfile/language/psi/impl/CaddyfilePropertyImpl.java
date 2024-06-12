@@ -40,4 +40,16 @@ public class CaddyfilePropertyImpl extends ASTWrapperPsiElement implements Caddy
     return findNotNullChildByClass(CaddyfileGroup.class);
   }
 
+  @Override
+  @Nullable
+  public String getKey() {
+    return CaddyfilePsiImplUtil.getKey(this);
+  }
+
+  @Override
+  @Nullable
+  public String getValue() {
+    return CaddyfilePsiImplUtil.getValue(this);
+  }
+
 }

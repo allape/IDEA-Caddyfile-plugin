@@ -38,10 +38,18 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             CaddyfileTypes.BASIC_AUTH,
             CaddyfileTypes.BIND,
             CaddyfileTypes.ENCODE,
+            CaddyfileTypes.ERROR,
             CaddyfileTypes.TLS,
             CaddyfileTypes.REDIR,
             CaddyfileTypes.RESPOND,
-            CaddyfileTypes.REVERSE_PROXY -> {
+            CaddyfileTypes.REVERSE_PROXY,
+            // sub directive
+            CaddyfileTypes.ERROR_ARG_MESSAGE,
+            CaddyfileTypes.MATCH_DIRECTIVE,
+            CaddyfileTypes.ENCODE_ARG_GZIP,
+            CaddyfileTypes.ENCODE_ARG_MINIMUM_LENGTH,
+            CaddyfileTypes.ENCODE_ARG_ZSTD
+            -> {
                 return KEYWORD_KEYS
             }
             CaddyfileTypes.HOSTNAME -> {

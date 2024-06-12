@@ -12,20 +12,38 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import cc.allape.caddyfile.language.psi.*;
 import cc.allape.caddyfile.CaddyfilePsiImplUtil;
 
-public class CaddyfileBindImpl extends ASTWrapperPsiElement implements CaddyfileBind {
+public class CaddyfileErrorImpl extends ASTWrapperPsiElement implements CaddyfileError {
 
-  public CaddyfileBindImpl(@NotNull ASTNode node) {
+  public CaddyfileErrorImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CaddyfileVisitor visitor) {
-    visitor.visitBind(this);
+    visitor.visitError(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof CaddyfileVisitor) accept((CaddyfileVisitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @Nullable
+  public CaddyfileErrorArg getErrorArg() {
+    return findChildByClass(CaddyfileErrorArg.class);
+  }
+
+  @Override
+  @Nullable
+  public CaddyfileMatcher getMatcher() {
+    return findChildByClass(CaddyfileMatcher.class);
+  }
+
+  @Override
+  @Nullable
+  public CaddyfileQuotedText getQuotedText() {
+    return findChildByClass(CaddyfileQuotedText.class);
   }
 
 }

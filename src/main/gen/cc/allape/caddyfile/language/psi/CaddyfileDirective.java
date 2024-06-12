@@ -23,6 +23,9 @@ public interface CaddyfileDirective extends PsiElement {
   CaddyfileEncode getEncode();
 
   @Nullable
+  CaddyfileError getError();
+
+  @Nullable
   CaddyfileRedir getRedir();
 
   @Nullable

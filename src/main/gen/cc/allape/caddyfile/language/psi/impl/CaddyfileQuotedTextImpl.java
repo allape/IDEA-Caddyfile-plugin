@@ -12,14 +12,14 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import cc.allape.caddyfile.language.psi.*;
 import cc.allape.caddyfile.CaddyfilePsiImplUtil;
 
-public class CaddyfileBindImpl extends ASTWrapperPsiElement implements CaddyfileBind {
+public class CaddyfileQuotedTextImpl extends ASTWrapperPsiElement implements CaddyfileQuotedText {
 
-  public CaddyfileBindImpl(@NotNull ASTNode node) {
+  public CaddyfileQuotedTextImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CaddyfileVisitor visitor) {
-    visitor.visitBind(this);
+    visitor.visitQuotedText(this);
   }
 
   @Override

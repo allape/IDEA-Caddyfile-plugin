@@ -32,6 +32,7 @@ host ::= HOSTNAME port_with_colon?
 hostname_matcher ::= (TEXT|STAR)(DOT (TEXT|STAR))*
 
 variable ::= (LEFT_CURLY_BRACE VARIABLE_NAME RIGHT_CURLY_BRACE)
+quoted_text ::= QUOTATION TEXT QUOTATION
 
 // region matcher
 
@@ -78,19 +79,30 @@ directive ::=
     basic_auth|
     bind|
     encode|
+    error|
     tls|
     redir|
     reverse_proxy|
     respond|
 
 abort ::= "abort" matcher?
+
 acme_server ::= "acme_server" matcher? // not support acme_server for now
+
 basic_auth ::= "basic_auth" matcher? LEFT_CURLY_BRACE (USERNAME PASSWORD)* RIGHT_CURLY_BRACE
-bind ::= "bind" matcher? (IPV4|IPV6|UNIX_SOCKET)+
+
+bind ::= "bind" (IPV4|IPV6|UNIX_SOCKET)+
+
 encode ::= "encode" matcher? COMPRESSION_METHOD+ (LEFT_CURLY_BRACE encode_arg* RIGHT_CURLY_BRACE)?
+
+error ::= "error" matcher? (STATUS_CODE|quoted_text STATUS_CODE) (LEFT_CURLY_BRACE error_arg? RIGHT_CURLY_BRACE)?
+
 tls ::= "tls" FILEPATH FILEPATH
+
 redir ::= "redir" PROTOCOL (TEXT|variable)+
+
 respond ::= "respond" STATUS_CODE
+
 reverse_proxy ::= "reverse_proxy" PROTOCOL host
 
 // endregion
@@ -106,5 +118,14 @@ encode_arg ::=
 encode_arg_gzip ::= "gzip" GZIP_LEVEL?
 encode_arg_zstd ::= "zstd"
 encode_arg_minimum_length ::= "minimum_length" MINIMUM_LENGTH
+
+// endregion
+
+// region error
+
+error_arg ::=
+    error_arg_message
+
+error_arg_message ::= "message" (TEXT|quoted_text)
 
 // endregion

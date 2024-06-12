@@ -43,4 +43,15 @@
             header Content-Type application/vnd.api+json*
     	}
     }
+
+     error /private* 403
+     error /private* 403 {
+        message 123
+     }
+     error /private* "Unauthorized" 403 {
+        message abc
+     }
+     error /hidden* "Not found" 404 {
+        message "abc"
+     }
 }

@@ -26,6 +26,9 @@ import java.util.Stack;
     private void _clearStack() {
         _stateStack.clear();
     }
+    private boolean _isStackEmpty() {
+        return _stateStack.empty();
+    }
 %}
 %{
     private boolean __IN_MATCH_DECLARE_ONE = false;
@@ -59,6 +62,7 @@ PORT=\d+
 
 %state BINDING_HOSTNAME
 
+%state QUOTED_STRING
 %state VARIABLE
 %state VARIABLE_STRING
 %state QUOTED_VARIABLE_STRING
@@ -76,21 +80,36 @@ PORT=\d+
 %state MATCH_DECLARE_DIR_STATUS
 
 %state GROUP
-%state GROUP_DIRECTIVE_ABORT
-%state GROUP_DIRECTIVE_ACME_SERVER
-%state GROUP_DIRECTIVE_BASIC_AUTH
-%state GROUP_DIRECTIVE_BASIC_AUTH_SERECTS
-%state GROUP_DIRECTIVE_BASIC_AUTH_PASSWORD
-%state GROUP_DIRECTIVE_BIND
-%state GROUP_DIRECTIVE_ENCODE
-%state GROUP_DIRECTIVE_TLS
-%state GROUP_DIRECTIVE_REDIR
-%state GROUP_DIRECTIVE_RESPOND
-%state GROUP_DIRECTIVE_REVERSE_PROXY
 
+%state GROUP_DIRECTIVE_ABORT
+
+%state GROUP_DIRECTIVE_ACME_SERVER
+
+%state GROUP_DIRECTIVE_BASIC_AUTH
+
+%state GROUP_DIRECTIVE_BASIC_AUTH_SERECTS
+
+%state GROUP_DIRECTIVE_BASIC_AUTH_PASSWORD
+
+%state GROUP_DIRECTIVE_BIND
+
+%state GROUP_DIRECTIVE_ENCODE
 %state GROUP_DIRECTIVE_ENCODE_ARGS
 %state GROUP_DIRECTIVE_ENCODE_ARGS_GZIP
 %state GROUP_DIRECTIVE_ENCODE_ARGS_MINIMUM_LENGTH
+
+%state GROUP_DIRECTIVE_ERROR
+%state GROUP_DIRECTIVE_ERROR_ARGS
+%state GROUP_DIRECTIVE_ERROR_ARGS_MESSAGE
+
+%state GROUP_DIRECTIVE_TLS
+
+%state GROUP_DIRECTIVE_REDIR
+
+%state GROUP_DIRECTIVE_RESPOND
+
+%state GROUP_DIRECTIVE_REVERSE_PROXY
+
 
 %%
 
@@ -108,6 +127,11 @@ PORT=\d+
 }
 <PORT> {
     \d+             { _popState(); return CaddyfileTypes.PORT; }
+}
+
+<QUOTED_STRING> {
+    "\""       { if (yycharat(yylength()-2) != '\\') { _popState(); return CaddyfileTypes.QUOTATION; } }
+    [^\r\n\"]+ { return CaddyfileTypes.TEXT; }
 }
 
 <VARIABLE> {
@@ -186,6 +210,7 @@ PORT=\d+
     basic_auth        { yybegin(GROUP_DIRECTIVE_BASIC_AUTH); return CaddyfileTypes.BASIC_AUTH; }
     bind              { yybegin(GROUP_DIRECTIVE_BIND); return CaddyfileTypes.BIND; }
     encode            { yybegin(GROUP_DIRECTIVE_ENCODE); return CaddyfileTypes.ENCODE; }
+    error             { yybegin(GROUP_DIRECTIVE_ERROR); return CaddyfileTypes.ERROR; }
     tls               { yybegin(GROUP_DIRECTIVE_TLS); return CaddyfileTypes.TLS; }
     redir             { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.REDIR; }
     respond           { yybegin(GROUP_DIRECTIVE_RESPOND); return CaddyfileTypes.RESPOND; }
@@ -194,19 +219,23 @@ PORT=\d+
     {EMPTY_LINE}       { return TokenType.WHITE_SPACE; }
     "}"                { yybegin(YYINITIAL); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
 }
+
 <GROUP_DIRECTIVE_ABORT> {
     {MATCHER}  { _pushState(MATCHER); yypushback(yylength()); }
     {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
+
 <GROUP_DIRECTIVE_ACME_SERVER> {
     {MATCHER}  { _pushState(MATCHER); yypushback(yylength()); }
     {NEW_LINE} { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
+
 <GROUP_DIRECTIVE_BASIC_AUTH> {
     {MATCHER}      { _pushState(MATCHER); yypushback(yylength()); }
     "{"            { _pushState(GROUP_DIRECTIVE_BASIC_AUTH_SERECTS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
     {NEW_LINE}     { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
+
 <GROUP_DIRECTIVE_BASIC_AUTH_SERECTS> {
     "}"              { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
     [\w\-\}]+        { _pushState(GROUP_DIRECTIVE_BASIC_AUTH_PASSWORD); return CaddyfileTypes.USERNAME; }
@@ -215,44 +244,21 @@ PORT=\d+
 <GROUP_DIRECTIVE_BASIC_AUTH_PASSWORD> {
     [^\s\}]+           { _popState(); return CaddyfileTypes.PASSWORD; }
 }
+
 <GROUP_DIRECTIVE_BIND> {
-    {MATCHER}                                     { _pushState(MATCHER); yypushback(yylength()); }
     (\d{1,3}\.){3}\d{1,3}                         { return CaddyfileTypes.IPV4; }
     \[([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}\]  { return CaddyfileTypes.IPV6; }
     unix\/[^\s]+                                  { return CaddyfileTypes.UNIX_SOCKET; }
     {NEW_LINE}                                    { yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
+
 <GROUP_DIRECTIVE_ENCODE> {
     {MATCHER}      { _pushState(MATCHER); yypushback(yylength()); }
     (zstd|gzip)    { return CaddyfileTypes.COMPRESSION_METHOD; }
-    "{"            { __IN_GROUP_DIRECTIVE_ENCODE_ARGS = true; _pushState(GROUP_DIRECTIVE_ENCODE_ARGS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
-    "}"            { __IN_GROUP_DIRECTIVE_ENCODE_ARGS = false; yybegin(GROUP); return CaddyfileTypes.RIGHT_CURLY_BRACE;}
-    {NEW_LINE}     { if (!__IN_GROUP_DIRECTIVE_ENCODE_ARGS) yybegin(GROUP); return TokenType.WHITE_SPACE; }
+    "{"            { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    "}"            { yybegin(GROUP); return CaddyfileTypes.RIGHT_CURLY_BRACE;}
+    {NEW_LINE}     { if (_isStackEmpty()) yybegin(GROUP); return TokenType.WHITE_SPACE; }
 }
-<GROUP_DIRECTIVE_TLS> {
-    {COMBINED_FILEPATH} { return CaddyfileTypes.FILEPATH; }
-    {NEW_LINE}          { yybegin(GROUP); return TokenType.WHITE_SPACE; }
-}
-<GROUP_DIRECTIVE_REDIR> {
-    {MATCHER}        { _pushState(MATCHER); yypushback(yylength()); }
-    {PROTOCOL}       { return CaddyfileTypes.PROTOCOL; }
-    [^\s]            { _pushState(VARIABLE_STRING); yypushback(yylength()); }
-    {NEW_LINE}       { yybegin(GROUP); return TokenType.WHITE_SPACE; }
-}
-<GROUP_DIRECTIVE_RESPOND> {
-    {MATCHER}       { _pushState(MATCHER); yypushback(yylength()); }
-    \d+             { return CaddyfileTypes.STATUS_CODE; }
-    {NEW_LINE}      { yybegin(GROUP); return TokenType.WHITE_SPACE; }
-}
-<GROUP_DIRECTIVE_REVERSE_PROXY> {
-    {MATCHER}        { _pushState(MATCHER); yypushback(yylength()); }
-    {PORT}           { return CaddyfileTypes.PORT; }
-    {PROTOCOL}       { return CaddyfileTypes.PROTOCOL; }
-    {HOSTNAME}       { return CaddyfileTypes.HOSTNAME; }
-    {COLON}          { return CaddyfileTypes.COLON; }
-    {NEW_LINE}       { yybegin(GROUP); return TokenType.WHITE_SPACE; }
-}
-
 <GROUP_DIRECTIVE_ENCODE_ARGS> {
     gzip                { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS_GZIP); return CaddyfileTypes.ENCODE_ARG_GZIP;}
     zstd                { return CaddyfileTypes.ENCODE_ARG_ZSTD;}
@@ -269,6 +275,53 @@ PORT=\d+
     \d+        { _popState(); return CaddyfileTypes.MINIMUM_LENGTH; }
     {NEW_LINE} { _popState(); return TokenType.WHITE_SPACE; }
 }
+
+<GROUP_DIRECTIVE_ERROR> {
+    {MATCHER}      { _pushState(MATCHER); yypushback(yylength()); }
+    \"             { _pushState(QUOTED_STRING); return CaddyfileTypes.QUOTATION; }
+    \d+            { return CaddyfileTypes.STATUS_CODE; }
+    "{"            { _pushState(GROUP_DIRECTIVE_ERROR_ARGS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    "}"            { yybegin(GROUP); return CaddyfileTypes.RIGHT_CURLY_BRACE;}
+    {NEW_LINE}     { if (_isStackEmpty()) yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_ERROR_ARGS> {
+    "message"      { _pushState(GROUP_DIRECTIVE_ERROR_ARGS_MESSAGE); return CaddyfileTypes.ERROR_ARG_MESSAGE; }
+    "}"            { _popState(); yypushback(yylength()); }
+    {NEW_LINE}     { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_ERROR_ARGS_MESSAGE> {
+    "\""           { _pushState(QUOTED_STRING); return CaddyfileTypes.QUOTATION; }
+    [^\s\"]+       { _popState(); return CaddyfileTypes.TEXT; }
+    {NEW_LINE}     { _popState(); yypushback(yylength()); }
+}
+
+<GROUP_DIRECTIVE_TLS> {
+    {COMBINED_FILEPATH} { return CaddyfileTypes.FILEPATH; }
+    {NEW_LINE}          { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+
+<GROUP_DIRECTIVE_REDIR> {
+    {MATCHER}        { _pushState(MATCHER); yypushback(yylength()); }
+    {PROTOCOL}       { return CaddyfileTypes.PROTOCOL; }
+    [^\s]            { _pushState(VARIABLE_STRING); yypushback(yylength()); }
+    {NEW_LINE}       { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+
+<GROUP_DIRECTIVE_RESPOND> {
+    {MATCHER}       { _pushState(MATCHER); yypushback(yylength()); }
+    \d+             { return CaddyfileTypes.STATUS_CODE; }
+    {NEW_LINE}      { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+
+<GROUP_DIRECTIVE_REVERSE_PROXY> {
+    {MATCHER}        { _pushState(MATCHER); yypushback(yylength()); }
+    {PORT}           { return CaddyfileTypes.PORT; }
+    {PROTOCOL}       { return CaddyfileTypes.PROTOCOL; }
+    {HOSTNAME}       { return CaddyfileTypes.HOSTNAME; }
+    {COLON}          { return CaddyfileTypes.COLON; }
+    {NEW_LINE}       { yybegin(GROUP); return TokenType.WHITE_SPACE; }
+}
+
 
 {WHITE_SPACE}+     { return TokenType.WHITE_SPACE; }
 {ONE_LINE_COMMENT} { return CaddyfileTypes.COMMENT; }

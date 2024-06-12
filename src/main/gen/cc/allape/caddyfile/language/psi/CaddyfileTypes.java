@@ -22,6 +22,9 @@ public interface CaddyfileTypes {
   IElementType ENCODE_ARG_GZIP = new CaddyfileElementType("ENCODE_ARG_GZIP");
   IElementType ENCODE_ARG_MINIMUM_LENGTH = new CaddyfileElementType("ENCODE_ARG_MINIMUM_LENGTH");
   IElementType ENCODE_ARG_ZSTD = new CaddyfileElementType("ENCODE_ARG_ZSTD");
+  IElementType ERROR = new CaddyfileElementType("ERROR");
+  IElementType ERROR_ARG = new CaddyfileElementType("ERROR_ARG");
+  IElementType ERROR_ARG_MESSAGE = new CaddyfileElementType("ERROR_ARG_MESSAGE");
   IElementType GROUP = new CaddyfileElementType("GROUP");
   IElementType HOST = new CaddyfileElementType("HOST");
   IElementType HOSTNAME_MATCHER = new CaddyfileElementType("HOSTNAME_MATCHER");
@@ -44,6 +47,7 @@ public interface CaddyfileTypes {
   IElementType MATCH_DIRECTIVE = new CaddyfileElementType("MATCH_DIRECTIVE");
   IElementType PORT_WITH_COLON = new CaddyfileElementType("PORT_WITH_COLON");
   IElementType PROPERTY = new CaddyfileElementType("PROPERTY");
+  IElementType QUOTED_TEXT = new CaddyfileElementType("QUOTED_TEXT");
   IElementType REDIR = new CaddyfileElementType("REDIR");
   IElementType RESPOND = new CaddyfileElementType("RESPOND");
   IElementType REVERSE_PROXY = new CaddyfileElementType("REVERSE_PROXY");
@@ -54,7 +58,7 @@ public interface CaddyfileTypes {
   IElementType COMMENT = new CaddyfileTokenType("COMMENT");
   IElementType COMPRESSION_METHOD = new CaddyfileTokenType("COMPRESSION_METHOD");
   IElementType CRLF = new CaddyfileTokenType("CRLF");
-  IElementType DIRECTIVE_9_0 = new CaddyfileTokenType("directive_9_0");
+  IElementType DIRECTIVE_10_0 = new CaddyfileTokenType("directive_10_0");
   IElementType DOT = new CaddyfileTokenType("DOT");
   IElementType ENCODE_ARG_4_0 = new CaddyfileTokenType("encode_arg_4_0");
   IElementType FILEPATH = new CaddyfileTokenType("FILEPATH");
@@ -73,6 +77,7 @@ public interface CaddyfileTypes {
   IElementType PASSWORD = new CaddyfileTokenType("PASSWORD");
   IElementType PORT = new CaddyfileTokenType("PORT");
   IElementType PROTOCOL = new CaddyfileTokenType("PROTOCOL");
+  IElementType QUOTATION = new CaddyfileTokenType("QUOTATION");
   IElementType RIGHT_CURLY_BRACE = new CaddyfileTokenType("RIGHT_CURLY_BRACE");
   IElementType SLASH = new CaddyfileTokenType("SLASH");
   IElementType STAR = new CaddyfileTokenType("STAR");
@@ -120,6 +125,15 @@ public interface CaddyfileTypes {
       }
       else if (type == ENCODE_ARG_ZSTD) {
         return new CaddyfileEncodeArgZstdImpl(node);
+      }
+      else if (type == ERROR) {
+        return new CaddyfileErrorImpl(node);
+      }
+      else if (type == ERROR_ARG) {
+        return new CaddyfileErrorArgImpl(node);
+      }
+      else if (type == ERROR_ARG_MESSAGE) {
+        return new CaddyfileErrorArgMessageImpl(node);
       }
       else if (type == GROUP) {
         return new CaddyfileGroupImpl(node);
@@ -186,6 +200,9 @@ public interface CaddyfileTypes {
       }
       else if (type == PROPERTY) {
         return new CaddyfilePropertyImpl(node);
+      }
+      else if (type == QUOTED_TEXT) {
+        return new CaddyfileQuotedTextImpl(node);
       }
       else if (type == REDIR) {
         return new CaddyfileRedirImpl(node);

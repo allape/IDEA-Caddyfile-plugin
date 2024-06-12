@@ -117,43 +117,35 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // "bind" matcher? (IPV4|IPV6|UNIX_SOCKET)+
+  // "bind" (IPV4|IPV6|UNIX_SOCKET)+
   public static boolean bind(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bind")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, BIND, "<bind>");
     r = consumeToken(b, "bind");
     r = r && bind_1(b, l + 1);
-    r = r && bind_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // matcher?
+  // (IPV4|IPV6|UNIX_SOCKET)+
   private static boolean bind_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bind_1")) return false;
-    matcher(b, l + 1);
-    return true;
-  }
-
-  // (IPV4|IPV6|UNIX_SOCKET)+
-  private static boolean bind_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "bind_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = bind_2_0(b, l + 1);
+    r = bind_1_0(b, l + 1);
     while (r) {
       int c = current_position_(b);
-      if (!bind_2_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "bind_2", c)) break;
+      if (!bind_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "bind_1", c)) break;
     }
     exit_section_(b, m, null, r);
     return r;
   }
 
   // IPV4|IPV6|UNIX_SOCKET
-  private static boolean bind_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "bind_2_0")) return false;
+  private static boolean bind_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bind_1_0")) return false;
     boolean r;
     r = consumeToken(b, IPV4);
     if (!r) r = consumeToken(b, IPV6);
@@ -220,6 +212,7 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   //     basic_auth|
   //     bind|
   //     encode|
+  //     error|
   //     tls|
   //     redir|
   //     reverse_proxy|
@@ -233,11 +226,12 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     if (!r) r = basic_auth(b, l + 1);
     if (!r) r = bind(b, l + 1);
     if (!r) r = encode(b, l + 1);
+    if (!r) r = error(b, l + 1);
     if (!r) r = tls(b, l + 1);
     if (!r) r = redir(b, l + 1);
     if (!r) r = reverse_proxy(b, l + 1);
     if (!r) r = respond(b, l + 1);
-    if (!r) r = consumeToken(b, DIRECTIVE_9_0);
+    if (!r) r = consumeToken(b, DIRECTIVE_10_0);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -365,6 +359,107 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, ENCODE_ARG_ZSTD, "<encode arg zstd>");
     r = consumeToken(b, "zstd");
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "error" matcher? (STATUS_CODE|quoted_text STATUS_CODE) (LEFT_CURLY_BRACE error_arg? RIGHT_CURLY_BRACE)?
+  public static boolean error(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ERROR, "<error>");
+    r = consumeToken(b, "error");
+    r = r && error_1(b, l + 1);
+    r = r && error_2(b, l + 1);
+    r = r && error_3(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // matcher?
+  private static boolean error_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error_1")) return false;
+    matcher(b, l + 1);
+    return true;
+  }
+
+  // STATUS_CODE|quoted_text STATUS_CODE
+  private static boolean error_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error_2")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, STATUS_CODE);
+    if (!r) r = error_2_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // quoted_text STATUS_CODE
+  private static boolean error_2_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error_2_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = quoted_text(b, l + 1);
+    r = r && consumeToken(b, STATUS_CODE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (LEFT_CURLY_BRACE error_arg? RIGHT_CURLY_BRACE)?
+  private static boolean error_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error_3")) return false;
+    error_3_0(b, l + 1);
+    return true;
+  }
+
+  // LEFT_CURLY_BRACE error_arg? RIGHT_CURLY_BRACE
+  private static boolean error_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LEFT_CURLY_BRACE);
+    r = r && error_3_0_1(b, l + 1);
+    r = r && consumeToken(b, RIGHT_CURLY_BRACE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // error_arg?
+  private static boolean error_3_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error_3_0_1")) return false;
+    error_arg(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // error_arg_message
+  public static boolean error_arg(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error_arg")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ERROR_ARG, "<error arg>");
+    r = error_arg_message(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "message" (TEXT|quoted_text)
+  public static boolean error_arg_message(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error_arg_message")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ERROR_ARG_MESSAGE, "<error arg message>");
+    r = consumeToken(b, "message");
+    r = r && error_arg_message_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // TEXT|quoted_text
+  private static boolean error_arg_message_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "error_arg_message_1")) return false;
+    boolean r;
+    r = consumeToken(b, TEXT);
+    if (!r) r = quoted_text(b, l + 1);
     return r;
   }
 
@@ -894,6 +989,18 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "property_0")) return false;
     binding(b, l + 1);
     return true;
+  }
+
+  /* ********************************************************** */
+  // QUOTATION TEXT QUOTATION
+  public static boolean quoted_text(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "quoted_text")) return false;
+    if (!nextTokenIs(b, QUOTATION)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokens(b, 0, QUOTATION, TEXT, QUOTATION);
+    exit_section_(b, m, QUOTED_TEXT, r);
+    return r;
   }
 
   /* ********************************************************** */

@@ -5,18 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CaddyfileProperty extends PsiElement {
-
-  @Nullable
-  CaddyfileBinding getBinding();
+public interface CaddyfileErrorArg extends PsiElement {
 
   @NotNull
-  CaddyfileGroup getGroup();
-
-  @Nullable
-  String getKey();
-
-  @Nullable
-  String getValue();
+  CaddyfileErrorArgMessage getErrorArgMessage();
 
 }

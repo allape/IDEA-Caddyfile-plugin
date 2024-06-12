@@ -55,6 +55,18 @@ public class CaddyfileVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitError(@NotNull CaddyfileError o) {
+    visitPsiElement(o);
+  }
+
+  public void visitErrorArg(@NotNull CaddyfileErrorArg o) {
+    visitPsiElement(o);
+  }
+
+  public void visitErrorArgMessage(@NotNull CaddyfileErrorArgMessage o) {
+    visitPsiElement(o);
+  }
+
   public void visitGroup(@NotNull CaddyfileGroup o) {
     visitPsiElement(o);
   }
@@ -140,6 +152,10 @@ public class CaddyfileVisitor extends PsiElementVisitor {
   }
 
   public void visitProperty(@NotNull CaddyfileProperty o) {
+    visitPsiElement(o);
+  }
+
+  public void visitQuotedText(@NotNull CaddyfileQuotedText o) {
     visitPsiElement(o);
   }
 
