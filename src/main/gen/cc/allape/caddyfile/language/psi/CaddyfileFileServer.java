@@ -5,13 +5,10 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CaddyfileEncode extends PsiElement {
+public interface CaddyfileFileServer extends PsiElement {
 
   @NotNull
-  List<CaddyfileCompressionMethod> getCompressionMethodList();
-
-  @NotNull
-  List<CaddyfileEncodeArg> getEncodeArgList();
+  List<CaddyfileFileServerArg> getFileServerArgList();
 
   @Nullable
   CaddyfileMatcher getMatcher();

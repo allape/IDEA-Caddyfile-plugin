@@ -47,9 +47,10 @@ EMPTY_LINE=({NEW_LINE}|{WHITE_SPACE})+
 ONE_LINE_COMMENT="#"[^\r\n]*
 
 MATCHER=[\@\/\*]
-FILEPATH=\.{0,2}([\/\\]?[\w.-]+)+
-QUOTED_FILEPATH=\"\.{0,2}([\/\\]?[\w.\- ]+)+\"
-COMBINED_FILEPATH=({FILEPATH}|{QUOTED_FILEPATH})
+
+FILEPATH=(\.{1,2}[\/\\])?([%\w.-]+[\/\\]?)+
+QUOTED_FILEPATH=\"(\.{1,2}?[\/\\])?([%\w. \-]+[\/\\]?)+\"
+COMBINED_FILEPATH=([\/\\]|{FILEPATH}|{QUOTED_FILEPATH})
 
 COLON=":"
 PROTOCOL=(\w+{COLON}\/\/)
@@ -101,6 +102,17 @@ PORT=\d+
 %state GROUP_DIRECTIVE_ERROR
 %state GROUP_DIRECTIVE_ERROR_ARGS
 %state GROUP_DIRECTIVE_ERROR_ARGS_MESSAGE
+
+%state GROUP_DIRECTIVE_FILE_SERVER
+%state GROUP_DIRECTIVE_FILE_SERVER_ARGS
+%state GROUP_DIRECTIVE_FILE_SERVER_ARGS_FS
+%state GROUP_DIRECTIVE_FILE_SERVER_ARGS_ROOT
+%state GROUP_DIRECTIVE_FILE_SERVER_ARGS_HIDE
+%state GROUP_DIRECTIVE_FILE_SERVER_ARGS_INDEX
+%state GROUP_DIRECTIVE_FILE_SERVER_ARGS_BROWSE
+%state GROUP_DIRECTIVE_FILE_SERVER_ARGS_BROWSE_ARGS
+%state GROUP_DIRECTIVE_FILE_SERVER_ARGS_PRECOMPRESSED
+%state GROUP_DIRECTIVE_FILE_SERVER_ARGS_STATUS
 
 %state GROUP_DIRECTIVE_TLS
 
@@ -155,7 +167,7 @@ PORT=\d+
     "*"         { _pushState(MATCHER_ONE); yypushback(yylength()); }
     "/"         { _pushState(MATCHER_TWO); yypushback(yylength()); }
     "@"         { _pushState(MATCHER_THR); return CaddyfileTypes.AT; }
-    [^\s\*\/@]+ { _popState(); yypushback(yylength()); }
+    [^\*\/\@]   { _popState(); yypushback(yylength()); }
 }
 <MATCHER_ONE> {
     "*"         { _popState(); return CaddyfileTypes.STAR; }
@@ -211,6 +223,7 @@ PORT=\d+
     bind              { yybegin(GROUP_DIRECTIVE_BIND); return CaddyfileTypes.BIND; }
     encode            { yybegin(GROUP_DIRECTIVE_ENCODE); return CaddyfileTypes.ENCODE; }
     error             { yybegin(GROUP_DIRECTIVE_ERROR); return CaddyfileTypes.ERROR; }
+    file_server       { yybegin(GROUP_DIRECTIVE_FILE_SERVER); return CaddyfileTypes.FILE_SERVER; }
     tls               { yybegin(GROUP_DIRECTIVE_TLS); return CaddyfileTypes.TLS; }
     redir             { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.REDIR; }
     respond           { yybegin(GROUP_DIRECTIVE_RESPOND); return CaddyfileTypes.RESPOND; }
@@ -254,7 +267,7 @@ PORT=\d+
 
 <GROUP_DIRECTIVE_ENCODE> {
     {MATCHER}      { _pushState(MATCHER); yypushback(yylength()); }
-    (zstd|gzip)    { return CaddyfileTypes.COMPRESSION_METHOD; }
+    (zstd|gzip|br) { return CaddyfileTypes.COMPRESSION_METHOD; }
     "{"            { _pushState(GROUP_DIRECTIVE_ENCODE_ARGS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
     "}"            { yybegin(GROUP); return CaddyfileTypes.RIGHT_CURLY_BRACE;}
     {NEW_LINE}     { if (_isStackEmpty()) yybegin(GROUP); return TokenType.WHITE_SPACE; }
@@ -293,6 +306,62 @@ PORT=\d+
     "\""           { _pushState(QUOTED_STRING); return CaddyfileTypes.QUOTATION; }
     [^\s\"]+       { _popState(); return CaddyfileTypes.TEXT; }
     {NEW_LINE}     { _popState(); yypushback(yylength()); }
+}
+
+<GROUP_DIRECTIVE_FILE_SERVER> {
+    {MATCHER}      { _pushState(MATCHER); yypushback(yylength()); }
+    "browse"       { return CaddyfileTypes.FILE_SERVER_BROWSE; }
+    "{"            { _pushState(GROUP_DIRECTIVE_FILE_SERVER_ARGS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    "}"            { yybegin(GROUP); return CaddyfileTypes.RIGHT_CURLY_BRACE;}
+    {NEW_LINE}     { if (_isStackEmpty()) yybegin(GROUP); return TokenType.WHITE_SPACE; }
+    {WHITE_SPACE}+ { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FILE_SERVER_ARGS> {
+    "}"                      { _popState(); yypushback(yylength()); }
+    "fs"                     { _pushState(GROUP_DIRECTIVE_FILE_SERVER_ARGS_FS); return CaddyfileTypes.FILE_SERVER_ARG_FS; }
+    "root"                   { _pushState(GROUP_DIRECTIVE_FILE_SERVER_ARGS_ROOT); return CaddyfileTypes.FILE_SERVER_ARG_ROOT; }
+    "hide"                   { _pushState(GROUP_DIRECTIVE_FILE_SERVER_ARGS_HIDE); return CaddyfileTypes.FILE_SERVER_ARG_HIDE; }
+    "index"                  { _pushState(GROUP_DIRECTIVE_FILE_SERVER_ARGS_INDEX); return CaddyfileTypes.FILE_SERVER_ARG_INDEX; }
+    "browse"                 { _pushState(GROUP_DIRECTIVE_FILE_SERVER_ARGS_BROWSE); return CaddyfileTypes.FILE_SERVER_ARG_BROWSE; }
+    "precompressed"          { _pushState(GROUP_DIRECTIVE_FILE_SERVER_ARGS_PRECOMPRESSED); return CaddyfileTypes.FILE_SERVER_ARG_PRECOMPRESSED; }
+    "status"                 { _pushState(GROUP_DIRECTIVE_FILE_SERVER_ARGS_STATUS); return CaddyfileTypes.FILE_SERVER_ARG_STATUS; }
+    "disable_canonical_uris" { return CaddyfileTypes.FILE_SERVER_ARG_DISABLE_CANONICAL_URIS; }
+    "pass_thru"              { return CaddyfileTypes.FILE_SERVER_ARG_PASS_THRU; }
+    {NEW_LINE}               { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FILE_SERVER_ARGS_FS> {
+    [^\s]+         { return CaddyfileTypes.BACKEND; }
+    {NEW_LINE}     { _popState(); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FILE_SERVER_ARGS_ROOT> {
+    {COMBINED_FILEPATH} { _popState(); return CaddyfileTypes.FILEPATH; }
+}
+<GROUP_DIRECTIVE_FILE_SERVER_ARGS_HIDE> {
+    {COMBINED_FILEPATH} { return CaddyfileTypes.FILEPATH; }
+    {NEW_LINE}          { _popState(); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FILE_SERVER_ARGS_INDEX> {
+    [^\s]+       { return CaddyfileTypes.TEXT; }
+    {NEW_LINE}   { _popState(); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FILE_SERVER_ARGS_BROWSE> {
+    {COMBINED_FILEPATH} { return CaddyfileTypes.FILEPATH; }
+    "{"                 { _pushState(GROUP_DIRECTIVE_FILE_SERVER_ARGS_BROWSE_ARGS); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    "}"                 { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    {NEW_LINE}          { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FILE_SERVER_ARGS_BROWSE_ARGS> {
+    "reveal_symlinks" { return CaddyfileTypes.FILE_SERVER_ARG_BROWSE_ARG_REVEAL_SYMLINKS; }
+    "}"               { _popState(); yypushback(yylength()); }
+    {NEW_LINE}        { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FILE_SERVER_ARGS_PRECOMPRESSED> {
+    [^\s]+      { return CaddyfileTypes.COMPRESSION_METHOD; }
+    {NEW_LINE}  { _popState(); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FILE_SERVER_ARGS_STATUS> {
+    \d+         { _popState(); return CaddyfileTypes.STATUS_CODE; }
+    {NEW_LINE}  { _popState(); return TokenType.WHITE_SPACE; }
 }
 
 <GROUP_DIRECTIVE_TLS> {

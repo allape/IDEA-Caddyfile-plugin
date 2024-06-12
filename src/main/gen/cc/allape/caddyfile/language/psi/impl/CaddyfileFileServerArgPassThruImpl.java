@@ -12,38 +12,20 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import cc.allape.caddyfile.language.psi.*;
 import cc.allape.caddyfile.CaddyfilePsiImplUtil;
 
-public class CaddyfileEncodeImpl extends ASTWrapperPsiElement implements CaddyfileEncode {
+public class CaddyfileFileServerArgPassThruImpl extends ASTWrapperPsiElement implements CaddyfileFileServerArgPassThru {
 
-  public CaddyfileEncodeImpl(@NotNull ASTNode node) {
+  public CaddyfileFileServerArgPassThruImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CaddyfileVisitor visitor) {
-    visitor.visitEncode(this);
+    visitor.visitFileServerArgPassThru(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof CaddyfileVisitor) accept((CaddyfileVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public List<CaddyfileCompressionMethod> getCompressionMethodList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, CaddyfileCompressionMethod.class);
-  }
-
-  @Override
-  @NotNull
-  public List<CaddyfileEncodeArg> getEncodeArgList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, CaddyfileEncodeArg.class);
-  }
-
-  @Override
-  @Nullable
-  public CaddyfileMatcher getMatcher() {
-    return findChildByClass(CaddyfileMatcher.class);
   }
 
 }

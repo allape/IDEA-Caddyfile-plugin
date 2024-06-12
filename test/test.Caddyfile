@@ -54,4 +54,29 @@
      error /hidden* "Not found" 404 {
         message "abc"
      }
+
+     file_server
+     file_server browse
+     file_server /static/*
+     file_server /static/* browse
+     file_server {
+     	hide .git
+     }
+     file_server {
+     	precompressed zstd br gzip
+     }
+
+     file_server / browse {
+     	fs            backend1 backend2
+     	root          /
+     	hide          abc.html
+     	index         index.html
+     	browse        index.html {
+     		reveal_symlinks
+     	}
+     	precompressed gzip
+     	status        304
+     	disable_canonical_uris
+     	pass_thru
+     }
 }

@@ -207,12 +207,26 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // "gzip"|"zstd"|"br"
+  public static boolean compression_method(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "compression_method")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, COMPRESSION_METHOD, "<compression method>");
+    r = consumeToken(b, "gzip");
+    if (!r) r = consumeToken(b, "zstd");
+    if (!r) r = consumeToken(b, "br");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // abort|
   //     acme_server|
   //     basic_auth|
   //     bind|
   //     encode|
   //     error|
+  //     file_server|
   //     tls|
   //     redir|
   //     reverse_proxy|
@@ -227,17 +241,18 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     if (!r) r = bind(b, l + 1);
     if (!r) r = encode(b, l + 1);
     if (!r) r = error(b, l + 1);
+    if (!r) r = file_server(b, l + 1);
     if (!r) r = tls(b, l + 1);
     if (!r) r = redir(b, l + 1);
     if (!r) r = reverse_proxy(b, l + 1);
     if (!r) r = respond(b, l + 1);
-    if (!r) r = consumeToken(b, DIRECTIVE_10_0);
+    if (!r) r = consumeToken(b, DIRECTIVE_11_0);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   /* ********************************************************** */
-  // "encode" matcher? COMPRESSION_METHOD+ (LEFT_CURLY_BRACE encode_arg* RIGHT_CURLY_BRACE)?
+  // "encode" matcher? compression_method+ (LEFT_CURLY_BRACE encode_arg* RIGHT_CURLY_BRACE)?
   public static boolean encode(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "encode")) return false;
     boolean r;
@@ -257,15 +272,15 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // COMPRESSION_METHOD+
+  // compression_method+
   private static boolean encode_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "encode_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COMPRESSION_METHOD);
+    r = compression_method(b, l + 1);
     while (r) {
       int c = current_position_(b);
-      if (!consumeToken(b, COMPRESSION_METHOD)) break;
+      if (!compression_method(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "encode_2", c)) break;
     }
     exit_section_(b, m, null, r);
@@ -460,6 +475,318 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     boolean r;
     r = consumeToken(b, TEXT);
     if (!r) r = quoted_text(b, l + 1);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "file_server" matcher? FILE_SERVER_BROWSE? (LEFT_CURLY_BRACE file_server_arg* RIGHT_CURLY_BRACE)?
+  public static boolean file_server(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER, "<file server>");
+    r = consumeToken(b, "file_server");
+    r = r && file_server_1(b, l + 1);
+    r = r && file_server_2(b, l + 1);
+    r = r && file_server_3(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // matcher?
+  private static boolean file_server_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_1")) return false;
+    matcher(b, l + 1);
+    return true;
+  }
+
+  // FILE_SERVER_BROWSE?
+  private static boolean file_server_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_2")) return false;
+    consumeToken(b, FILE_SERVER_BROWSE);
+    return true;
+  }
+
+  // (LEFT_CURLY_BRACE file_server_arg* RIGHT_CURLY_BRACE)?
+  private static boolean file_server_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_3")) return false;
+    file_server_3_0(b, l + 1);
+    return true;
+  }
+
+  // LEFT_CURLY_BRACE file_server_arg* RIGHT_CURLY_BRACE
+  private static boolean file_server_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LEFT_CURLY_BRACE);
+    r = r && file_server_3_0_1(b, l + 1);
+    r = r && consumeToken(b, RIGHT_CURLY_BRACE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // file_server_arg*
+  private static boolean file_server_3_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_3_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!file_server_arg(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "file_server_3_0_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // file_server_arg_fs|
+  //     file_server_arg_root|
+  //     file_server_arg_hide|
+  //     file_server_arg_index|
+  //     file_server_arg_browse|
+  //     file_server_arg_precompressed|
+  //     file_server_arg_status|
+  //     file_server_arg_disable_canonical_uris|
+  //     file_server_arg_pass_thru|
+  public static boolean file_server_arg(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG, "<file server arg>");
+    r = file_server_arg_fs(b, l + 1);
+    if (!r) r = file_server_arg_root(b, l + 1);
+    if (!r) r = file_server_arg_hide(b, l + 1);
+    if (!r) r = file_server_arg_index(b, l + 1);
+    if (!r) r = file_server_arg_browse(b, l + 1);
+    if (!r) r = file_server_arg_precompressed(b, l + 1);
+    if (!r) r = file_server_arg_status(b, l + 1);
+    if (!r) r = file_server_arg_disable_canonical_uris(b, l + 1);
+    if (!r) r = file_server_arg_pass_thru(b, l + 1);
+    if (!r) r = consumeToken(b, FILE_SERVER_ARG_9_0);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "browse" FILEPATH? (LEFT_CURLY_BRACE file_server_arg_browse_arg* RIGHT_CURLY_BRACE)?
+  public static boolean file_server_arg_browse(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_browse")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_BROWSE, "<file server arg browse>");
+    r = consumeToken(b, "browse");
+    r = r && file_server_arg_browse_1(b, l + 1);
+    r = r && file_server_arg_browse_2(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // FILEPATH?
+  private static boolean file_server_arg_browse_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_browse_1")) return false;
+    consumeToken(b, FILEPATH);
+    return true;
+  }
+
+  // (LEFT_CURLY_BRACE file_server_arg_browse_arg* RIGHT_CURLY_BRACE)?
+  private static boolean file_server_arg_browse_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_browse_2")) return false;
+    file_server_arg_browse_2_0(b, l + 1);
+    return true;
+  }
+
+  // LEFT_CURLY_BRACE file_server_arg_browse_arg* RIGHT_CURLY_BRACE
+  private static boolean file_server_arg_browse_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_browse_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LEFT_CURLY_BRACE);
+    r = r && file_server_arg_browse_2_0_1(b, l + 1);
+    r = r && consumeToken(b, RIGHT_CURLY_BRACE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // file_server_arg_browse_arg*
+  private static boolean file_server_arg_browse_2_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_browse_2_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!file_server_arg_browse_arg(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "file_server_arg_browse_2_0_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // file_server_arg_browse_arg_reveal_symlinks
+  public static boolean file_server_arg_browse_arg(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_browse_arg")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_BROWSE_ARG, "<file server arg browse arg>");
+    r = file_server_arg_browse_arg_reveal_symlinks(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "reveal_symlinks"
+  public static boolean file_server_arg_browse_arg_reveal_symlinks(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_browse_arg_reveal_symlinks")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_BROWSE_ARG_REVEAL_SYMLINKS, "<file server arg browse arg reveal symlinks>");
+    r = consumeToken(b, "reveal_symlinks");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "disable_canonical_uris"
+  public static boolean file_server_arg_disable_canonical_uris(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_disable_canonical_uris")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_DISABLE_CANONICAL_URIS, "<file server arg disable canonical uris>");
+    r = consumeToken(b, "disable_canonical_uris");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "fs" BACKEND+
+  public static boolean file_server_arg_fs(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_fs")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_FS, "<file server arg fs>");
+    r = consumeToken(b, "fs");
+    r = r && file_server_arg_fs_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // BACKEND+
+  private static boolean file_server_arg_fs_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_fs_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, BACKEND);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, BACKEND)) break;
+      if (!empty_element_parsed_guard_(b, "file_server_arg_fs_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "hide" FILEPATH+
+  public static boolean file_server_arg_hide(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_hide")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_HIDE, "<file server arg hide>");
+    r = consumeToken(b, "hide");
+    r = r && file_server_arg_hide_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // FILEPATH+
+  private static boolean file_server_arg_hide_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_hide_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, FILEPATH);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, FILEPATH)) break;
+      if (!empty_element_parsed_guard_(b, "file_server_arg_hide_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "index" TEXT+
+  public static boolean file_server_arg_index(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_index")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_INDEX, "<file server arg index>");
+    r = consumeToken(b, "index");
+    r = r && file_server_arg_index_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // TEXT+
+  private static boolean file_server_arg_index_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_index_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, TEXT);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, TEXT)) break;
+      if (!empty_element_parsed_guard_(b, "file_server_arg_index_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "pass_thru"
+  public static boolean file_server_arg_pass_thru(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_pass_thru")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_PASS_THRU, "<file server arg pass thru>");
+    r = consumeToken(b, "pass_thru");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "precompressed" compression_method+
+  public static boolean file_server_arg_precompressed(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_precompressed")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_PRECOMPRESSED, "<file server arg precompressed>");
+    r = consumeToken(b, "precompressed");
+    r = r && file_server_arg_precompressed_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // compression_method+
+  private static boolean file_server_arg_precompressed_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_precompressed_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = compression_method(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!compression_method(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "file_server_arg_precompressed_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "root" FILEPATH
+  public static boolean file_server_arg_root(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_root")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_ROOT, "<file server arg root>");
+    r = consumeToken(b, "root");
+    r = r && consumeToken(b, FILEPATH);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "status" STATUS_CODE
+  public static boolean file_server_arg_status(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file_server_arg_status")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_STATUS, "<file server arg status>");
+    r = consumeToken(b, "status");
+    r = r && consumeToken(b, STATUS_CODE);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 

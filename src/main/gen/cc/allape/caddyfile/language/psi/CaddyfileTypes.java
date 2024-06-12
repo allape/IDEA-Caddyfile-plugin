@@ -16,6 +16,7 @@ public interface CaddyfileTypes {
   IElementType BIND = new CaddyfileElementType("BIND");
   IElementType BINDING = new CaddyfileElementType("BINDING");
   IElementType COLON = new CaddyfileElementType("COLON");
+  IElementType COMPRESSION_METHOD = new CaddyfileElementType("COMPRESSION_METHOD");
   IElementType DIRECTIVE = new CaddyfileElementType("DIRECTIVE");
   IElementType ENCODE = new CaddyfileElementType("ENCODE");
   IElementType ENCODE_ARG = new CaddyfileElementType("ENCODE_ARG");
@@ -25,6 +26,19 @@ public interface CaddyfileTypes {
   IElementType ERROR = new CaddyfileElementType("ERROR");
   IElementType ERROR_ARG = new CaddyfileElementType("ERROR_ARG");
   IElementType ERROR_ARG_MESSAGE = new CaddyfileElementType("ERROR_ARG_MESSAGE");
+  IElementType FILE_SERVER = new CaddyfileElementType("FILE_SERVER");
+  IElementType FILE_SERVER_ARG = new CaddyfileElementType("FILE_SERVER_ARG");
+  IElementType FILE_SERVER_ARG_BROWSE = new CaddyfileElementType("FILE_SERVER_ARG_BROWSE");
+  IElementType FILE_SERVER_ARG_BROWSE_ARG = new CaddyfileElementType("FILE_SERVER_ARG_BROWSE_ARG");
+  IElementType FILE_SERVER_ARG_BROWSE_ARG_REVEAL_SYMLINKS = new CaddyfileElementType("FILE_SERVER_ARG_BROWSE_ARG_REVEAL_SYMLINKS");
+  IElementType FILE_SERVER_ARG_DISABLE_CANONICAL_URIS = new CaddyfileElementType("FILE_SERVER_ARG_DISABLE_CANONICAL_URIS");
+  IElementType FILE_SERVER_ARG_FS = new CaddyfileElementType("FILE_SERVER_ARG_FS");
+  IElementType FILE_SERVER_ARG_HIDE = new CaddyfileElementType("FILE_SERVER_ARG_HIDE");
+  IElementType FILE_SERVER_ARG_INDEX = new CaddyfileElementType("FILE_SERVER_ARG_INDEX");
+  IElementType FILE_SERVER_ARG_PASS_THRU = new CaddyfileElementType("FILE_SERVER_ARG_PASS_THRU");
+  IElementType FILE_SERVER_ARG_PRECOMPRESSED = new CaddyfileElementType("FILE_SERVER_ARG_PRECOMPRESSED");
+  IElementType FILE_SERVER_ARG_ROOT = new CaddyfileElementType("FILE_SERVER_ARG_ROOT");
+  IElementType FILE_SERVER_ARG_STATUS = new CaddyfileElementType("FILE_SERVER_ARG_STATUS");
   IElementType GROUP = new CaddyfileElementType("GROUP");
   IElementType HOST = new CaddyfileElementType("HOST");
   IElementType HOSTNAME_MATCHER = new CaddyfileElementType("HOSTNAME_MATCHER");
@@ -55,13 +69,15 @@ public interface CaddyfileTypes {
   IElementType VARIABLE = new CaddyfileElementType("VARIABLE");
 
   IElementType AT = new CaddyfileTokenType("AT");
+  IElementType BACKEND = new CaddyfileTokenType("BACKEND");
   IElementType COMMENT = new CaddyfileTokenType("COMMENT");
-  IElementType COMPRESSION_METHOD = new CaddyfileTokenType("COMPRESSION_METHOD");
   IElementType CRLF = new CaddyfileTokenType("CRLF");
-  IElementType DIRECTIVE_10_0 = new CaddyfileTokenType("directive_10_0");
+  IElementType DIRECTIVE_11_0 = new CaddyfileTokenType("directive_11_0");
   IElementType DOT = new CaddyfileTokenType("DOT");
   IElementType ENCODE_ARG_4_0 = new CaddyfileTokenType("encode_arg_4_0");
   IElementType FILEPATH = new CaddyfileTokenType("FILEPATH");
+  IElementType FILE_SERVER_ARG_9_0 = new CaddyfileTokenType("file_server_arg_9_0");
+  IElementType FILE_SERVER_BROWSE = new CaddyfileTokenType("FILE_SERVER_BROWSE");
   IElementType GZIP_LEVEL = new CaddyfileTokenType("GZIP_LEVEL");
   IElementType HEADER = new CaddyfileTokenType("HEADER");
   IElementType HEADER_VALUE = new CaddyfileTokenType("HEADER_VALUE");
@@ -108,6 +124,9 @@ public interface CaddyfileTypes {
       else if (type == COLON) {
         return new CaddyfileColonImpl(node);
       }
+      else if (type == COMPRESSION_METHOD) {
+        return new CaddyfileCompressionMethodImpl(node);
+      }
       else if (type == DIRECTIVE) {
         return new CaddyfileDirectiveImpl(node);
       }
@@ -134,6 +153,45 @@ public interface CaddyfileTypes {
       }
       else if (type == ERROR_ARG_MESSAGE) {
         return new CaddyfileErrorArgMessageImpl(node);
+      }
+      else if (type == FILE_SERVER) {
+        return new CaddyfileFileServerImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG) {
+        return new CaddyfileFileServerArgImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_BROWSE) {
+        return new CaddyfileFileServerArgBrowseImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_BROWSE_ARG) {
+        return new CaddyfileFileServerArgBrowseArgImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_BROWSE_ARG_REVEAL_SYMLINKS) {
+        return new CaddyfileFileServerArgBrowseArgRevealSymlinksImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_DISABLE_CANONICAL_URIS) {
+        return new CaddyfileFileServerArgDisableCanonicalUrisImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_FS) {
+        return new CaddyfileFileServerArgFsImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_HIDE) {
+        return new CaddyfileFileServerArgHideImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_INDEX) {
+        return new CaddyfileFileServerArgIndexImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_PASS_THRU) {
+        return new CaddyfileFileServerArgPassThruImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_PRECOMPRESSED) {
+        return new CaddyfileFileServerArgPrecompressedImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_ROOT) {
+        return new CaddyfileFileServerArgRootImpl(node);
+      }
+      else if (type == FILE_SERVER_ARG_STATUS) {
+        return new CaddyfileFileServerArgStatusImpl(node);
       }
       else if (type == GROUP) {
         return new CaddyfileGroupImpl(node);

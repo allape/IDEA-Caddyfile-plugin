@@ -31,6 +31,10 @@ public class CaddyfileVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCompressionMethod(@NotNull CaddyfileCompressionMethod o) {
+    visitPsiElement(o);
+  }
+
   public void visitDirective(@NotNull CaddyfileDirective o) {
     visitPsiElement(o);
   }
@@ -64,6 +68,58 @@ public class CaddyfileVisitor extends PsiElementVisitor {
   }
 
   public void visitErrorArgMessage(@NotNull CaddyfileErrorArgMessage o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServer(@NotNull CaddyfileFileServer o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArg(@NotNull CaddyfileFileServerArg o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgBrowse(@NotNull CaddyfileFileServerArgBrowse o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgBrowseArg(@NotNull CaddyfileFileServerArgBrowseArg o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgBrowseArgRevealSymlinks(@NotNull CaddyfileFileServerArgBrowseArgRevealSymlinks o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgDisableCanonicalUris(@NotNull CaddyfileFileServerArgDisableCanonicalUris o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgFs(@NotNull CaddyfileFileServerArgFs o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgHide(@NotNull CaddyfileFileServerArgHide o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgIndex(@NotNull CaddyfileFileServerArgIndex o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgPassThru(@NotNull CaddyfileFileServerArgPassThru o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgPrecompressed(@NotNull CaddyfileFileServerArgPrecompressed o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgRoot(@NotNull CaddyfileFileServerArgRoot o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFileServerArgStatus(@NotNull CaddyfileFileServerArgStatus o) {
     visitPsiElement(o);
   }
 
