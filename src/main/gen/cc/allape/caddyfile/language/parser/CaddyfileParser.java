@@ -220,6 +220,17 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // ">"
+  public static boolean copy_to(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "copy_to")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, COPY_TO, "<copy to>");
+    r = consumeToken(b, ">");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // abort|
   //     acme_server|
   //     basic_auth|
@@ -227,6 +238,7 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
   //     encode|
   //     error|
   //     file_server|
+  //     forward_auth|
   //     tls|
   //     redir|
   //     reverse_proxy|
@@ -242,11 +254,12 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     if (!r) r = encode(b, l + 1);
     if (!r) r = error(b, l + 1);
     if (!r) r = file_server(b, l + 1);
+    if (!r) r = forward_auth(b, l + 1);
     if (!r) r = tls(b, l + 1);
     if (!r) r = redir(b, l + 1);
     if (!r) r = reverse_proxy(b, l + 1);
     if (!r) r = respond(b, l + 1);
-    if (!r) r = consumeToken(b, DIRECTIVE_11_0);
+    if (!r) r = consumeToken(b, DIRECTIVE_12_0);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -786,6 +799,204 @@ public class CaddyfileParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, FILE_SERVER_ARG_STATUS, "<file server arg status>");
     r = consumeToken(b, "status");
     r = r && consumeToken(b, STATUS_CODE);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "forward_auth" matcher? UPSTREAM* (LEFT_CURLY_BRACE forward_auth_arg* RIGHT_CURLY_BRACE)?
+  public static boolean forward_auth(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FORWARD_AUTH, "<forward auth>");
+    r = consumeToken(b, "forward_auth");
+    r = r && forward_auth_1(b, l + 1);
+    r = r && forward_auth_2(b, l + 1);
+    r = r && forward_auth_3(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // matcher?
+  private static boolean forward_auth_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_1")) return false;
+    matcher(b, l + 1);
+    return true;
+  }
+
+  // UPSTREAM*
+  private static boolean forward_auth_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, UPSTREAM)) break;
+      if (!empty_element_parsed_guard_(b, "forward_auth_2", c)) break;
+    }
+    return true;
+  }
+
+  // (LEFT_CURLY_BRACE forward_auth_arg* RIGHT_CURLY_BRACE)?
+  private static boolean forward_auth_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_3")) return false;
+    forward_auth_3_0(b, l + 1);
+    return true;
+  }
+
+  // LEFT_CURLY_BRACE forward_auth_arg* RIGHT_CURLY_BRACE
+  private static boolean forward_auth_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LEFT_CURLY_BRACE);
+    r = r && forward_auth_3_0_1(b, l + 1);
+    r = r && consumeToken(b, RIGHT_CURLY_BRACE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // forward_auth_arg*
+  private static boolean forward_auth_3_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_3_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!forward_auth_arg(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "forward_auth_3_0_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // forward_auth_arg_uri|
+  //     forward_auth_arg_copy_headers|
+  //     forward_auth_arg_header_up|
+  public static boolean forward_auth_arg(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FORWARD_AUTH_ARG, "<forward auth arg>");
+    r = forward_auth_arg_uri(b, l + 1);
+    if (!r) r = forward_auth_arg_copy_headers(b, l + 1);
+    if (!r) r = forward_auth_arg_header_up(b, l + 1);
+    if (!r) r = consumeToken(b, FORWARD_AUTH_ARG_3_0);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "copy_headers" HEADER* (LEFT_CURLY_BRACE forward_auth_arg_copy_headers_arg* RIGHT_CURLY_BRACE)?
+  public static boolean forward_auth_arg_copy_headers(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_copy_headers")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FORWARD_AUTH_ARG_COPY_HEADERS, "<forward auth arg copy headers>");
+    r = consumeToken(b, "copy_headers");
+    r = r && forward_auth_arg_copy_headers_1(b, l + 1);
+    r = r && forward_auth_arg_copy_headers_2(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // HEADER*
+  private static boolean forward_auth_arg_copy_headers_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_copy_headers_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, HEADER)) break;
+      if (!empty_element_parsed_guard_(b, "forward_auth_arg_copy_headers_1", c)) break;
+    }
+    return true;
+  }
+
+  // (LEFT_CURLY_BRACE forward_auth_arg_copy_headers_arg* RIGHT_CURLY_BRACE)?
+  private static boolean forward_auth_arg_copy_headers_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_copy_headers_2")) return false;
+    forward_auth_arg_copy_headers_2_0(b, l + 1);
+    return true;
+  }
+
+  // LEFT_CURLY_BRACE forward_auth_arg_copy_headers_arg* RIGHT_CURLY_BRACE
+  private static boolean forward_auth_arg_copy_headers_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_copy_headers_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LEFT_CURLY_BRACE);
+    r = r && forward_auth_arg_copy_headers_2_0_1(b, l + 1);
+    r = r && consumeToken(b, RIGHT_CURLY_BRACE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // forward_auth_arg_copy_headers_arg*
+  private static boolean forward_auth_arg_copy_headers_2_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_copy_headers_2_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!forward_auth_arg_copy_headers_arg(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "forward_auth_arg_copy_headers_2_0_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // HEADER (copy_to HEADER)?
+  public static boolean forward_auth_arg_copy_headers_arg(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_copy_headers_arg")) return false;
+    if (!nextTokenIs(b, HEADER)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, HEADER);
+    r = r && forward_auth_arg_copy_headers_arg_1(b, l + 1);
+    exit_section_(b, m, FORWARD_AUTH_ARG_COPY_HEADERS_ARG, r);
+    return r;
+  }
+
+  // (copy_to HEADER)?
+  private static boolean forward_auth_arg_copy_headers_arg_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_copy_headers_arg_1")) return false;
+    forward_auth_arg_copy_headers_arg_1_0(b, l + 1);
+    return true;
+  }
+
+  // copy_to HEADER
+  private static boolean forward_auth_arg_copy_headers_arg_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_copy_headers_arg_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = copy_to(b, l + 1);
+    r = r && consumeToken(b, HEADER);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "header_up" HEADER (HEADER_VALUE|quoted_text|variable)
+  public static boolean forward_auth_arg_header_up(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_header_up")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FORWARD_AUTH_ARG_HEADER_UP, "<forward auth arg header up>");
+    r = consumeToken(b, "header_up");
+    r = r && consumeToken(b, HEADER);
+    r = r && forward_auth_arg_header_up_2(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // HEADER_VALUE|quoted_text|variable
+  private static boolean forward_auth_arg_header_up_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_header_up_2")) return false;
+    boolean r;
+    r = consumeToken(b, HEADER_VALUE);
+    if (!r) r = quoted_text(b, l + 1);
+    if (!r) r = variable(b, l + 1);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "uri" URI
+  public static boolean forward_auth_arg_uri(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_auth_arg_uri")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FORWARD_AUTH_ARG_URI, "<forward auth arg uri>");
+    r = consumeToken(b, "uri");
+    r = r && consumeToken(b, URI);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

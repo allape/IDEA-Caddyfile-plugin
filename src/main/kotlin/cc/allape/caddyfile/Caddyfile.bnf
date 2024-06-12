@@ -82,6 +82,7 @@ directive ::=
     encode|
     error|
     file_server|
+    forward_auth|
     tls|
     redir|
     reverse_proxy|
@@ -100,6 +101,8 @@ encode ::= "encode" matcher? compression_method+ (LEFT_CURLY_BRACE encode_arg* R
 error ::= "error" matcher? (STATUS_CODE|quoted_text STATUS_CODE) (LEFT_CURLY_BRACE error_arg? RIGHT_CURLY_BRACE)?
 
 file_server ::= "file_server" matcher? FILE_SERVER_BROWSE? (LEFT_CURLY_BRACE file_server_arg* RIGHT_CURLY_BRACE)?
+
+forward_auth ::= "forward_auth" matcher? UPSTREAM* (LEFT_CURLY_BRACE forward_auth_arg* RIGHT_CURLY_BRACE)?
 
 tls ::= "tls" FILEPATH FILEPATH
 
@@ -159,5 +162,21 @@ file_server_arg_pass_thru ::= "pass_thru"
 
 file_server_arg_browse_arg ::= file_server_arg_browse_arg_reveal_symlinks
 file_server_arg_browse_arg_reveal_symlinks ::= "reveal_symlinks"
+
+// endregion
+
+// region forward_auth_arg
+
+forward_auth_arg ::=
+    forward_auth_arg_uri|
+    forward_auth_arg_copy_headers|
+    forward_auth_arg_header_up|
+
+forward_auth_arg_uri ::= "uri" URI
+forward_auth_arg_copy_headers ::= "copy_headers" HEADER* (LEFT_CURLY_BRACE forward_auth_arg_copy_headers_arg* RIGHT_CURLY_BRACE)?
+forward_auth_arg_header_up ::= "header_up" HEADER (HEADER_VALUE|quoted_text|variable)
+
+copy_to ::= ">"
+forward_auth_arg_copy_headers_arg ::= HEADER (copy_to HEADER)?
 
 // endregion

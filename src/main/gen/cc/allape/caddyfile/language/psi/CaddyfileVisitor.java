@@ -35,6 +35,10 @@ public class CaddyfileVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCopyTo(@NotNull CaddyfileCopyTo o) {
+    visitPsiElement(o);
+  }
+
   public void visitDirective(@NotNull CaddyfileDirective o) {
     visitPsiElement(o);
   }
@@ -120,6 +124,30 @@ public class CaddyfileVisitor extends PsiElementVisitor {
   }
 
   public void visitFileServerArgStatus(@NotNull CaddyfileFileServerArgStatus o) {
+    visitPsiElement(o);
+  }
+
+  public void visitForwardAuth(@NotNull CaddyfileForwardAuth o) {
+    visitPsiElement(o);
+  }
+
+  public void visitForwardAuthArg(@NotNull CaddyfileForwardAuthArg o) {
+    visitPsiElement(o);
+  }
+
+  public void visitForwardAuthArgCopyHeaders(@NotNull CaddyfileForwardAuthArgCopyHeaders o) {
+    visitPsiElement(o);
+  }
+
+  public void visitForwardAuthArgCopyHeadersArg(@NotNull CaddyfileForwardAuthArgCopyHeadersArg o) {
+    visitPsiElement(o);
+  }
+
+  public void visitForwardAuthArgHeaderUp(@NotNull CaddyfileForwardAuthArgHeaderUp o) {
+    visitPsiElement(o);
+  }
+
+  public void visitForwardAuthArgUri(@NotNull CaddyfileForwardAuthArgUri o) {
     visitPsiElement(o);
   }
 

@@ -72,6 +72,12 @@ public class CaddyfileDirectiveImpl extends ASTWrapperPsiElement implements Cadd
 
   @Override
   @Nullable
+  public CaddyfileForwardAuth getForwardAuth() {
+    return findChildByClass(CaddyfileForwardAuth.class);
+  }
+
+  @Override
+  @Nullable
   public CaddyfileRedir getRedir() {
     return findChildByClass(CaddyfileRedir.class);
   }

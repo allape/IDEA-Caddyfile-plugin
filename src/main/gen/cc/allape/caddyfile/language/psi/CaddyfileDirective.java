@@ -29,6 +29,9 @@ public interface CaddyfileDirective extends PsiElement {
   CaddyfileFileServer getFileServer();
 
   @Nullable
+  CaddyfileForwardAuth getForwardAuth();
+
+  @Nullable
   CaddyfileRedir getRedir();
 
   @Nullable

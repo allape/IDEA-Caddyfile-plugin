@@ -66,7 +66,6 @@ PORT=\d+
 %state QUOTED_STRING
 %state VARIABLE
 %state VARIABLE_STRING
-%state QUOTED_VARIABLE_STRING
 
 %state MATCHER
 %state MATCHER_ONE
@@ -114,6 +113,14 @@ PORT=\d+
 %state GROUP_DIRECTIVE_FILE_SERVER_ARGS_PRECOMPRESSED
 %state GROUP_DIRECTIVE_FILE_SERVER_ARGS_STATUS
 
+%state GROUP_DIRECTIVE_FORWARD_AUTH
+%state GROUP_DIRECTIVE_FORWARD_AUTH_ARG
+%state GROUP_DIRECTIVE_FORWARD_AUTH_ARG_URI
+%state GROUP_DIRECTIVE_FORWARD_AUTH_ARG_COPY_HEADERS
+%state GROUP_DIRECTIVE_FORWARD_AUTH_ARG_COPY_HEADERS_ARG
+%state GROUP_DIRECTIVE_FORWARD_AUTH_ARG_HEADER_UP
+%state GROUP_DIRECTIVE_FORWARD_AUTH_ARG_HEADER_UP_VALUE
+
 %state GROUP_DIRECTIVE_TLS
 
 %state GROUP_DIRECTIVE_REDIR
@@ -141,26 +148,26 @@ PORT=\d+
     \d+             { _popState(); return CaddyfileTypes.PORT; }
 }
 
-<QUOTED_STRING> {
-    "\""       { if (yycharat(yylength()-2) != '\\') { _popState(); return CaddyfileTypes.QUOTATION; } }
-    [^\r\n\"]+ { return CaddyfileTypes.TEXT; }
-}
-
 <VARIABLE> {
     "{"        { return CaddyfileTypes.LEFT_CURLY_BRACE; }
     "}"        { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
     [^\s\{\}]+ { return CaddyfileTypes.VARIABLE_NAME; }
 }
 
-<BINDING_HOSTNAME> {
-    "{"             { yybegin(GROUP); return CaddyfileTypes.LEFT_CURLY_BRACE; }
-    [^\s\{]+        { _pushState(HOSTNAME_MATCHER); yypushback(yylength()); }
-}
-
 <VARIABLE_STRING> {
     "{"            { _pushState(VARIABLE); yypushback(yylength()); }
     [^\s\{]+       { return CaddyfileTypes.TEXT; }
     {EMPTY_LINE}   { _popState(); yypushback(yylength()); }
+}
+
+<QUOTED_STRING> {
+    "\""       { if (yycharat(yylength()-2) != '\\') { _popState(); return CaddyfileTypes.QUOTATION; } }
+    [^\r\n\"]+ { return CaddyfileTypes.TEXT; }
+}
+
+<BINDING_HOSTNAME> {
+    "{"             { yybegin(GROUP); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    [^\s\{]+        { _pushState(HOSTNAME_MATCHER); yypushback(yylength()); }
 }
 
 <MATCHER> {
@@ -224,13 +231,14 @@ PORT=\d+
     encode            { yybegin(GROUP_DIRECTIVE_ENCODE); return CaddyfileTypes.ENCODE; }
     error             { yybegin(GROUP_DIRECTIVE_ERROR); return CaddyfileTypes.ERROR; }
     file_server       { yybegin(GROUP_DIRECTIVE_FILE_SERVER); return CaddyfileTypes.FILE_SERVER; }
+    forward_auth      { yybegin(GROUP_DIRECTIVE_FORWARD_AUTH); return CaddyfileTypes.FORWARD_AUTH; }
     tls               { yybegin(GROUP_DIRECTIVE_TLS); return CaddyfileTypes.TLS; }
     redir             { yybegin(GROUP_DIRECTIVE_REDIR); return CaddyfileTypes.REDIR; }
     respond           { yybegin(GROUP_DIRECTIVE_RESPOND); return CaddyfileTypes.RESPOND; }
     reverse_proxy     { yybegin(GROUP_DIRECTIVE_REVERSE_PROXY); return CaddyfileTypes.REVERSE_PROXY; }
 
-    {EMPTY_LINE}       { return TokenType.WHITE_SPACE; }
-    "}"                { yybegin(YYINITIAL); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    {EMPTY_LINE}      { return TokenType.WHITE_SPACE; }
+    "}"               { yybegin(YYINITIAL); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
 }
 
 <GROUP_DIRECTIVE_ABORT> {
@@ -362,6 +370,46 @@ PORT=\d+
 <GROUP_DIRECTIVE_FILE_SERVER_ARGS_STATUS> {
     \d+         { _popState(); return CaddyfileTypes.STATUS_CODE; }
     {NEW_LINE}  { _popState(); return TokenType.WHITE_SPACE; }
+}
+
+<GROUP_DIRECTIVE_FORWARD_AUTH> {
+    {MATCHER}      { _pushState(MATCHER); yypushback(yylength()); }
+    "{"            { _pushState(GROUP_DIRECTIVE_FORWARD_AUTH_ARG); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    "}"            { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    [^\s\{\}]+     { return CaddyfileTypes.UPSTREAM; }
+    {NEW_LINE}     { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FORWARD_AUTH_ARG> {
+    "uri"          { _pushState(GROUP_DIRECTIVE_FORWARD_AUTH_ARG_URI); return CaddyfileTypes.FORWARD_AUTH_ARG_URI; }
+    "copy_headers" { _pushState(GROUP_DIRECTIVE_FORWARD_AUTH_ARG_COPY_HEADERS); return CaddyfileTypes.FORWARD_AUTH_ARG_COPY_HEADERS; }
+    "header_up"    { _pushState(GROUP_DIRECTIVE_FORWARD_AUTH_ARG_HEADER_UP); return CaddyfileTypes.FORWARD_AUTH_ARG_HEADER_UP; }
+    "}"            { yybegin(GROUP); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    {NEW_LINE}     { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FORWARD_AUTH_ARG_URI> {
+    [^\s]+         { _popState(); return CaddyfileTypes.URI; }
+}
+<GROUP_DIRECTIVE_FORWARD_AUTH_ARG_COPY_HEADERS> {
+    [^\s\{\}]+     { return CaddyfileTypes.HEADER; }
+    "{"            { _pushState(GROUP_DIRECTIVE_FORWARD_AUTH_ARG_COPY_HEADERS_ARG); return CaddyfileTypes.LEFT_CURLY_BRACE; }
+    "}"            { _popState(); return CaddyfileTypes.RIGHT_CURLY_BRACE; }
+    {NEW_LINE}     { _popState(); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FORWARD_AUTH_ARG_COPY_HEADERS_ARG> {
+    ">"              { return CaddyfileTypes.COPY_TO; }
+    "}"              { _popState(); yypushback(yylength()); }
+    [^\s\}\>]+       { return CaddyfileTypes.HEADER; }
+    {NEW_LINE}       { return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FORWARD_AUTH_ARG_HEADER_UP> {
+    [^\s]+         { _pushState(GROUP_DIRECTIVE_FORWARD_AUTH_ARG_HEADER_UP_VALUE); return CaddyfileTypes.HEADER; }
+    {NEW_LINE}     { _popState(); return TokenType.WHITE_SPACE; }
+}
+<GROUP_DIRECTIVE_FORWARD_AUTH_ARG_HEADER_UP_VALUE> {
+    "{"            { _pushState(VARIABLE); yypushback(yylength()); }
+    "\""           { _pushState(QUOTED_STRING); return CaddyfileTypes.QUOTATION; }
+    [^\s\{\"]+     { _popState(); return CaddyfileTypes.HEADER_VALUE; }
+    {NEW_LINE}     { _popState(); yypushback(yylength()); }
 }
 
 <GROUP_DIRECTIVE_TLS> {

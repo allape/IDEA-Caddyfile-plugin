@@ -17,6 +17,7 @@ public interface CaddyfileTypes {
   IElementType BINDING = new CaddyfileElementType("BINDING");
   IElementType COLON = new CaddyfileElementType("COLON");
   IElementType COMPRESSION_METHOD = new CaddyfileElementType("COMPRESSION_METHOD");
+  IElementType COPY_TO = new CaddyfileElementType("COPY_TO");
   IElementType DIRECTIVE = new CaddyfileElementType("DIRECTIVE");
   IElementType ENCODE = new CaddyfileElementType("ENCODE");
   IElementType ENCODE_ARG = new CaddyfileElementType("ENCODE_ARG");
@@ -39,6 +40,12 @@ public interface CaddyfileTypes {
   IElementType FILE_SERVER_ARG_PRECOMPRESSED = new CaddyfileElementType("FILE_SERVER_ARG_PRECOMPRESSED");
   IElementType FILE_SERVER_ARG_ROOT = new CaddyfileElementType("FILE_SERVER_ARG_ROOT");
   IElementType FILE_SERVER_ARG_STATUS = new CaddyfileElementType("FILE_SERVER_ARG_STATUS");
+  IElementType FORWARD_AUTH = new CaddyfileElementType("FORWARD_AUTH");
+  IElementType FORWARD_AUTH_ARG = new CaddyfileElementType("FORWARD_AUTH_ARG");
+  IElementType FORWARD_AUTH_ARG_COPY_HEADERS = new CaddyfileElementType("FORWARD_AUTH_ARG_COPY_HEADERS");
+  IElementType FORWARD_AUTH_ARG_COPY_HEADERS_ARG = new CaddyfileElementType("FORWARD_AUTH_ARG_COPY_HEADERS_ARG");
+  IElementType FORWARD_AUTH_ARG_HEADER_UP = new CaddyfileElementType("FORWARD_AUTH_ARG_HEADER_UP");
+  IElementType FORWARD_AUTH_ARG_URI = new CaddyfileElementType("FORWARD_AUTH_ARG_URI");
   IElementType GROUP = new CaddyfileElementType("GROUP");
   IElementType HOST = new CaddyfileElementType("HOST");
   IElementType HOSTNAME_MATCHER = new CaddyfileElementType("HOSTNAME_MATCHER");
@@ -72,12 +79,13 @@ public interface CaddyfileTypes {
   IElementType BACKEND = new CaddyfileTokenType("BACKEND");
   IElementType COMMENT = new CaddyfileTokenType("COMMENT");
   IElementType CRLF = new CaddyfileTokenType("CRLF");
-  IElementType DIRECTIVE_11_0 = new CaddyfileTokenType("directive_11_0");
+  IElementType DIRECTIVE_12_0 = new CaddyfileTokenType("directive_12_0");
   IElementType DOT = new CaddyfileTokenType("DOT");
   IElementType ENCODE_ARG_4_0 = new CaddyfileTokenType("encode_arg_4_0");
   IElementType FILEPATH = new CaddyfileTokenType("FILEPATH");
   IElementType FILE_SERVER_ARG_9_0 = new CaddyfileTokenType("file_server_arg_9_0");
   IElementType FILE_SERVER_BROWSE = new CaddyfileTokenType("FILE_SERVER_BROWSE");
+  IElementType FORWARD_AUTH_ARG_3_0 = new CaddyfileTokenType("forward_auth_arg_3_0");
   IElementType GZIP_LEVEL = new CaddyfileTokenType("GZIP_LEVEL");
   IElementType HEADER = new CaddyfileTokenType("HEADER");
   IElementType HEADER_VALUE = new CaddyfileTokenType("HEADER_VALUE");
@@ -100,6 +108,8 @@ public interface CaddyfileTypes {
   IElementType STATUS_CODE = new CaddyfileTokenType("STATUS_CODE");
   IElementType TEXT = new CaddyfileTokenType("TEXT");
   IElementType UNIX_SOCKET = new CaddyfileTokenType("UNIX_SOCKET");
+  IElementType UPSTREAM = new CaddyfileTokenType("UPSTREAM");
+  IElementType URI = new CaddyfileTokenType("URI");
   IElementType USERNAME = new CaddyfileTokenType("USERNAME");
   IElementType VARIABLE_NAME = new CaddyfileTokenType("VARIABLE_NAME");
 
@@ -126,6 +136,9 @@ public interface CaddyfileTypes {
       }
       else if (type == COMPRESSION_METHOD) {
         return new CaddyfileCompressionMethodImpl(node);
+      }
+      else if (type == COPY_TO) {
+        return new CaddyfileCopyToImpl(node);
       }
       else if (type == DIRECTIVE) {
         return new CaddyfileDirectiveImpl(node);
@@ -192,6 +205,24 @@ public interface CaddyfileTypes {
       }
       else if (type == FILE_SERVER_ARG_STATUS) {
         return new CaddyfileFileServerArgStatusImpl(node);
+      }
+      else if (type == FORWARD_AUTH) {
+        return new CaddyfileForwardAuthImpl(node);
+      }
+      else if (type == FORWARD_AUTH_ARG) {
+        return new CaddyfileForwardAuthArgImpl(node);
+      }
+      else if (type == FORWARD_AUTH_ARG_COPY_HEADERS) {
+        return new CaddyfileForwardAuthArgCopyHeadersImpl(node);
+      }
+      else if (type == FORWARD_AUTH_ARG_COPY_HEADERS_ARG) {
+        return new CaddyfileForwardAuthArgCopyHeadersArgImpl(node);
+      }
+      else if (type == FORWARD_AUTH_ARG_HEADER_UP) {
+        return new CaddyfileForwardAuthArgHeaderUpImpl(node);
+      }
+      else if (type == FORWARD_AUTH_ARG_URI) {
+        return new CaddyfileForwardAuthArgUriImpl(node);
       }
       else if (type == GROUP) {
         return new CaddyfileGroupImpl(node);

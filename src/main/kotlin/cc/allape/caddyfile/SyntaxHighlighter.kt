@@ -40,11 +40,15 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             CaddyfileTypes.ENCODE,
             CaddyfileTypes.ERROR,
             CaddyfileTypes.FILE_SERVER,
+            CaddyfileTypes.FORWARD_AUTH,
             CaddyfileTypes.TLS,
             CaddyfileTypes.REDIR,
             CaddyfileTypes.RESPOND,
             CaddyfileTypes.REVERSE_PROXY,
             // sub directive
+            CaddyfileTypes.FORWARD_AUTH_ARG_URI,
+            CaddyfileTypes.FORWARD_AUTH_ARG_COPY_HEADERS,
+            CaddyfileTypes.FORWARD_AUTH_ARG_HEADER_UP,
             CaddyfileTypes.FILE_SERVER_ARG_FS,
             CaddyfileTypes.FILE_SERVER_ARG_ROOT,
             CaddyfileTypes.FILE_SERVER_ARG_HIDE,
@@ -66,6 +70,7 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             CaddyfileTypes.HOSTNAME -> {
                 return LABEL_KEYS
             }
+            CaddyfileTypes.COPY_TO,
             CaddyfileTypes.DOT,
             CaddyfileTypes.COLON -> {
                 return SEMICOLON_KEYS
@@ -79,6 +84,8 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             CaddyfileTypes.LEFT_CURLY_BRACE -> {
                 return BRACKETS_KEYS
             }
+            CaddyfileTypes.HEADER,
+            CaddyfileTypes.HEADER_VALUE,
             CaddyfileTypes.USERNAME,
             CaddyfileTypes.PASSWORD,
             CaddyfileTypes.MATCH_DECLARE_DIR_HEADER,
