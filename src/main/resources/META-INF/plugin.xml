@@ -49,5 +49,8 @@
         <spellchecker.support
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileSpellcheckingStrategy"/>
+        <lang.foldingBuilder
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileFoldingBuilder"/>
     </extensions>
 </idea-plugin>
