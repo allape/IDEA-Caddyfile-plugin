@@ -1,14 +1,9 @@
 package cc.allape.caddyfile
 
-import cc.allape.caddyfile.language.psi.CaddyfileProperty
-import cc.allape.caddyfile.language.psi.CaddyfileTypes
-import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.spellchecker.inspections.CommentSplitter
-import com.intellij.spellchecker.inspections.IdentifierSplitter
-import com.intellij.spellchecker.inspections.PlainTextSplitter
 import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy
 import com.intellij.spellchecker.tokenizer.TokenConsumer
 import com.intellij.spellchecker.tokenizer.Tokenizer
@@ -21,11 +16,6 @@ internal class CaddyfileSpellcheckingStrategy : SpellcheckingStrategy() {
         if (element is PsiComment) {
             return CaddyfileCommentTokenizer()
         }
-
-        if (element is CaddyfileProperty) {
-            return CaddyfilePropertyTokenizer()
-        }
-
         return EMPTY_TOKENIZER
     }
 
@@ -46,19 +36,5 @@ private class CaddyfileCommentTokenizer : Tokenizer<PsiComment?>() {
             TextRange.create(startIndex, element.textLength),
             CommentSplitter.getInstance()
         )
-    }
-}
-
-private class CaddyfilePropertyTokenizer : Tokenizer<CaddyfileProperty?>() {
-    override fun tokenize(@NotNull element: CaddyfileProperty, @NotNull consumer: TokenConsumer) {
-        val key: ASTNode? = element.node.findChildByType(CaddyfileTypes.DIRECTIVE)
-        if (key != null && key.textLength > 0) {
-            val keyPsi: PsiElement = key.psi
-            val text: String = key.text
-            consumer.consumeToken(
-                keyPsi, text, true, 0,
-                TextRange.allOf(text), IdentifierSplitter.getInstance()
-            )
-        }
     }
 }

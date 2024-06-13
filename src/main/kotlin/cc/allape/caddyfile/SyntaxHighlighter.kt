@@ -29,7 +29,6 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
 
     override fun getTokenHighlights(tokenType: IElementType): @NotNull Array<TextAttributesKey?> {
         when (tokenType) {
-            CaddyfileTypes.STAR,
             CaddyfileTypes.VARIABLE_NAME,
             CaddyfileTypes.DIRECTIVE
             -> {
@@ -38,6 +37,7 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             CaddyfileTypes.MATCHER_NAME -> {
                 return LABEL_KEYS
             }
+            CaddyfileTypes.AT,
             CaddyfileTypes.SLASH -> {
                 return SEMICOLON_KEYS
             }

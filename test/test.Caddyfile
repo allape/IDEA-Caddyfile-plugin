@@ -1,6 +1,6 @@
+# TODO
 :80 {
     abort
-    # TODO
     acme_server
     basic_auth {
         # Username "Bob", password "hiccup"
@@ -94,12 +94,31 @@
     	header_up Original-URI "1234"
     	header_up Original-URI 1234
     	header_up Original-URI abcd
+    	copy_headers a b c d e
     	copy_headers {
     		Tailscale-User>X-Webauth-User
     		Tailscale-Name>X-Webauth-Name
     		Tailscale-Login>X-Webauth-Login
     		Tailscale-Tailnet>X-Webauth-Tailnet
     		Tailscale-Profile-Picture>X-Webauth-Profile-Picture
+    		abc>def
     	}
     }
 }
+
+example.com:443 {
+    tls cert.crt private.key
+}
+
+directive [<matcher>] <args...> {
+	subdirective [<args...>]
+}
+
+@postfoo {
+	method POST
+	path /foo/*
+	root * /home/www/mysite
+}
+reverse_proxy @postfoo localhost:9000
+
+root * /home/www/mysite
