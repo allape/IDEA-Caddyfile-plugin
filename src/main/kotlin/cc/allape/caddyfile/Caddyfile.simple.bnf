@@ -1,0 +1,29 @@
+{
+  parserClass="cc.allape.caddyfile.language.parser.CaddyfileParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Caddyfile"
+  psiImplClassSuffix="Impl"
+  psiPackage="cc.allape.caddyfile.language.psi"
+  psiImplPackage="cc.allape.caddyfile.language.psi.impl"
+
+  elementTypeHolderClass="cc.allape.caddyfile.language.psi.CaddyfileTypes"
+  elementTypeClass="cc.allape.caddyfile.CaddyfileElementType"
+  tokenTypeClass="cc.allape.caddyfile.CaddyfileTokenType"
+
+  psiImplUtilClass="cc.allape.caddyfile.CaddyfilePsiImplUtil"
+}
+
+caddyfileFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF)
+
+matcher ::= (matcher_one|matcher_two|matcher_thr)
+matcher_one ::= STAR
+matcher_two ::= SLASH ((TEXT|STAR) SLASH?)*
+matcher_thr ::= AT MATCHER_NAME
+
+variable ::= LCB VARIABLE_NAME RCB
+
+property ::= DIRECTIVE matcher? (ARG|variable)* (LCB property* RCB)?

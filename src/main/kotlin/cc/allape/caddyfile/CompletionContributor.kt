@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull
 
 internal class CaddyfileCompletionContributor : CompletionContributor() {
     init {
-        extend(CompletionType.BASIC, PlatformPatterns.psiElement(CaddyfileTypes.PROTOCOL),
+        extend(CompletionType.BASIC, PlatformPatterns.psiElement(CaddyfileTypes.COMMENT),
             object : CompletionProvider<CompletionParameters?>() {
                 override fun addCompletions(
                     @NotNull parameters: CompletionParameters,

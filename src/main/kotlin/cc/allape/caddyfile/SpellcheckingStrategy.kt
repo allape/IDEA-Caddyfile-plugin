@@ -51,23 +51,13 @@ private class CaddyfileCommentTokenizer : Tokenizer<PsiComment?>() {
 
 private class CaddyfilePropertyTokenizer : Tokenizer<CaddyfileProperty?>() {
     override fun tokenize(@NotNull element: CaddyfileProperty, @NotNull consumer: TokenConsumer) {
-        val key: ASTNode? = element.node.findChildByType(CaddyfileTypes.HOSTNAME)
+        val key: ASTNode? = element.node.findChildByType(CaddyfileTypes.DIRECTIVE)
         if (key != null && key.textLength > 0) {
             val keyPsi: PsiElement = key.psi
             val text: String = key.text
             consumer.consumeToken(
                 keyPsi, text, true, 0,
                 TextRange.allOf(text), IdentifierSplitter.getInstance()
-            )
-        }
-
-        val value: ASTNode? = element.node.findChildByType(CaddyfileTypes.FILEPATH)
-        if (value != null && value.textLength > 0) {
-            val valuePsi: PsiElement = value.psi
-            val text = valuePsi.text
-            consumer.consumeToken(
-                valuePsi, text, false, 0,
-                TextRange.allOf(text), PlainTextSplitter.getInstance()
             )
         }
     }

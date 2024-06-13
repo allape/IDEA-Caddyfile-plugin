@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull
 
 interface CaddyfileTokenSets {
     companion object {
-        val GROUPS: TokenSet = TokenSet.create(CaddyfileTypes.GROUP)
         val COMMENTS: TokenSet = TokenSet.create(CaddyfileTypes.COMMENT)
     }
 }

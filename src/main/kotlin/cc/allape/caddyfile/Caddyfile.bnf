@@ -33,7 +33,7 @@ hostname_matcher ::= (TEXT|STAR)(DOT (TEXT|STAR))*
 
 variable ::= (LEFT_CURLY_BRACE VARIABLE_NAME RIGHT_CURLY_BRACE)
 quoted_text ::= QUOTATION TEXT QUOTATION
-compression_method ::= ("gzip"|"zstd"|"br")
+compression_method ::=
 
 // region matcher
 

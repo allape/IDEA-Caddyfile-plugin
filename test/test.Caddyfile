@@ -1,6 +1,7 @@
 :80 {
     abort
-    acme_server # TODO
+    # TODO
+    acme_server
     basic_auth {
         # Username "Bob", password "hiccup"
         Bob $2a$14$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
@@ -12,11 +13,11 @@
     bind 127.0.0.1
     bind 127.0.0.1 [::1]
     bind 10.0.0.1
-    bind unix//run/caddy#123
+    bind unix//run/caddy
     bind unix//run/caddy|0222
     encode gzip
     encode zstd gzip
-    encode zstd {            # 123
+    encode zstd {
     	gzip 2
     	zstd
     	minimum_length 3
@@ -25,7 +26,7 @@
     	match header Content-Type application/atom+xml*
     	match status 102 567
     	match {
-    		status 1 23 456    #123
+    		status 1 23 456
     		header Content-Type application/atom+xml*
             header Content-Type application/eot*
             header Content-Type application/font*

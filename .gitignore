@@ -38,5 +38,7 @@ bin/
 ### Mac OS ###
 .DS_Store
 
+src/main/gen
+
 /idea-flex.skeleton
 /jflex-*.jar

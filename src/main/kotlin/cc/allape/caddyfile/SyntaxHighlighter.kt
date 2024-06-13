@@ -29,71 +29,26 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
 
     override fun getTokenHighlights(tokenType: IElementType): @NotNull Array<TextAttributesKey?> {
         when (tokenType) {
-            // important keywords
-            CaddyfileTypes.VARIABLE_NAME,
             CaddyfileTypes.STAR,
-            // directives
-            CaddyfileTypes.ABORT,
-            CaddyfileTypes.ACME_SERVER,
-            CaddyfileTypes.BASIC_AUTH,
-            CaddyfileTypes.BIND,
-            CaddyfileTypes.ENCODE,
-            CaddyfileTypes.ERROR,
-            CaddyfileTypes.FILE_SERVER,
-            CaddyfileTypes.FORWARD_AUTH,
-            CaddyfileTypes.TLS,
-            CaddyfileTypes.REDIR,
-            CaddyfileTypes.RESPOND,
-            CaddyfileTypes.REVERSE_PROXY,
-            // sub directive
-            CaddyfileTypes.FORWARD_AUTH_ARG_URI,
-            CaddyfileTypes.FORWARD_AUTH_ARG_COPY_HEADERS,
-            CaddyfileTypes.FORWARD_AUTH_ARG_HEADER_UP,
-            CaddyfileTypes.FILE_SERVER_ARG_FS,
-            CaddyfileTypes.FILE_SERVER_ARG_ROOT,
-            CaddyfileTypes.FILE_SERVER_ARG_HIDE,
-            CaddyfileTypes.FILE_SERVER_ARG_INDEX,
-            CaddyfileTypes.FILE_SERVER_ARG_BROWSE,
-            CaddyfileTypes.FILE_SERVER_ARG_BROWSE_ARG_REVEAL_SYMLINKS,
-            CaddyfileTypes.FILE_SERVER_ARG_PRECOMPRESSED,
-            CaddyfileTypes.FILE_SERVER_ARG_STATUS,
-            CaddyfileTypes.FILE_SERVER_ARG_DISABLE_CANONICAL_URIS,
-            CaddyfileTypes.FILE_SERVER_ARG_PASS_THRU,
-            CaddyfileTypes.ERROR_ARG_MESSAGE,
-            CaddyfileTypes.MATCH_DIRECTIVE,
-            CaddyfileTypes.ENCODE_ARG_GZIP,
-            CaddyfileTypes.ENCODE_ARG_MINIMUM_LENGTH,
-            CaddyfileTypes.ENCODE_ARG_ZSTD
+            CaddyfileTypes.VARIABLE_NAME,
+            CaddyfileTypes.DIRECTIVE
             -> {
                 return KEYWORD_KEYS
             }
-            CaddyfileTypes.HOSTNAME -> {
+            CaddyfileTypes.MATCHER_NAME -> {
                 return LABEL_KEYS
             }
-            CaddyfileTypes.COPY_TO,
-            CaddyfileTypes.DOT,
-            CaddyfileTypes.COLON -> {
+            CaddyfileTypes.SLASH -> {
                 return SEMICOLON_KEYS
             }
-            CaddyfileTypes.STATUS_CODE,
-            CaddyfileTypes.PORT,
-            CaddyfileTypes.PORT_WITH_COLON -> {
+            CaddyfileTypes.STAR -> {
                 return NUMBER_KEYS
             }
-            CaddyfileTypes.RIGHT_CURLY_BRACE,
-            CaddyfileTypes.LEFT_CURLY_BRACE -> {
+            CaddyfileTypes.LCB,
+            CaddyfileTypes.RCB -> {
                 return BRACKETS_KEYS
             }
-            CaddyfileTypes.HEADER,
-            CaddyfileTypes.HEADER_VALUE,
-            CaddyfileTypes.USERNAME,
-            CaddyfileTypes.PASSWORD,
-            CaddyfileTypes.MATCH_DECLARE_DIR_HEADER,
-            CaddyfileTypes.MATCH_DECLARE_DIR_METHOD,
-            CaddyfileTypes.MATCH_DECLARE_DIR_PATH,
-            CaddyfileTypes.MATCH_DECLARE_DIR_STATUS,
-            CaddyfileTypes.TEXT,
-            CaddyfileTypes.PROTOCOL -> {
+            CaddyfileTypes.TEXT -> {
                 return STRING_KEYS
             }
             CaddyfileTypes.COMMENT -> {
@@ -105,6 +60,85 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             else -> return EMPTY_KEYS
         }
     }
+
+//    override fun getTokenHighlights(tokenType: IElementType): @NotNull Array<TextAttributesKey?> {
+//        when (tokenType) {
+//            // important keywords
+//            CaddyfileTypes.VARIABLE_NAME,
+//            CaddyfileTypes.STAR,
+//            // directives
+//            CaddyfileTypes.ABORT,
+//            CaddyfileTypes.ACME_SERVER,
+//            CaddyfileTypes.BASIC_AUTH,
+//            CaddyfileTypes.BIND,
+//            CaddyfileTypes.ENCODE,
+//            CaddyfileTypes.ERROR,
+//            CaddyfileTypes.FILE_SERVER,
+//            CaddyfileTypes.FORWARD_AUTH,
+//            CaddyfileTypes.TLS,
+//            CaddyfileTypes.REDIR,
+//            CaddyfileTypes.RESPOND,
+//            CaddyfileTypes.REVERSE_PROXY,
+//            // sub directive
+//            CaddyfileTypes.FORWARD_AUTH_ARG_URI,
+//            CaddyfileTypes.FORWARD_AUTH_ARG_COPY_HEADERS,
+//            CaddyfileTypes.FORWARD_AUTH_ARG_HEADER_UP,
+//            CaddyfileTypes.FILE_SERVER_ARG_FS,
+//            CaddyfileTypes.FILE_SERVER_ARG_ROOT,
+//            CaddyfileTypes.FILE_SERVER_ARG_HIDE,
+//            CaddyfileTypes.FILE_SERVER_ARG_INDEX,
+//            CaddyfileTypes.FILE_SERVER_ARG_BROWSE,
+//            CaddyfileTypes.FILE_SERVER_ARG_BROWSE_ARG_REVEAL_SYMLINKS,
+//            CaddyfileTypes.FILE_SERVER_ARG_PRECOMPRESSED,
+//            CaddyfileTypes.FILE_SERVER_ARG_STATUS,
+//            CaddyfileTypes.FILE_SERVER_ARG_DISABLE_CANONICAL_URIS,
+//            CaddyfileTypes.FILE_SERVER_ARG_PASS_THRU,
+//            CaddyfileTypes.ERROR_ARG_MESSAGE,
+//            CaddyfileTypes.MATCH_DIRECTIVE,
+//            CaddyfileTypes.ENCODE_ARG_GZIP,
+//            CaddyfileTypes.ENCODE_ARG_MINIMUM_LENGTH,
+//            CaddyfileTypes.ENCODE_ARG_ZSTD
+//            -> {
+//                return KEYWORD_KEYS
+//            }
+//            CaddyfileTypes.HOSTNAME -> {
+//                return LABEL_KEYS
+//            }
+//            CaddyfileTypes.COPY_TO,
+//            CaddyfileTypes.DOT,
+//            CaddyfileTypes.COLON -> {
+//                return SEMICOLON_KEYS
+//            }
+//            CaddyfileTypes.STATUS_CODE,
+//            CaddyfileTypes.PORT,
+//            CaddyfileTypes.PORT_WITH_COLON -> {
+//                return NUMBER_KEYS
+//            }
+//            CaddyfileTypes.RIGHT_CURLY_BRACE,
+//            CaddyfileTypes.LEFT_CURLY_BRACE -> {
+//                return BRACKETS_KEYS
+//            }
+//            CaddyfileTypes.HEADER,
+//            CaddyfileTypes.HEADER_VALUE,
+//            CaddyfileTypes.USERNAME,
+//            CaddyfileTypes.PASSWORD,
+//            CaddyfileTypes.MATCH_DECLARE_DIR_HEADER,
+//            CaddyfileTypes.MATCH_DECLARE_DIR_METHOD,
+//            CaddyfileTypes.MATCH_DECLARE_DIR_PATH,
+//            CaddyfileTypes.MATCH_DECLARE_DIR_STATUS,
+//            CaddyfileTypes.TEXT,
+//            CaddyfileTypes.PROTOCOL -> {
+//                return STRING_KEYS
+//            }
+//            CaddyfileTypes.COMMENT -> {
+//                return COMMENT_KEYS
+//            }
+//            TokenType.BAD_CHARACTER -> {
+//                return BAD_CHAR_KEYS
+//            }
+//            else -> return EMPTY_KEYS
+//        }
+//    }
 
     companion object {
         val SEMICOLON: TextAttributesKey =

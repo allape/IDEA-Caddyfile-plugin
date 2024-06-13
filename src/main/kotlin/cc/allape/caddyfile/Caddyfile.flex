@@ -1,9 +1,9 @@
 package cc.allape.caddyfile.language;
 
 // DO NOT OPTIMIZE IMPORT
+import cc.allape.caddyfile.language.psi.CaddyfileTypes;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import cc.allape.caddyfile.language.psi.CaddyfileTypes;
 import com.intellij.psi.TokenType;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -16,18 +16,39 @@ import java.util.Stack;
 %unicode
 %{
     private Stack<Integer> _stateStack = new Stack<Integer>();
-    private void _pushState(int state) {
-        _stateStack.push(zzLexicalState);
-        yybegin(state);
+    private void _pushState(int ...state) {
+        if (state.length == 0) {
+            return;
+        }
+        this._stateStack.push(this.zzLexicalState);
+        for (int s : state) {
+            this._stateStack.push(s);
+        }
+        yybegin(state[state.length - 1]);
     }
     private void _popState() {
-        yybegin(_stateStack.pop());
+        this._popState(1);
+    }
+    private void _popState(int depth) {
+        if (depth < 1) {
+            return;
+        }
+        if (depth >= this._stateStack.size()) {
+            this._stateStack.clear();
+            yybegin(YYINITIAL);
+        } else {
+            int lastPopped = YYINITIAL;
+            for (int i = 0; i < depth; i++) {
+                lastPopped = this._stateStack.pop();
+            }
+            yybegin(lastPopped);
+        }
     }
     private void _clearStack() {
-        _stateStack.clear();
+        this._stateStack.clear();
     }
     private boolean _isStackEmpty() {
-        return _stateStack.empty();
+        return this._stateStack.empty();
     }
 %}
 %{
