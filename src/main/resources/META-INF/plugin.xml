@@ -55,5 +55,8 @@
         <lang.formatter
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileFormattingModelBuilder"/>
+<!--        <lang.findUsagesProvider-->
+<!--                language="Caddyfile"-->
+<!--                implementationClass="cc.allape.caddyfile.CaddyfileFindUsagesProvider"/>-->
     </extensions>
 </idea-plugin>

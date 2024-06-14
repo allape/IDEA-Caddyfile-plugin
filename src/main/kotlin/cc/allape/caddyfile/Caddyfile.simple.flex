@@ -29,6 +29,7 @@ COMMENT="#"[^\r\n]*
 %state VARIABLE
 
 %state DIRECTIVE
+%state MATCHER_DECLARATION
 %state ARG
 
 %%
@@ -68,8 +69,13 @@ COMMENT="#"[^\r\n]*
 }
 
 <DIRECTIVE> {
-    [^\s]+      { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
-    {CRLF}      { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+    "@"       { yybegin(MATCHER_DECLARATION); return CaddyfileTypes.AT; }
+    [^\s\@]+  { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    {CRLF}    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+}
+
+<MATCHER_DECLARATION> {
+    [^\s]+        { yybegin(ARG); return CaddyfileTypes.MATCHER_NAME; }
 }
 
 <ARG> {

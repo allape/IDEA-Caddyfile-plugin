@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull
 
 interface CaddyfileTokenSets {
     companion object {
+        val IDENTIFIERS: TokenSet = TokenSet.create(CaddyfileTypes.MATCHER_DECLARATION)
         val COMMENTS: TokenSet = TokenSet.create(CaddyfileTypes.COMMENT)
     }
 }

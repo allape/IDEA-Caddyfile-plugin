@@ -19,11 +19,14 @@ caddyfileFile ::= item_*
 
 private item_ ::= (property|COMMENT|CRLF)
 
+matcher_declaration ::= AT MATCHER_NAME
+
 matcher ::= (matcher_one|matcher_two|matcher_thr)
 matcher_one ::= STAR
 matcher_two ::= SLASH ((TEXT|STAR) SLASH?)*
-matcher_thr ::= AT MATCHER_NAME
+matcher_thr ::= matcher_declaration
 
 variable ::= LCB VARIABLE_NAME RCB
 
-property ::= DIRECTIVE matcher? (ARG|variable)* (LCB property* RCB)?
+property ::= (DIRECTIVE|matcher_declaration) matcher? (ARG|variable)* (LCB property* RCB)?
+
