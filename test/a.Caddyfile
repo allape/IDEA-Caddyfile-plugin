@@ -1,0 +1,12 @@
+a {
+    a1 arg1 arg2
+    b {
+        c1 arg1 arg2
+        c {
+            d1 arg1 arg2
+            d2
+            d3
+            d4
+        }
+    }
+}

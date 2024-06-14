@@ -52,5 +52,8 @@
         <lang.foldingBuilder
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileFoldingBuilder"/>
+        <lang.formatter
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileFormattingModelBuilder"/>
     </extensions>
 </idea-plugin>
