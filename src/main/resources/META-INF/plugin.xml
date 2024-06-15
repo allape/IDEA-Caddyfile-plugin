@@ -55,8 +55,11 @@
         <lang.formatter
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileFormattingModelBuilder"/>
-<!--        <lang.findUsagesProvider-->
-<!--                language="Caddyfile"-->
-<!--                implementationClass="cc.allape.caddyfile.CaddyfileFindUsagesProvider"/>-->
+        <psi.referenceContributor
+                language="Caddyfile"
+                implementation="cc.allape.caddyfile.CaddyfileReferenceContributor"/>
+        <lang.findUsagesProvider
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileFindUsagesProvider"/>
     </extensions>
 </idea-plugin>

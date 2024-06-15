@@ -69,6 +69,9 @@ COMMENT="#"[^\r\n]*
 }
 
 <DIRECTIVE> {
+    // region these directives have no matcher
+    "uri"     { yybegin(ARG); return CaddyfileTypes.DIRECTIVE; }
+    // endregion
     "@"       { yybegin(MATCHER_DECLARATION); return CaddyfileTypes.AT; }
     [^\s\@]+  { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
     {CRLF}    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }

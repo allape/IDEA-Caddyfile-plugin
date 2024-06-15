@@ -5,7 +5,6 @@ import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.util.ProcessingContext
-import org.jetbrains.annotations.NotNull
 
 // Run this script in browser console of `https://caddyserver.com/docs/caddyfile/directives` to get the full list of directives
 /*
@@ -269,9 +268,9 @@ internal class CaddyfileCompletionContributor : CompletionContributor() {
         extend(CompletionType.BASIC, PlatformPatterns.psiElement(CaddyfileTypes.DIRECTIVE),
             object : CompletionProvider<CompletionParameters?>() {
                 override fun addCompletions(
-                    @NotNull parameters: CompletionParameters,
-                    @NotNull context: ProcessingContext,
-                    @NotNull resultSet: CompletionResultSet
+                    parameters: CompletionParameters,
+                    context: ProcessingContext,
+                    resultSet: CompletionResultSet
                 ) {
                     for (directive in DIRECTIVES) {
                         resultSet.addElement(LookupElementBuilder.create(directive))

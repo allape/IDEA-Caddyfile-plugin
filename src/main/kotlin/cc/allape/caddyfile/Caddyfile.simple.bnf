@@ -19,7 +19,10 @@ caddyfileFile ::= item_*
 
 private item_ ::= (property|COMMENT|CRLF)
 
-matcher_declaration ::= AT MATCHER_NAME
+matcher_declaration ::= AT MATCHER_NAME {
+  mixin="cc.allape.caddyfile.element.CaddyfileMatcherNamedElementImpl"
+  implements="cc.allape.caddyfile.element.CaddyfileMatcherNamedElement"
+}
 
 matcher ::= (matcher_one|matcher_two|matcher_thr)
 matcher_one ::= STAR

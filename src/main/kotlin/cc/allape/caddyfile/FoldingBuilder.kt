@@ -30,10 +30,8 @@ class CaddyfilePropertyVisitor(private val descriptors: MutableList<FoldingDescr
 
         this.visitProperty(ele)
 
-        val comments = PsiTreeUtil.getChildrenOfType(ele, PsiComment::class.java)
-        if (comments != null) {
-            this.visitComments(comments)
-        }
+        val comments = PsiTreeUtil.findChildrenOfAnyType(ele, PsiComment::class.java)
+        this.visitComments(comments.toTypedArray())
     }
 
     private fun visitProperty(ele: PsiElement) {
