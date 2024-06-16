@@ -61,5 +61,8 @@
         <lang.findUsagesProvider
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileFindUsagesProvider"/>
+        <lang.refactoringSupport
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileRefactoringSupportProvider"/>
     </extensions>
 </idea-plugin>
