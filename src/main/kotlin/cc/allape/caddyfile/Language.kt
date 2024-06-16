@@ -14,7 +14,7 @@ class CaddyfileLanguage : Language("Caddyfile") {
 
 class CaddyfileIcons {
     companion object {
-        val FILE: Icon by lazy { getIcon("/icons/caddyfile.svg", CaddyfileIcons::class.java) }
+        val FILE: Icon by lazy { getIcon("/META-INF/pluginIcon.svg", CaddyfileIcons::class.java) }
     }
 }
 
