@@ -69,11 +69,41 @@ COMMENT="#"[^\r\n]*
 }
 
 <DIRECTIVE> {
-    // region these directives have no matcher
-    "uri"     { yybegin(ARG); return CaddyfileTypes.DIRECTIVE; }
+    // region these directives have matcher
+    "abort"           { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "acme_server"     { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "basic_auth"      { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "encode"          { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "error"           { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "file_server"     { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "forward_auth"    { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "fs"              { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "handle"          { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "handle_path"     { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "header"          { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "invoke"          { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "log_append"      { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "log_skip"        { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "map"             { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "method"          { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "metrics"         { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "php_fastcgi"     { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "push"            { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "redir"           { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "request_body"    { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "request_header"  { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "respond"         { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "reverse_proxy"   { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "rewrite"         { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "root"            { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "route"           { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "templates"       { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    // `uri` can be ambiguous, detail see https://caddyserver.com/docs/caddyfile/directives/uri
+    "uri"             { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    "vars"            { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
     // endregion
     "@"       { yybegin(MATCHER_DECLARATION); return CaddyfileTypes.AT; }
-    [^\s\@]+  { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
+    [^\s\@]+  { yybegin(ARG); return CaddyfileTypes.DIRECTIVE; }
     {CRLF}    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
 
