@@ -9,6 +9,7 @@ import com.intellij.psi.formatter.common.AbstractBlock
 
 const val DEFAULT_SPACE_COUNT = 4
 
+val NEW_LINE_REGEXP = Regex.fromLiteral("^[\r\n]+$")
 
 open class CaddyfileBlock(
     node: ASTNode, wrap: Wrap?, alignment: Alignment?,
@@ -30,15 +31,20 @@ open class CaddyfileBlock(
         return blocks
     }
 
+    private fun isParentAProperty(): Boolean {
+        return myNode.treeParent?.elementType == CaddyfileTypes.PROPERTY
+    }
+
     override fun getIndent(): Indent? {
         when (myNode.elementType) {
+            CaddyfileTypes.COMMENT,
             CaddyfileTypes.PROPERTY -> {
-                if (myNode.treeParent?.elementType == CaddyfileTypes.PROPERTY) {
+                if (this.isParentAProperty()) {
                     return Indent.getIndent(Indent.Type.NORMAL, DEFAULT_SPACE_COUNT, false, false)
                 }
             }
             CaddyfileTypes.RCB -> {
-                if (myNode.treeParent?.elementType == CaddyfileTypes.PROPERTY) {
+                if (this.isParentAProperty()) {
                     Indent.getIndent(Indent.Type.NONE, true, false)
                 }
             }
