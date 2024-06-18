@@ -2,7 +2,7 @@
 
 ## Plugin Marketplace
 
-TODO
+https://plugins.jetbrains.com/plugin/24642-caddyfile
 
 ## Known Issues
 
