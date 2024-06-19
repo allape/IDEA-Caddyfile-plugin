@@ -9,8 +9,6 @@ import com.intellij.psi.formatter.common.AbstractBlock
 
 const val DEFAULT_SPACE_COUNT = 4
 
-val NEW_LINE_REGEXP = Regex.fromLiteral("^[\r\n]+$")
-
 open class CaddyfileBlock(
     node: ASTNode, wrap: Wrap?, alignment: Alignment?,
     private val spacingBuilder: SpacingBuilder,
@@ -56,6 +54,14 @@ open class CaddyfileBlock(
         return spacingBuilder.getSpacing(this, child1, child2)
     }
 
+    override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
+        return if (isParentAProperty()) {
+            ChildAttributes(Indent.getIndent(Indent.Type.NORMAL, DEFAULT_SPACE_COUNT, false, false), null)
+        } else {
+            ChildAttributes(Indent.getIndent(Indent.Type.NONE, false, false), null)
+        }
+    }
+
     override fun isLeaf(): Boolean {
         return myNode.firstChildNode == null
     }
@@ -76,7 +82,6 @@ internal class CaddyfileFormattingModelBuilder : FormattingModelBuilder {
                 codeStyleSettings
             )
     }
-
 }
 
 private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
