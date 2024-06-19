@@ -6,6 +6,7 @@ a {
         # endregion
         c {
             uri @matcher arg1 arg2
+            uri @matcher arg1 arg2
             d2
             d3
             d4
