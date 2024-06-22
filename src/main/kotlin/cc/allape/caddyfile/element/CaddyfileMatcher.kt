@@ -21,7 +21,7 @@ abstract class CaddyfileMatcherNamedElementImpl(node: ASTNode) : ASTWrapperPsiEl
     }
 
     override fun getName(): String? {
-        return this.lastChild.text
+        return this.text
     }
 
     override fun getNameIdentifier(): PsiElement? {

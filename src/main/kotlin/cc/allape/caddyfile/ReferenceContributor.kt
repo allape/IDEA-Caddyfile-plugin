@@ -53,6 +53,9 @@ internal class CaddyfileReferenceContributor : PsiReferenceContributor() {
                     element: PsiElement,
                     context: ProcessingContext
                 ): Array<PsiReference> {
+                    if (element.parent is CaddyfileProperty) {
+                        return emptyArray()
+                    }
                     return arrayOf(
                         CaddyfileMatcherReference(
                             element,

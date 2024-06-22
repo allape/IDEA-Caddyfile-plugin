@@ -36,7 +36,7 @@ internal class CaddyfileFindUsagesProvider : FindUsagesProvider {
 
     override fun getType(element: PsiElement): String {
         if (element is CaddyfileMatcherDeclaration) {
-            return "Caddyfile matcher declaration"
+            return "Caddyfile Matcher Declaration"
         }
         return ""
     }
@@ -50,7 +50,7 @@ internal class CaddyfileFindUsagesProvider : FindUsagesProvider {
 
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String {
         if (element is CaddyfileMatcherDeclaration) {
-            return element.parent.text
+            return element.text
         }
         return ""
     }
