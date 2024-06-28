@@ -67,5 +67,8 @@
         <lang.refactoringSupport
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileRefactoringSupportProvider"/>
+        <lang.namesValidator
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileLanguageNamesValidator"/>
     </extensions>
 </idea-plugin>
