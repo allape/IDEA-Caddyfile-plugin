@@ -37,7 +37,7 @@ COMMENT="#"[^\r\n]*
 <MATCHER> {
     "*"         { yybegin(MATCHER_ONE); yypushback(yylength()); }
     "/"         { yybegin(MATCHER_TWO); yypushback(yylength()); }
-    "@"         { yybegin(MATCHER_THR); return CaddyfileTypes.AT; }
+    "@"         { yybegin(MATCHER_THR); yypushback(yylength()); }
     {CRLF}      { yybegin(ARG); yypushback(yylength()); }
     [^\s\*\/\@] { yybegin(ARG); yypushback(yylength()); }
 }
@@ -52,7 +52,7 @@ COMMENT="#"[^\r\n]*
     [\s]          { yybegin(ARG); yypushback(yylength()); }
 }
 <MATCHER_THR> {
-    [^\s]+      { yybegin(ARG); return CaddyfileTypes.MATCHER_NAME; }
+    [^\s]+      { yybegin(ARG); return CaddyfileTypes.AT_MATCHER_NAME; }
 }
 
 <VARIABLE> {
@@ -102,13 +102,13 @@ COMMENT="#"[^\r\n]*
     "uri"             { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
     "vars"            { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
     // endregion
-    "@"       { yybegin(MATCHER_DECLARATION); return CaddyfileTypes.AT; }
+    "@"       { yybegin(MATCHER_DECLARATION); yypushback(yylength()); }
     [^\s\@]+  { yybegin(ARG); return CaddyfileTypes.DIRECTIVE; }
     {CRLF}    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
 
 <MATCHER_DECLARATION> {
-    [^\s]+        { yybegin(ARG); return CaddyfileTypes.MATCHER_NAME; }
+    [^\s]+        { yybegin(ARG); return CaddyfileTypes.AT_MATCHER_NAME; }
 }
 
 <ARG> {

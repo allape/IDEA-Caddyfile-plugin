@@ -34,10 +34,9 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
             -> {
                 return KEYWORD_KEYS
             }
-            CaddyfileTypes.MATCHER_NAME -> {
+            CaddyfileTypes.AT_MATCHER_NAME -> {
                 return LABEL_KEYS
             }
-            CaddyfileTypes.AT,
             CaddyfileTypes.SLASH -> {
                 return SEMICOLON_KEYS
             }
