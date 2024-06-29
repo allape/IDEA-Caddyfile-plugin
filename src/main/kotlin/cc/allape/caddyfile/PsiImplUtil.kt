@@ -15,8 +15,10 @@ object CaddyfilePsiImplUtil {
     @JvmStatic
     fun setName(element: PsiElement, newName: String?): PsiElement {
         return when (element.elementType) {
-            CaddyfileTypes.AT_MATCHER_NAME -> {
-                ElementFactory.createMatcherDeclaration(element.project, newName ?: "@???")
+            CaddyfileTypes.MATCHER_DECLARATION -> {
+                val newEle = ElementFactory.createMatcherDeclaration(element.project, newName ?: "@???")
+                element.replace(newEle)
+                return newEle
             }
             else -> {
                 element

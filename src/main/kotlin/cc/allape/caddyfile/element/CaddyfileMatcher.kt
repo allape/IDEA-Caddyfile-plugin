@@ -1,7 +1,10 @@
 package cc.allape.caddyfile.element
 
+import cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.util.TextRange
+import com.intellij.psi.AbstractElementManipulator
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.PsiReference
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
@@ -23,5 +26,15 @@ abstract class CaddyfileMatcherNamedElementImpl(node: ASTNode) : ASTWrapperPsiEl
 
     override fun getResolveScope(): GlobalSearchScope {
         return GlobalSearchScope.fileScope(containingFile)
+    }
+}
+
+class CaddyfileMatcherManipulator : AbstractElementManipulator<CaddyfileMatcherDeclaration>() {
+    override fun handleContentChange(
+        element: CaddyfileMatcherDeclaration,
+        range: TextRange,
+        newContent: String?
+    ): CaddyfileMatcherDeclaration {
+        return element.setName(newContent) as CaddyfileMatcherDeclaration
     }
 }

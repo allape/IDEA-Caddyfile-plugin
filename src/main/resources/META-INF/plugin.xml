@@ -70,5 +70,8 @@
         <lang.namesValidator
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileLanguageNamesValidator"/>
+        <lang.elementManipulator
+                forClass="cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration"
+                implementationClass="cc.allape.caddyfile.element.CaddyfileMatcherManipulator" />
     </extensions>
 </idea-plugin>
