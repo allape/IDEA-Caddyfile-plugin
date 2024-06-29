@@ -4,10 +4,13 @@
 
 https://plugins.jetbrains.com/plugin/24642-caddyfile
 
+## TODOs
+- [x] `Find Usage` and `Go To Declaration` for matchers
+- [ ] Add documentation dialog for directives
+
 ## Known Issues
 
 - Lack of testing, only tested with simple Caddyfiles
-- Unable to find usage of matcher declaration, but it works at matcher reference
 - ICON file may violate legal issue
     - ICON file is copied from https://github.com/caddyserver/caddy/blob/master/README.md, and modified to remove text
 
