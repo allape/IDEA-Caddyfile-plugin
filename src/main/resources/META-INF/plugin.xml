@@ -35,6 +35,7 @@
                 fieldName="INSTANCE"
                 language="Caddyfile"
                 fileNames="Caddyfile;caddyfile"
+                fileNamesCaseInsensitive="Caddyfile"
                 extensions="Caddyfile;caddyfile"/>
         <lang.parserDefinition
                 language="Caddyfile"
