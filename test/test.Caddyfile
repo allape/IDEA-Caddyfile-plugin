@@ -3,11 +3,11 @@
     abort
     acme_server
     basic_auth {
-    # Username "Bob", password "hiccup"
+        # Username "Bob", password "hiccup"
         Bob $2a$14$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
     }
     basic_auth /secret/* {
-    # Username "Bob", password "hiccup"
+        # Username "Bob", password "hiccup"
         Bob $2a$14$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
     }
     bind 127.0.0.1
@@ -121,6 +121,7 @@ directive [<matcher>] <args...> {
 # region
 # endregion
 
+# abc matcher
 @postfoo {
     method POST
     path /foo/*

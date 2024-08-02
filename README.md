@@ -4,9 +4,9 @@
 
 https://plugins.jetbrains.com/plugin/24642-caddyfile
 
-## TODOs
+## Features
 - [x] `Find Usage` and `Go To Declaration` for matchers
-- [ ] Add documentation dialog for directives
+- [x] Add documentation dialog for directives and matchers
 
 ## Known Issues
 

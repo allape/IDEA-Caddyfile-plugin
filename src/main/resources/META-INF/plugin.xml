@@ -74,5 +74,8 @@
         <lang.elementManipulator
                 forClass="cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration"
                 implementationClass="cc.allape.caddyfile.element.CaddyfileMatcherManipulator" />
+        <lang.documentationProvider
+                language="Caddyfile"
+                implementationClass="cc.allape.caddyfile.CaddyfileDocumentationProvider"/>
     </extensions>
 </idea-plugin>
