@@ -38,7 +38,7 @@ internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() 
             val dir = element.text
             if (DIRECTIVES.contains(dir)) {
                 val docURL = "https://caddyserver.com/docs/caddyfile/directives/${dir}"
-                return "Office Documentation for <b>${dir}</b>: <a href=\"$docURL\">$docURL</a>"
+                return "Official Documentation for <b>${dir}</b>: <a href=\"$docURL\">$docURL</a>"
             }
             return "Unknown directive: <b>${dir}</b>"
         }
