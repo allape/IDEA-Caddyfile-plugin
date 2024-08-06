@@ -16,46 +16,51 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
-import org.jetbrains.annotations.NotNull
-import org.jetbrains.annotations.Nullable
 import javax.swing.Icon
 
 
 class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
-    @NotNull
     override fun getHighlightingLexer(): Lexer {
         return CaddyfileLexerAdapter()
     }
 
-    override fun getTokenHighlights(tokenType: IElementType): @NotNull Array<TextAttributesKey?> {
+    override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey?> {
         when (tokenType) {
             CaddyfileTypes.VARIABLE_NAME,
             CaddyfileTypes.DIRECTIVE
             -> {
                 return KEYWORD_KEYS
             }
+
             CaddyfileTypes.AT_MATCHER_NAME -> {
                 return LABEL_KEYS
             }
+
             CaddyfileTypes.SLASH -> {
                 return SEMICOLON_KEYS
             }
+
             CaddyfileTypes.STAR -> {
                 return NUMBER_KEYS
             }
+
             CaddyfileTypes.LCB,
             CaddyfileTypes.RCB -> {
                 return BRACKETS_KEYS
             }
+
             CaddyfileTypes.TEXT -> {
                 return STRING_KEYS
             }
+
             CaddyfileTypes.COMMENT -> {
                 return COMMENT_KEYS
             }
+
             TokenType.BAD_CHARACTER -> {
                 return BAD_CHAR_KEYS
             }
+
             else -> return EMPTY_KEYS
         }
     }
@@ -204,7 +209,6 @@ internal class CaddyfileColorSettingsPage : ColorSettingsPage {
         """.trimIndent()
     }
 
-    @Nullable
     override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? {
         return null
     }

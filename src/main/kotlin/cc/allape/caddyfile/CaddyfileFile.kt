@@ -14,7 +14,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
-import org.jetbrains.annotations.NotNull
 
 
 interface CaddyfileTokenSets {
@@ -24,9 +23,8 @@ interface CaddyfileTokenSets {
     }
 }
 
-class CaddyfileFile(@NotNull viewProvider: FileViewProvider?) :
+class CaddyfileFile(viewProvider: FileViewProvider?) :
     PsiFileBase(viewProvider!!, CaddyfileLanguage.INSTANCE) {
-    @NotNull
     override fun getFileType(): FileType {
         return CaddyfileFileType.INSTANCE
     }

@@ -7,11 +7,9 @@ import com.intellij.spellchecker.inspections.CommentSplitter
 import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy
 import com.intellij.spellchecker.tokenizer.TokenConsumer
 import com.intellij.spellchecker.tokenizer.Tokenizer
-import org.jetbrains.annotations.NotNull
 
 
 internal class CaddyfileSpellcheckingStrategy : SpellcheckingStrategy() {
-    @NotNull
     override fun getTokenizer(element: PsiElement): Tokenizer<*> {
         if (element is PsiComment) {
             return CaddyfileCommentTokenizer()
@@ -22,7 +20,7 @@ internal class CaddyfileSpellcheckingStrategy : SpellcheckingStrategy() {
 }
 
 private class CaddyfileCommentTokenizer : Tokenizer<PsiComment?>() {
-    override fun tokenize(@NotNull element: PsiComment, @NotNull consumer: TokenConsumer) {
+    override fun tokenize(element: PsiComment, consumer: TokenConsumer) {
         var startIndex = 0
         for (c in element.textToCharArray()) {
             if (c == '#' || Character.isWhitespace(c)) {

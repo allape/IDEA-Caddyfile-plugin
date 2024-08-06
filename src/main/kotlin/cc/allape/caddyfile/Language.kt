@@ -3,7 +3,6 @@ package cc.allape.caddyfile
 import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.util.IconLoader.getIcon
-import org.jetbrains.annotations.NotNull
 import javax.swing.Icon
 
 class CaddyfileLanguage : Language("Caddyfile") {
@@ -20,17 +19,14 @@ class CaddyfileIcons {
 
 @Suppress("CompanionObjectInExtension")
 class CaddyfileFileType : LanguageFileType(CaddyfileLanguage.INSTANCE) {
-    @NotNull
     override fun getName(): String {
         return "Caddyfile"
     }
 
-    @NotNull
     override fun getDescription(): String {
         return "Caddyfile"
     }
 
-    @NotNull
     override fun getDefaultExtension(): String {
         return "Caddyfile"
     }

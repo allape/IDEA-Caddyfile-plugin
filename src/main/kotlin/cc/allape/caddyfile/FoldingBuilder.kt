@@ -13,8 +13,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.toArray
-import org.jetbrains.annotations.NotNull
-import org.jetbrains.annotations.Nullable
 
 
 class CaddyfilePropertyVisitor(private val descriptors: MutableList<FoldingDescriptor>) : PsiElementVisitor() {
@@ -23,7 +21,7 @@ class CaddyfilePropertyVisitor(private val descriptors: MutableList<FoldingDescr
         private const val ENDREGION_PREFIX = "# endregion"
     }
 
-    override fun visitElement(@NotNull ele: PsiElement) {
+    override fun visitElement(ele: PsiElement) {
         if (ele !is CaddyfileFile) {
             return
         }
@@ -90,8 +88,7 @@ internal class CaddyfileFoldingBuilder : FoldingBuilderEx(), DumbAware {
         return descriptors.toArray(FoldingDescriptor.EMPTY_ARRAY)
     }
 
-    @Nullable
-    override fun getPlaceholderText(@NotNull node: ASTNode): String? {
+    override fun getPlaceholderText(node: ASTNode): String? {
         if (node.psi is CaddyfileProperty) {
             return node.psi.firstChild.text
         }
