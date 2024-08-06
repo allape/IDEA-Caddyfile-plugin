@@ -40,7 +40,7 @@ internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() 
                 val docURL = "https://caddyserver.com/docs/caddyfile/directives/${dir}"
                 return "Official Documentation for <b>${dir}</b>: <a href=\"$docURL\">$docURL</a>"
             }
-            return "Unknown directive: <b>${dir}</b>"
+            return null
         }
 
         if (element.elementType == CaddyfileTypes.MATCHER_DECLARATION) {
