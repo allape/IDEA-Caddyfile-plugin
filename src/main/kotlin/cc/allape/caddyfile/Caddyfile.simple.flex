@@ -71,7 +71,7 @@ COMMENT="#"[^\r\n]*
 }
 
 <YYINITIAL> {
-    [^\s{}]+    { yybegin(DIRECTIVE); yypushback(yylength()); }
+    [^\s{}#]+   { yybegin(DIRECTIVE); yypushback(yylength()); }
     \{[^\s]     { yybegin(GLOBAL_VARIABLE); yypushback(yylength()); }
     \{\s        { yybegin(YYINITIAL); yypushback(yylength() - 1); return CaddyfileTypes.LCB; }
     "}"         { yybegin(YYINITIAL); return CaddyfileTypes.RCB; }
