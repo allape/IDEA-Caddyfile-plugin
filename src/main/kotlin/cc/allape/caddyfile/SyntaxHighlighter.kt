@@ -27,6 +27,7 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey?> {
         when (tokenType) {
             CaddyfileTypes.VARIABLE_NAME,
+            CaddyfileTypes.GLOBAL_VARIABLE_NAME,
             CaddyfileTypes.DIRECTIVE
             -> {
                 return KEYWORD_KEYS

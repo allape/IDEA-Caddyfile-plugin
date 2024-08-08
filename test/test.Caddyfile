@@ -96,6 +96,7 @@
         header_up Original-URI abcd
         copy_headers a b c d e
         copy_headers {
+            {$FRANKENPHP_CONFIG}
             Tailscale-User>X-Webauth-User
             Tailscale-Name>X-Webauth-Name
             Tailscale-Login>X-Webauth-Login
@@ -131,3 +132,19 @@ directive [<matcher>] <args...> {
 reverse_proxy @postfoo localhost:9000
 
 root * /home/www/mysite
+
+# global block https://github.com/allape/IDEA-Caddyfile-plugin/issues/2
+{$CADDY_EXTRA_CONFIG}
+
+{
+    {$CADDY_EXTRA_CONFIG}
+    frackenphp {
+        {$FRANKENPHP_CONFIG}
+    }
+}
+
+(logging) {
+    log {
+
+    }
+}

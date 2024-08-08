@@ -12,6 +12,9 @@ import com.intellij.psi.TokenType;
 %public %class CaddyfileLexer
 %implements FlexLexer
 %unicode
+//%{
+//    private boolean _globalVariable = false;
+//%}
 %function advance
 %type IElementType
 %eof{  return;
@@ -27,6 +30,7 @@ COMMENT="#"[^\r\n]*
 %state MATCHER_THR
 
 %state VARIABLE
+%state GLOBAL_VARIABLE
 
 %state DIRECTIVE
 %state MATCHER_DECLARATION
@@ -58,11 +62,18 @@ COMMENT="#"[^\r\n]*
 <VARIABLE> {
     "{"        { return CaddyfileTypes.LCB; }
     "}"        { yybegin(ARG); return CaddyfileTypes.RCB; }
-    [^\s\{\}]+ { return CaddyfileTypes.VARIABLE_NAME; }
+    [^\s{}]+   { return CaddyfileTypes.VARIABLE_NAME; }
+}
+<GLOBAL_VARIABLE> {
+    "{"        { return CaddyfileTypes.LCB; }
+    "}"        { yybegin(YYINITIAL); return CaddyfileTypes.RCB; }
+    [^\s{}]+   { return CaddyfileTypes.GLOBAL_VARIABLE_NAME; }
 }
 
 <YYINITIAL> {
-    [^\s#}]+    { yybegin(DIRECTIVE); yypushback(yylength()); }
+    [^\s{}]+    { yybegin(DIRECTIVE); yypushback(yylength()); }
+    \{[^\s]     { yybegin(GLOBAL_VARIABLE); yypushback(yylength()); }
+    \{\s        { yybegin(YYINITIAL); yypushback(yylength() - 1); return CaddyfileTypes.LCB; }
     "}"         { yybegin(YYINITIAL); return CaddyfileTypes.RCB; }
     {COMMENT}   { return CaddyfileTypes.COMMENT; }
     {CRLF}      { return TokenType.WHITE_SPACE; }
@@ -112,10 +123,10 @@ COMMENT="#"[^\r\n]*
 }
 
 <ARG> {
-    [^\s\{\}]+  { return CaddyfileTypes.ARG; }
-    \{[^\s]+    { yybegin(VARIABLE); yypushback(yylength()); }
-    \{[\s]+     { yybegin(YYINITIAL); yypushback(yylength()-1); return CaddyfileTypes.LCB; }
-    {CRLF}      { yybegin(YYINITIAL); yypushback(yylength()); }
+    [^\s{}]+    { return CaddyfileTypes.ARG; }
+    \{[^\s]     { yybegin(VARIABLE); yypushback(yylength()); }
+    \{\s        { yybegin(YYINITIAL); yypushback(yylength()-1); return CaddyfileTypes.LCB; }
+    {CRLF}      { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
 
 {WHITE_SPACE}+  { return TokenType.WHITE_SPACE; }

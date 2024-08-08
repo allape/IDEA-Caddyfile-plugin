@@ -13,37 +13,47 @@ open class CaddyfileBlock(
     node: ASTNode, wrap: Wrap?, alignment: Alignment?,
     private val spacingBuilder: SpacingBuilder,
 ) : AbstractBlock(node, wrap, alignment) {
-    override fun buildChildren(): List<Block> {
+    private fun myBuildChildren(node: ASTNode?): List<Block> {
         val blocks: MutableList<Block> = ArrayList()
-        var child = myNode.firstChildNode
+        var child = node
         while (child != null) {
             if (child.elementType !== TokenType.WHITE_SPACE) {
-                val block: Block = CaddyfileBlock(
-                    child, Wrap.createWrap(WrapType.NONE, false), Alignment.createAlignment(),
-                    spacingBuilder
-                )
-                blocks.add(block)
+                if (child.elementType == CaddyfileTypes.BLOCK) {
+                    blocks.addAll(myBuildChildren(child.firstChildNode))
+                } else {
+                    val block: Block = CaddyfileBlock(
+                        child, Wrap.createWrap(WrapType.NONE, false), Alignment.createAlignment(),
+                        spacingBuilder
+                    )
+                    blocks.add(block)
+                }
             }
             child = child.treeNext
         }
         return blocks
     }
 
-    private fun isParentAProperty(): Boolean {
-        return myNode.treeParent?.elementType == CaddyfileTypes.PROPERTY
+    override fun buildChildren(): List<Block> {
+        return myBuildChildren(myNode.firstChildNode)
+    }
+
+    private fun isSubProperty(): Boolean {
+        return myNode.treeParent?.elementType == CaddyfileTypes.BLOCK
     }
 
     override fun getIndent(): Indent? {
         when (myNode.elementType) {
             CaddyfileTypes.COMMENT,
-            CaddyfileTypes.PROPERTY -> {
-                if (this.isParentAProperty()) {
+            CaddyfileTypes.PROPERTY,
+            CaddyfileTypes.GLOBAL_VARIABLE,
+            CaddyfileTypes.VARIABLE -> {
+                if (this.isSubProperty()) {
                     return Indent.getIndent(Indent.Type.NORMAL, DEFAULT_SPACE_COUNT, false, false)
                 }
             }
             CaddyfileTypes.RCB -> {
-                if (this.isParentAProperty()) {
-                    Indent.getIndent(Indent.Type.NONE, true, false)
+                if (this.isSubProperty()) {
+                    return Indent.getIndent(Indent.Type.NONE, true, false)
                 }
             }
         }
@@ -55,7 +65,7 @@ open class CaddyfileBlock(
     }
 
     override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
-        return if (isParentAProperty()) {
+        return if (isSubProperty()) {
             ChildAttributes(Indent.getIndent(Indent.Type.NORMAL, DEFAULT_SPACE_COUNT, false, false), null)
         } else {
             ChildAttributes(Indent.getIndent(Indent.Type.NONE, false, false), null)
@@ -96,4 +106,6 @@ private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
         .spaces(1)
         .before(CaddyfileTypes.VARIABLE)
         .spaces(1)
+        .before(CaddyfileTypes.GLOBAL_VARIABLE)
+        .none()
 }

@@ -17,7 +17,7 @@
 
 caddyfileFile ::= item_*
 
-private item_ ::= (property|COMMENT|CRLF)
+private item_ ::= (property|block|global_variable|COMMENT|CRLF)
 
 matcher_declaration ::= AT_MATCHER_NAME {
   mixin="cc.allape.caddyfile.element.CaddyfileMatcherNamedElementImpl"
@@ -31,6 +31,9 @@ matcher_two ::= SLASH ((TEXT|STAR) SLASH?)*
 matcher_thr ::= matcher_declaration
 
 variable ::= LCB VARIABLE_NAME RCB
+global_variable ::= LCB GLOBAL_VARIABLE_NAME RCB
 
-property ::= (DIRECTIVE|matcher_declaration) matcher? (ARG|variable)* (LCB property* RCB)?
+block ::= LCB (property|global_variable)* RCB
+
+property ::= (DIRECTIVE|matcher_declaration) matcher? (ARG|variable)* block?
 
