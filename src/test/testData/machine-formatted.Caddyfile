@@ -1,0 +1,151 @@
+# TODO
+#123456
+:80 {
+abort
+acme_server
+basic_auth {
+# Username "Bob", password "hiccup"
+Bob $2a$14$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
+}
+basic_auth /secret/* {
+# Username "Bob", password "hiccup"
+Bob $2a$14$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
+}
+bind 127.0.0.1
+bind 127.0.0.1 [::1]
+bind 10.0.0.1
+bind unix//run/caddy
+bind unix//run/caddy|0222
+encode gzip
+encode zstd gzip
+encode zstd {
+gzip 2
+zstd
+minimum_length 3
+match header Content-Type application/atom+xml* | status 102
+match header Content-Type application/atom+xml* | status 102 567
+match header Content-Type application/atom+xml*
+match status 102 567
+match {
+status 1 23 456
+header Content-Type application/atom+xml*
+header Content-Type application/eot*
+header Content-Type application/font*
+header Content-Type application/geo+json*
+header Content-Type application/graphql+json*
+header Content-Type application/javascript*
+header Content-Type application/json*
+header Content-Type application/ld+json*
+header Content-Type application/manifest+json*
+header Content-Type application/opentype*
+header Content-Type application/otf*
+header Content-Type application/rss+xml*
+header Content-Type application/truetype*
+header Content-Type application/ttf*
+header Content-Type application/vnd.api+json*
+}
+}
+
+error /private* 403
+error /private* 403 {
+message 123
+}
+error /private* "Unauthorized" 403 {
+message abc
+}
+error /hidden* "Not found" 404 {
+message "abc"
+}
+
+file_server
+file_server browse
+file_server /static/*
+file_server /static/* browse
+file_server {
+hide .git
+}
+file_server {
+precompressed zstd br gzip
+}
+
+file_server / browse {
+fs backend1 backend2
+root /
+hide abc.html
+index index.html
+browse index.html {
+reveal_symlinks
+}
+precompressed gzip
+status 304
+disable_canonical_uris
+pass_thru
+}
+
+forward_auth authelia:9091 {
+uri /api/verify?rd=https://auth.example.com
+copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+}
+
+forward_auth unix//run/tailscale.nginx-auth.sock {
+uri /auth
+header_up Remote-Addr {remote_host}
+header_up Remote-Port {remote_port}
+header_up Original-URI {uri}
+header_up Original-URI "1234"
+header_up Original-URI 1234
+header_up Original-URI abcd
+copy_headers a b c d e
+copy_headers {
+{$FRANKENPHP_CONFIG}
+Tailscale-User>X-Webauth-User
+Tailscale-Name>X-Webauth-Name
+Tailscale-Login>X-Webauth-Login
+Tailscale-Tailnet>X-Webauth-Tailnet
+Tailscale-Profile-Picture>X-Webauth-Profile-Picture
+abc>def
+}
+}
+}
+
+# region Example
+
+example.com:443 {
+tls cert.crt private.key
+}
+
+directive [<matcher>] <args...> {
+subdirective [<args...>]
+}
+
+# endregion
+
+# region
+# endregion
+
+# abc matcher
+@postfoo {
+method POST
+path /foo/*
+root * /home/www/mysite
+}
+
+reverse_proxy @postfoo localhost:9000
+
+root * /home/www/mysite
+
+# global block https://github.com/allape/IDEA-Caddyfile-plugin/issues/2
+{$CADDY_EXTRA_CONFIG}
+
+{
+{$CADDY_EXTRA_CONFIG}
+frackenphp {
+{$FRANKENPHP_CONFIG}
+}
+}
+
+(logging) {
+log {
+
+}
+}

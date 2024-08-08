@@ -1,3 +1,5 @@
+import org.gradle.internal.classpath.Instrumented.systemProperty
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.23"
@@ -56,5 +58,10 @@ tasks {
 
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
+    }
+
+    test {
+        // git clone --depth 1 https://github.com/JetBrains/intellij-community.git ../intellij-community
+        systemProperty("idea.home.path", "../intellij-community")
     }
 }
