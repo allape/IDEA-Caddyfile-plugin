@@ -1,5 +1,3 @@
-import org.gradle.internal.classpath.Instrumented.systemProperty
-
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.23"
@@ -7,7 +5,7 @@ plugins {
 }
 
 group = "cc.allape"
-version = "0.3.0"
+version = "0.3.1"
 
 repositories {
     mavenCentral()
@@ -47,7 +45,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("232")
-        untilBuild.set("242.*")
+//        untilBuild.set("999.*")
     }
 
     signPlugin {
