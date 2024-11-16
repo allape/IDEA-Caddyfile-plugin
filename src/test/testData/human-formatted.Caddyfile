@@ -53,7 +53,7 @@
     error /private* "Unauthorized" 403 {
         message abc
     }
-    error /hidden* "Not found" 404 {
+    error /hidden* "Not     found" 404 {
         message "ab   c"
     }
 
