@@ -50,22 +50,22 @@ error /private* 403
 error /private* 403 {
 message 123
 }
-error /private* "Unauthorized" 403 {
+error /private*    "Unauthorized" 403 {
 message abc
 }
-error /hidden* "Not found" 404 {
+error /hidden* "Not found"    404 {
 message "abc"
 }
 
 file_server
 file_server browse
 file_server /static/*
-file_server /static/* browse
+file_server /static/*     browse
 file_server {
 hide .git
 }
 file_server {
-precompressed zstd br gzip
+precompressed     zstd br gzip
 }
 
 file_server / browse {
