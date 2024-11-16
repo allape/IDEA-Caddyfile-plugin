@@ -30,7 +30,7 @@ match {
 status 1 23 456
 header Content-Type application/atom+xml*
 header Content-Type application/eot*
-header Content-Type application/font*
+header Content-Type       application/font*
 header Content-Type application/geo+json*
 header Content-Type application/graphql+json*
 header Content-Type application/javascript*
@@ -50,26 +50,26 @@ error /private* 403
 error /private* 403 {
 message 123
 }
-error /private*    "Unauthorized" 403 {
+error /private* "Unauthorized" 403 {
 message abc
 }
-error /hidden* "Not found"    404 {
-message "abc"
+error /hidden* "Not     found" 404 {
+message "ab   c"
 }
 
 file_server
 file_server browse
 file_server /static/*
-file_server /static/*     browse
+file_server /static/*      browse
 file_server {
 hide .git
 }
 file_server {
-precompressed     zstd br gzip
+precompressed zstd      br gzip
 }
 
 file_server / browse {
-fs backend1 backend2
+fs backend1      backend2
 root /
 hide abc.html
 index index.html
@@ -91,11 +91,11 @@ forward_auth unix//run/tailscale.nginx-auth.sock {
 uri /auth
 header_up Remote-Addr {remote_host}
 header_up Remote-Port {remote_port}
-header_up Original-URI {uri}
+header_up Original-URI      {uri}
 header_up Original-URI "1234"
 header_up Original-URI 1234
 header_up Original-URI abcd
-copy_headers a b c d e
+copy_headers a b c d       e
 copy_headers {
 {$FRANKENPHP_CONFIG}
 Tailscale-User>X-Webauth-User
@@ -130,7 +130,7 @@ path /foo/*
 root * /home/www/mysite
 }
 
-reverse_proxy @postfoo localhost:9000
+reverse_proxy @postfoo       localhost:9000
 
 root * /home/www/mysite
 
@@ -156,3 +156,6 @@ redir https://{host}{uri}abcdefg
 example.com:443 {
 redir https://www.example.com{uri}
 }
+
+test_quoted_string 123 "1   5"
+test_quoted_string 123 "1    \"  \" 0" 123

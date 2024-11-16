@@ -53,7 +53,7 @@ COMMENT="#"[^\r\n]*
     "*"           { return CaddyfileTypes.STAR; }
     \?[^\s]+      { return CaddyfileTypes.TEXT; }
     [^\s\/\*\?]+  { return CaddyfileTypes.TEXT; }
-    [\s]          { yybegin(ARG); yypushback(yylength()); }
+    \s+          { yybegin(ARG); yypushback(yylength()); }
 }
 <MATCHER_THR> {
     [^\s]+      { yybegin(ARG); return CaddyfileTypes.AT_MATCHER_NAME; }
@@ -123,10 +123,11 @@ COMMENT="#"[^\r\n]*
 }
 
 <ARG> {
-    [^\s{}]+    { return CaddyfileTypes.ARG; }
-    \{[^\s]     { yybegin(VARIABLE); yypushback(yylength()); }
-    \{\s        { yybegin(YYINITIAL); yypushback(yylength()-1); return CaddyfileTypes.LCB; }
-    {CRLF}      { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+    \"[^\n]+[^\\]\" { return CaddyfileTypes.ARG; }
+    [^\"\s{}]+      { return CaddyfileTypes.ARG; }
+    \{[^\s]         { yybegin(VARIABLE); yypushback(yylength()); }
+    \{\s            { yybegin(YYINITIAL); yypushback(yylength()-1); return CaddyfileTypes.LCB; }
+    {CRLF}          { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
 
 {WHITE_SPACE}+  { return TokenType.WHITE_SPACE; }

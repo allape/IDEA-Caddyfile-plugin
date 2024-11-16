@@ -27,10 +27,18 @@ intellij {
 
     plugins.set(
         listOf(
-// For test only, do NOT include this dependency in production
+// For debug only, do NOT include this dependency in production
 //        "properties"
         )
     )
+
+    testing {
+        plugins.set(
+            listOf(
+                "com.intellij.java"
+            )
+        )
+    }
 }
 
 tasks {
@@ -56,10 +64,5 @@ tasks {
 
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
-    }
-
-    test {
-        // git clone --depth 1 https://github.com/JetBrains/intellij-community.git ../intellij-community
-        systemProperty("idea.home.path", "../intellij-community")
     }
 }

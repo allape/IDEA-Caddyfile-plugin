@@ -54,7 +54,7 @@
         message abc
     }
     error /hidden* "Not found" 404 {
-        message "abc"
+        message "ab   c"
     }
 
     file_server
@@ -156,3 +156,6 @@ root * /home/www/mysite
 example.com:443 {
     redir https://www.example.com{uri}
 }
+
+test_quoted_string 123 "1   5"
+test_quoted_string 123 "1    \"  \" 0" 123
