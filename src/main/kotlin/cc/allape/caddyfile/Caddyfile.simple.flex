@@ -113,9 +113,9 @@ COMMENT="#"[^\r\n]*
     "uri"             { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
     "vars"            { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
     // endregion
-    "@"       { yybegin(MATCHER_DECLARATION); yypushback(yylength()); }
-    [^\s\@]+  { yybegin(ARG); return CaddyfileTypes.DIRECTIVE; }
-    {CRLF}    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+    "@"         { yybegin(MATCHER_DECLARATION); yypushback(yylength()); }
+    [^\s\@\{]+  { yybegin(ARG); return CaddyfileTypes.DIRECTIVE; }
+    {CRLF}      { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
 
 <MATCHER_DECLARATION> {

@@ -96,16 +96,16 @@ internal class CaddyfileFormattingModelBuilder : FormattingModelBuilder {
 
 private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
     return SpacingBuilder(settings, CaddyfileLanguage.INSTANCE)
-        .before(CaddyfileTypes.LCB)
-        .spaces(1)
         .before(CaddyfileTypes.PROPERTY)
         .none()
-        .before(CaddyfileTypes.ARG)
+        .before(CaddyfileTypes.GLOBAL_VARIABLE)
+        .none()
+        .before(CaddyfileTypes.LCB)
         .spaces(1)
         .before(CaddyfileTypes.MATCHER)
         .spaces(1)
+        .before(CaddyfileTypes.ARG)
+        .spacing(0, 1, 0, false, 0)
         .before(CaddyfileTypes.VARIABLE)
-        .spaces(1)
-        .before(CaddyfileTypes.GLOBAL_VARIABLE)
-        .none()
+        .spacing(0, 1, 0, false, 0)
 }

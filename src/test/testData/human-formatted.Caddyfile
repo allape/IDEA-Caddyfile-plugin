@@ -149,3 +149,10 @@ root * /home/www/mysite
 
     }
 }
+
+:80 {
+    redir https://{host}{uri}abcdefg
+}
+example.com:443 {
+    redir https://www.example.com{uri}
+}
