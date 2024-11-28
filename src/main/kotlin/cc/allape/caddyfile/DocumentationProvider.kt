@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.elementType
+import com.intellij.psi.util.siblings
 
 
 internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() {
@@ -35,17 +36,26 @@ internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() 
         }
 
         if (element.elementType == CaddyfileTypes.DIRECTIVE) {
+            var comment = ""
+
             val dir = element.text
             if (DIRECTIVES.contains(dir)) {
                 val docURL = "https://caddyserver.com/docs/caddyfile/directives/${dir}"
-                return "Official Documentation for <b>${dir}</b>: <a href=\"$docURL\">$docURL</a>"
+                comment = "<a href=\"$docURL\">$docURL</a>"
             }
-            return null
+
+            val userComment = getUserComment(element)
+
+            if (comment.isEmpty()) {
+                return userComment
+            }
+
+            return comment + "<hr>" + getUserComment(element)
         }
 
         if (element.elementType == CaddyfileTypes.MATCHER_DECLARATION) {
             return "<b>${element.text}</b>" +
-                    "<br>${findDocumentationComment(element.parent)}" +
+                    "<br>${getUserComment(element)}" +
                     "<br><a href=\"https://caddyserver.com/docs/caddyfile/matchers\">https://caddyserver.com/docs/caddyfile/matchers</a>"
         }
 
@@ -55,25 +65,40 @@ internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() 
     /**
      * @copy https://plugins.jetbrains.com/docs/intellij/documentation-provider.html#extract-documentation-comments-from-keyvalue-definitions
      */
-    private fun findDocumentationComment(property: PsiElement): String? {
-        val result = ArrayList<String>()
-        var element: PsiElement? = property.prevSibling ?: return null
+    private fun getUserComment(element: PsiElement): String {
+        val comments = ArrayList<String>()
+        var textLength = 0
 
-        var continuesWhiteSpaceCount = 0
-        while (element is PsiComment || element is PsiWhiteSpace) {
-            if (element is PsiWhiteSpace && element.text.contains("\n")) {
-                continuesWhiteSpaceCount++
-            }
-            if (element is PsiComment) {
-                val commentText = element.getText().replaceFirst("[!# ]+".toRegex(), "")
-                result.add(commentText)
-                continuesWhiteSpaceCount = 0
-            }
-            if (continuesWhiteSpaceCount >= 2) {
+        element.parent?.siblings(forward = false, withSelf = false)?.let { siblings ->
+            var whitespaceCount = 0
+            for (sibling in siblings) {
+                if (sibling is PsiWhiteSpace) {
+                    // only count new lines
+                    if (sibling.text.contains("\n")) {
+                        whitespaceCount += 1
+                        if (whitespaceCount >= 2) {
+                            break
+                        }
+                    }
+                    continue
+                }
+
+                whitespaceCount = 0
+                if (sibling is PsiComment) {
+                    val comment = sibling.text.replaceFirst(Regex("[^#]*#"), "")
+                    comments.add(comment)
+                    textLength += comment.length
+                    continue
+                }
+
                 break
             }
-            element = element.prevSibling
         }
-        return result.reversed().joinToString("<br>")
+
+        if (comments.isEmpty()) {
+            return ""
+        }
+
+        return comments.reversed().joinToString("<br>") + "<br>"
     }
 }
