@@ -46,15 +46,15 @@ internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() 
 
             val userComment = getUserComment(element)
 
-            if (comment.isEmpty()) {
-                return userComment
+            comment = if (comment.isEmpty()) {
+                userComment
+            } else {
+                "$comment<hr>$userComment"
             }
 
-            if (userComment.isEmpty()) {
-                return comment
+            return comment.ifEmpty {
+                null
             }
-
-            return "$comment<hr>$userComment"
         }
 
         if (element.elementType == CaddyfileTypes.MATCHER_DECLARATION) {
