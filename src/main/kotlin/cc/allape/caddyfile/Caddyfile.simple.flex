@@ -127,6 +127,7 @@ COMMENT="#"[^\r\n]*
     [^\"\s{}]+      { return CaddyfileTypes.ARG; }
     \{[^\s]         { yybegin(VARIABLE); yypushback(yylength()); }
     \{\s            { yybegin(YYINITIAL); yypushback(yylength()-1); return CaddyfileTypes.LCB; }
+    #[^\n]*\n       { yybegin(YYINITIAL); return CaddyfileTypes.COMMENT; }
     {CRLF}          { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
 
