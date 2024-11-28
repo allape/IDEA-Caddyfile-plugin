@@ -50,7 +50,11 @@ internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() 
                 return userComment
             }
 
-            return comment + "<hr>" + getUserComment(element)
+            if (userComment.isEmpty()) {
+                return comment
+            }
+
+            return "$comment<hr>$userComment"
         }
 
         if (element.elementType == CaddyfileTypes.MATCHER_DECLARATION) {
