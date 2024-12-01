@@ -1,0 +1,14 @@
+<html lang="en">
+<body>
+Generate a hash for the current plain text inside a <code>basic_auth</code> directive. <br>
+See <a href="https://caddyserver.com/docs/caddyfile/directives/basic_auth#syntax">https://caddyserver.com/docs/caddyfile/directives/basic_auth#syntax</a>
+for more information.
+<hr>
+Tools: <a href="https://github.com/patrickfav/bcrypt">https://github.com/patrickfav/bcrypt</a>
+<pre><code>
+// language=kotlin
+BCrypt.withDefaults().hashToString(Random.nextInt(8, 15), password.toCharArray())
+</code></pre>
+<!-- tooltip end -->
+</body>
+</html>

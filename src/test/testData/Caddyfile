@@ -19,3 +19,9 @@ a {
 @matcher {
 
 }
+
+:80 {
+    basic_auth {
+        bob $2a$14$2jRU1ZETv0bPu2KGLH5/BOrGlXWjDUyUZtgUJE8iAsehAjuJHvPCO # 12345678
+    }
+}

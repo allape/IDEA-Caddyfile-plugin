@@ -11,6 +11,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation("at.favre.lib:bcrypt:0.10.2")
+}
+
 sourceSets {
     main {
         java {
