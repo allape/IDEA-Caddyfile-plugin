@@ -14,7 +14,7 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    Language support for Caddyfile: syntax highlighting, reformatting, code block, commenter, etc.
+    Language support for Caddyfile: syntax highlighting, reformatting, code block, commenter, password hashing etc.
     <br/>
     <br/>
     <a href="https://github.com/allape/IDEA-Caddyfile-plugin">Source Code on GitHub</a>
@@ -36,7 +36,7 @@
                 language="Caddyfile"
                 fileNames="Caddyfile;caddyfile"
                 fileNamesCaseInsensitive="Caddyfile"
-                extensions="Caddyfile;caddyfile"/>
+                extensions="Caddyfile;caddyfile;privoxy"/>
         <lang.parserDefinition
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileParserDefinition"/>

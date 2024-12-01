@@ -1,12 +1,21 @@
 # Caddyfile language support
 
+Supported file types: Caddyfile, Privoxy
+
 ## Plugin Marketplace
 
 https://plugins.jetbrains.com/plugin/24642-caddyfile
 
 ## Features
+
 - [x] `Find Usage` and `Go To Declaration` for matchers
 - [x] Add documentation dialog for directives and matchers
+
+## Screenshots
+
+![documentation.png](screenshot/documentation.png)
+![matcher-reference.png](screenshot/matcher-reference.png)
+![password-hashing.png](screenshot/password-hashing.png)
 
 ## Known Issues
 
