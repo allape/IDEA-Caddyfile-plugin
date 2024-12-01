@@ -74,14 +74,15 @@
                 implementationClass="cc.allape.caddyfile.CaddyfileLanguageNamesValidator"/>
         <lang.elementManipulator
                 forClass="cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration"
-                implementationClass="cc.allape.caddyfile.element.CaddyfileMatcherManipulator" />
+                implementationClass="cc.allape.caddyfile.element.CaddyfileMatcherManipulator"/>
         <lang.documentationProvider
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileDocumentationProvider"/>
+        <enterHandlerDelegate implementation="cc.allape.caddyfile.editor.BracketEnterHandlerDelegate"/>
         <intentionAction>
             <language>Caddyfile</language>
             <category>Caddyfile/password/hashing</category>
-            <className>cc.allape.caddyfile.intention.HashPasswordIntentionAction</className>
+            <className>cc.allape.caddyfile.editor.action.HashPasswordIntentionAction</className>
         </intentionAction>
     </extensions>
 </idea-plugin>

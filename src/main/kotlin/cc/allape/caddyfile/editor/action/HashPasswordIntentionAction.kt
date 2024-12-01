@@ -1,4 +1,4 @@
-package cc.allape.caddyfile.intention
+package cc.allape.caddyfile.editor.action
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import cc.allape.caddyfile.ElementFactory
