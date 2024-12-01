@@ -79,6 +79,7 @@
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileDocumentationProvider"/>
         <enterHandlerDelegate implementation="cc.allape.caddyfile.editor.BracketEnterHandlerDelegate"/>
+        <typedHandler implementation="cc.allape.caddyfile.editor.BraceTypedHandlerDelegate"/>
         <intentionAction>
             <language>Caddyfile</language>
             <category>Caddyfile/password/hashing</category>
