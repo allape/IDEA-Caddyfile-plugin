@@ -12,10 +12,10 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.LocalSearchScope
 import com.intellij.psi.search.SearchScope
 
-interface CaddyfileMatcherNamedElement : PsiNameIdentifierOwner
+interface CaddyfileNamedElement : PsiNameIdentifierOwner
 
-abstract class CaddyfileMatcherNamedElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
-    CaddyfileMatcherNamedElement {
+abstract class CaddyfileNamedElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
+    CaddyfileNamedElement {
     override fun getReferences(): Array<PsiReference> {
         return ReferenceProvidersRegistry.getReferencesFromProviders(this)
     }
@@ -29,12 +29,22 @@ abstract class CaddyfileMatcherNamedElementImpl(node: ASTNode) : ASTWrapperPsiEl
     }
 }
 
-class CaddyfileMatcherManipulator : AbstractElementManipulator<CaddyfileMatcherDeclaration>() {
+
+abstract class CaddyfileNamedElementManipulator<T : CaddyfileNamedElement> : AbstractElementManipulator<T>() {
     override fun handleContentChange(
-        element: CaddyfileMatcherDeclaration,
+        element: T,
         range: TextRange,
         newContent: String?
-    ): CaddyfileMatcherDeclaration {
-        return element.setName(newContent) as CaddyfileMatcherDeclaration
+    ): T {
+        if (newContent.isNullOrEmpty()) {
+            return element
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        return element.setName(newContent) as T
     }
 }
+
+class CaddyfileMatcherManipulator : CaddyfileNamedElementManipulator<CaddyfileMatcherDeclaration>()
+
+class CaddyfileSnippetNameManipulator : CaddyfileNamedElementManipulator<CaddyfileMatcherDeclaration>()

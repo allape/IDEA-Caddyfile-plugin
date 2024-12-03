@@ -20,14 +20,14 @@ caddyfileFile ::= item_*
 private item_ ::= (property|block|global_variable|COMMENT|CRLF)
 
 matcher_declaration ::= AT_MATCHER_NAME {
-  mixin="cc.allape.caddyfile.element.CaddyfileMatcherNamedElementImpl"
-  implements="cc.allape.caddyfile.element.CaddyfileMatcherNamedElement"
+  mixin="cc.allape.caddyfile.element.CaddyfileNamedElementImpl"
+  implements="cc.allape.caddyfile.element.CaddyfileNamedElement"
   methods=[getName setName getNameIdentifier]
 }
 
 snippet_name ::= SNIPPET_NAME_TEXT {
-  mixin="cc.allape.caddyfile.element.CaddyfileSnippetNamedElementImpl"
-  implements="cc.allape.caddyfile.element.CaddyfileSnippetNamedElement"
+  mixin="cc.allape.caddyfile.element.CaddyfileNamedElementImpl"
+  implements="cc.allape.caddyfile.element.CaddyfileNamedElement"
   methods=[getName setName getNameIdentifier]
 }
 
