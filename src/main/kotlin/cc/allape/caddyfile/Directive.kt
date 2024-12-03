@@ -1,258 +1,389 @@
 package cc.allape.caddyfile
 
-// Run this script in browser console of `https://caddyserver.com/docs/caddyfile/directives` to get the full list of directives
-/*
+/**
+ * See [https://caddyserver.com/docs/caddyfile/directives](https://caddyserver.com/docs/caddyfile/directives)
+```javascript
 /**
  * @param url {string}
  * @return {Promise<string[]>}
- */
+*/
 async function getDirectives(url) {
-    const content = await (await fetch(url)).text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(content, 'text/html');
-    return Array.from(new Set(Array.from(doc.querySelectorAll('.chroma')).map(i => i.innerText.split('\n')).reduce((p, c) => [...p, ...c], []).map(i => i.trim().split(' ')[0]).filter(i => !!i && /^\w+$/.test(i))));
+const content = await (await fetch(url)).text();
+const parser = new DOMParser();
+const doc = parser.parseFromString(content, 'text/html');
+return Array.from(new Set(Array.from(doc.querySelectorAll('.chroma')).map(i => i.innerText.split('\n')).reduce((p, c) => [...p, ...c], []).map(i => i.trim().split(' ')[0]).filter(i => !!i && /^\w+$/.test(i))));
 }
 async function main() {
-    const primaryDirectives = Array.from(document.querySelectorAll('#directive-table > table > tbody > tr > td:nth-child(1)')).map(i => i.innerText.trim());
-    const all = await Promise.all(primaryDirectives.map(dir => getDirectives(`https://caddyserver.com/docs/caddyfile/directives/${dir}`)));
-    console.log(Array.from(new Set([...primaryDirectives, ...all.reduce((p, c) => [...p, ...c])])).join('\n'));
+const primaryDirectives = Array.from(document.querySelectorAll('#directive-table table > tbody > tr > td:nth-child(1)')).map(i => i.innerText.trim());
+const all = await Promise.all(primaryDirectives.map(dir => getDirectives(`https://caddyserver.com/docs/caddyfile/directives/${dir}`)));
+return Array.from(new Set([...primaryDirectives, ...all.reduce((p, c) => [...p, ...c])])).sort().map(i => `    "${i}",\n`).join('');
 }
-main();
-*/
+`val DIRECTIVES = arrayOf(\n${await main()})`;
+```
+ */
+val DIRECTIVES = arrayOf(
+//    "Bob",
+//    "HTML",
+    "abc",
+    "abort",
+    "acme_ca",
+    "acme_ca_root",
+    "acme_server",
+    "allow",
+    "allow_wildcard_names",
+    "alpn",
+    "alt_http_port",
+    "alt_tlsalpn_port",
+    "any_common_name",
+    "api_key",
+    "authority",
+    "basic_auth",
+    "between",
+    "bind",
+    "body",
+    "browse",
+    "ca",
+    "ca_root",
+    "caller_key",
+    "capture_stderr",
+    "challenges",
+    "ciphers",
+    "client_auth",
+    "close",
+    "compression",
+    "copy_headers",
+    "copy_response",
+    "copy_response_headers",
+    "curves",
+    "def",
+    "default",
+    "delete",
+    "deny",
+    "dial_fallback_delay",
+    "dial_timeout",
+    "dir",
+    "disable_canonical_uris",
+    "disable_http_challenge",
+    "disable_openmetrics",
+    "disable_tlsalpn_challenge",
+    "dns",
+    "dns_challenge_override_domain",
+    "dns_ttl",
+    "domains",
+    "duration_format",
+    "dynamic",
+    "eab",
+    "echo",
+    "email",
+    "encode",
+    "endpoints",
+    "env",
+    "error",
+    "exclude",
+    "expect_continue_timeout",
+    "export",
+    "fail_duration",
+    "fallback",
+    "fields",
+    "file",
+    "file_server",
+    "filesystem",
+    "flush_interval",
+    "format",
+    "forward_auth",
+    "forward_proxy_url",
+    "fs",
+    "get_certificate",
+    "ghi",
+    "gzip",
+    "handle",
+    "handle_errors",
+    "handle_path",
+    "handle_response",
+    "handshake_timeout",
+    "hash",
+    "header",
+    "header_down",
+    "header_up",
+    "headers",
+    "health_body",
+    "health_follow_redirects",
+    "health_headers",
+    "health_interval",
+    "health_passes",
+    "health_port",
+    "health_status",
+    "health_timeout",
+    "health_uri",
+    "hide",
+    "hostnames",
+    "import",
+    "include",
+    "index",
+    "insecure_secrets_log",
+    "insecure_skip_verify",
+    "intercept",
+    "invoke",
+    "ip_ranges",
+    "ipv4",
+    "ipv6",
+    "issuer",
+    "jkl",
+    "keepalive",
+    "keepalive_idle_conns",
+    "keepalive_idle_conns_per_host",
+    "keepalive_interval",
+    "key_type",
+    "keys",
+    "lb_policy",
+    "lb_retries",
+    "lb_retry_match",
+    "lb_try_duration",
+    "lb_try_interval",
+    "level",
+    "level_format",
+    "level_key",
+    "lifetime",
+    "line_ending",
+    "load",
+    "localhost",
+    "log",
+    "log_append",
+    "log_name",
+    "log_skip",
+    "map",
+    "match",
+    "max_conns_per_host",
+    "max_fails",
+    "max_response_header",
+    "max_size",
+    "message",
+    "message_key",
+    "method",
+    "metrics",
+    "mime",
+    "minimum_length",
+    "mode",
+    "name",
+    "name_key",
+    "no_hostname",
+    "not",
+    "on_demand",
+    "output",
+    "pass_thru",
+    "pem_file",
+    "php_fastcgi",
+    "php_server",
+    "pki",
+    "policy",
+    "port",
+    "precompressed",
+    "preferred_chains",
+    "propagation_delay",
+    "propagation_timeout",
+    "proto",
+    "protocols",
+    "proxy_protocol",
+    "push",
+    "qux",
+    "read_buffer",
+    "read_timeout",
+    "redir",
+    "refresh",
+    "renegotiation",
+    "replace",
+    "replace_status",
+    "request_body",
+    "request_buffers",
+    "request_header",
+    "resolve_root_symlink",
+    "resolvers",
+    "respond",
+    "response_buffers",
+    "response_header_timeout",
+    "reuse_private_keys",
+    "reveal_symlinks",
+    "reverse_proxy",
+    "rewrite",
+    "roll_disabled",
+    "roll_keep",
+    "roll_keep_for",
+    "roll_local_time",
+    "roll_size",
+    "roll_uncompressed",
+    "root",
+    "root_common_name",
+    "route",
+    "server_id",
+    "server_name",
+    "service",
+    "sign_with_root",
+    "soft_start",
+    "span",
+    "split",
+    "split_path",
+    "stacktrace_key",
+    "status",
+    "storage",
+    "stream_close_delay",
+    "stream_timeout",
+    "templates",
+    "test_dir",
+    "time_format",
+    "time_key",
+    "time_local",
+    "timeout",
+    "tls",
+    "tls_client_auth",
+    "tls_curves",
+    "tls_except_ports",
+    "tls_insecure_skip_verify",
+    "tls_renegotiation",
+    "tls_server_name",
+    "tls_timeout",
+    "tls_trust_pool",
+    "tls_trusted_ca_certs",
+    "to",
+    "tracing",
+    "transport",
+    "trust_der",
+    "trust_pool",
+    "trusted_ca_cert_file",
+    "trusted_proxies",
+    "trusted_roots",
+    "try_files",
+    "unhealthy_latency",
+    "unhealthy_request_count",
+    "unhealthy_status",
+    "uri",
+    "validity_days",
+    "vars",
+    "verifier",
+    "versions",
+    "wrap",
+    "write_buffer",
+    "write_timeout",
+    "zstd",
+)
 
-val DIRECTIVES = """
-abort
-acme_server
-basic_auth
-bind
-encode
-error
-file_server
-forward_auth
-fs
-handle
-handle_errors
-handle_path
-header
-import
-invoke
-log
-log_append
-log_skip
-map
-method
-metrics
-php_fastcgi
-push
-redir
-request_body
-request_header
-respond
-reverse_proxy
-rewrite
-root
-route
-templates
-tls
-tracing
-try_files
-uri
-vars
-ca
-lifetime
-resolvers
-challenges
-allow_wildcard_names
-allow
-domains
-ip_ranges
-deny
-pki
-name
-issuer
-acme_ca
-acme_ca_root
-Bob
-gzip
-zstd
-minimum_length
-match
-status
-message
-hide
-index
-browse
-reveal_symlinks
-precompressed
-disable_canonical_uris
-pass_thru
-copy_headers
-header_up
-handle_response
-filesystem
-api_key
-replace_status
-transport
-lb_policy
-health_uri
-health_interval
-hostnames
-output
-format
-level
-roll_disabled
-roll_size
-roll_uncompressed
-roll_local_time
-roll_keep
-roll_keep_for
-dial_timeout
-soft_start
-message_key
-level_key
-time_key
-name_key
-caller_key
-stacktrace_key
-line_ending
-time_format
-time_local
-duration_format
-level_format
-fields
-wrap
-ipv4
-ipv6
-delete
-replace
-hash
-server_id
-include
-default
-disable_openmetrics
-split
-env
-resolve_root_symlink
-capture_stderr
-read_timeout
-write_timeout
-file
-not
-split_path
-headers
-max_size
-body
-close
-HTML
-to
-dynamic
-lb_retries
-lb_try_duration
-lb_try_interval
-lb_retry_match
-health_port
-health_timeout
-health_status
-health_body
-health_headers
-fail_duration
-max_fails
-unhealthy_status
-unhealthy_latency
-unhealthy_request_count
-flush_interval
-request_buffers
-response_buffers
-stream_timeout
-stream_close_delay
-trusted_proxies
-header_down
-copy_response
-copy_response_headers
-exclude
-service
-proto
-refresh
-dial_fallback_delay
-port
-versions
-fallback
-echo
-read_buffer
-write_buffer
-max_response_header
-proxy_protocol
-response_header_timeout
-expect_continue_timeout
-tls_client_auth
-tls_insecure_skip_verify
-tls_curves
-tls_timeout
-tls_trust_pool
-tls_server_name
-tls_renegotiation
-tls_except_ports
-keepalive
-keepalive_interval
-keepalive_idle_conns
-keepalive_idle_conns_per_host
-compression
-max_conns_per_host
-tls_trusted_ca_certs
-mime
-between
-protocols
-ciphers
-curves
-alpn
-load
-ca_root
-key_type
-dns
-propagation_timeout
-propagation_delay
-dns_ttl
-dns_challenge_override_domain
-eab
-on_demand
-reuse_private_keys
-client_auth
-mode
-trust_pool
-trusted_leaf_cert
-trusted_leaf_cert_file
-verifier
-get_certificate
-insecure_secrets_log
-trust_der
-pem_file
-authority
-storage
-keys
-endpoints
-insecure_skip_verify
-handshake_timeout
-server_name
-renegotiation
-dir
-test_dir
-email
-timeout
-disable_http_challenge
-disable_tlsalpn_challenge
-alt_http_port
-alt_tlsalpn_port
-trusted_roots
-preferred_chains
-root_common_name
-any_common_name
-sign_with_root
-trusted_ca_cert_file
-export
-span
-policy
-abc
-def
-ghi
-jkl
-""".split("\n").filter { it.isNotBlank() }
+/**
+ * See [https://caddyserver.com/docs/caddyfile/concepts#placeholders](https://caddyserver.com/docs/caddyfile/concepts#placeholders)
+```javascript
+var placeholders = `{cookie.*}	{http.request.cookie.*}
+{client_ip}	{http.vars.client_ip}
+{dir}	{http.request.uri.path.dir}
+{err.*}	{http.error.*}
+{file_match.*}	{http.matchers.file.*}
+{file.base}	{http.request.uri.path.file.base}
+{file.ext}	{http.request.uri.path.file.ext}
+{file}	{http.request.uri.path.file}
+{header.*}	{http.request.header.*}
+{host}	{http.request.host}
+{hostport}	{http.request.hostport}
+{labels.*}	{http.request.host.labels.*}
+{method}	{http.request.method}
+{path.*}	{http.request.uri.path.*}
+{path}	{http.request.uri.path}
+{port}	{http.request.port}
+{query.*}	{http.request.uri.query.*}
+{query}	{http.request.uri.query}
+{re.*}	{http.regexp.*}
+{remote_host}	{http.request.remote.host}
+{remote_port}	{http.request.remote.port}
+{remote}	{http.request.remote}
+{rp.*}	{http.reverse_proxy.*}
+{resp.*}	{http.intercept.*}
+{scheme}	{http.request.scheme}
+{tls_cipher}	{http.request.tls.cipher_suite}
+{tls_client_certificate_der_base64}	{http.request.tls.client.certificate_der_base64}
+{tls_client_certificate_pem}	{http.request.tls.client.certificate_pem}
+{tls_client_fingerprint}	{http.request.tls.client.fingerprint}
+{tls_client_issuer}	{http.request.tls.client.issuer}
+{tls_client_serial}	{http.request.tls.client.serial}
+{tls_client_subject}	{http.request.tls.client.subject}
+{tls_version}	{http.request.tls.version}
+{upstream_hostport}	{http.reverse_proxy.upstream.hostport}
+{uri}	{http.request.uri}
+{vars.*}	{http.vars.*}`.split(/\s+/)
+.map(i => i.substring(1, i.length - 1))
+.map(i => i.endsWith('*') ? i.substring(0, i.length - 1) : i)
+.map(i => `    "${i}",\n`)
+.sort()
+.join('');
+`val PLACEHOLDERS = arrayOf(\n${placeholders})`;
+```
+ */
+val PLACEHOLDERS = arrayOf(
+    "client_ip",
+    "cookie.",
+    "dir",
+    "err.",
+    "file",
+    "file.base",
+    "file.ext",
+    "file_match.",
+    "header.",
+    "host",
+    "hostport",
+    "http.error.",
+    "http.intercept.",
+    "http.matchers.file.",
+    "http.regexp.",
+    "http.request.cookie.",
+    "http.request.header.",
+    "http.request.host",
+    "http.request.host.labels.",
+    "http.request.hostport",
+    "http.request.method",
+    "http.request.port",
+    "http.request.remote",
+    "http.request.remote.host",
+    "http.request.remote.port",
+    "http.request.scheme",
+    "http.request.tls.cipher_suite",
+    "http.request.tls.client.certificate_der_base64",
+    "http.request.tls.client.certificate_pem",
+    "http.request.tls.client.fingerprint",
+    "http.request.tls.client.issuer",
+    "http.request.tls.client.serial",
+    "http.request.tls.client.subject",
+    "http.request.tls.version",
+    "http.request.uri",
+    "http.request.uri.path",
+    "http.request.uri.path.",
+    "http.request.uri.path.dir",
+    "http.request.uri.path.file",
+    "http.request.uri.path.file.base",
+    "http.request.uri.path.file.ext",
+    "http.request.uri.query",
+    "http.request.uri.query.",
+    "http.reverse_proxy.",
+    "http.reverse_proxy.upstream.hostport",
+    "http.vars.",
+    "http.vars.client_ip",
+    "labels.",
+    "method",
+    "path",
+    "path.",
+    "port",
+    "query",
+    "query.",
+    "re.",
+    "remote",
+    "remote_host",
+    "remote_port",
+    "resp.",
+    "rp.",
+    "scheme",
+    "tls_cipher",
+    "tls_client_certificate_der_base64",
+    "tls_client_certificate_pem",
+    "tls_client_fingerprint",
+    "tls_client_issuer",
+    "tls_client_serial",
+    "tls_client_subject",
+    "tls_version",
+    "upstream_hostport",
+    "uri",
+    "vars.",
+)

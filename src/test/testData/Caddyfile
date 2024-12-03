@@ -9,7 +9,8 @@ a {
             uri @matcher1 arg1 arg2
             uri @matcher1 arg1 arg2
             d2
-            d3
+            d3 {host}{uri}
+            d3 {host} {uri}
             d4
         }
     }
@@ -26,6 +27,7 @@ a {
 
 :80 {
     import snippet
+    import 1 {ars[0]} {http.request.host}
     import snippet
     import snippet a {
         abc
