@@ -6,8 +6,8 @@ a {
         c1 @matcher arg1 arg2
         # endregion
         c {
-            uri @matcher arg1 arg2
-            uri @matcher arg1 arg2
+            uri @matcher1 arg1 arg2
+            uri @matcher1 arg1 arg2
             d2
             d3
             d4
@@ -16,16 +16,20 @@ a {
 }
 
 # Matcher Comments
-@matcher {
+@matcher1 {
 
 }
 
 (snippet) {
-
+    ok {args[0]}
 }
 
 :80 {
     import snippet
+    import snippet
+    import snippet a {
+        abc
+    }
     basic_auth {
         bob 12345678
     }

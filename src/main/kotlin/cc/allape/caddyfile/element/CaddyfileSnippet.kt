@@ -1,6 +1,6 @@
 package cc.allape.caddyfile.element
 
-import cc.allape.caddyfile.language.psi.CaddyfileSnippetDeclaration
+import cc.allape.caddyfile.language.psi.CaddyfileSnippetName
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
@@ -29,12 +29,12 @@ abstract class CaddyfileSnippetNamedElementImpl(node: ASTNode) : ASTWrapperPsiEl
     }
 }
 
-class CaddyfileSnippetManipulator : AbstractElementManipulator<CaddyfileSnippetDeclaration>() {
+class CaddyfileSnippetNameManipulator : AbstractElementManipulator<CaddyfileSnippetName>() {
     override fun handleContentChange(
-        element: CaddyfileSnippetDeclaration,
+        element: CaddyfileSnippetName,
         range: TextRange,
         newContent: String?
-    ): CaddyfileSnippetDeclaration {
-        return element.setName(newContent) as CaddyfileSnippetDeclaration
+    ): CaddyfileSnippetName {
+        return element.setName(newContent) as CaddyfileSnippetName
     }
 }

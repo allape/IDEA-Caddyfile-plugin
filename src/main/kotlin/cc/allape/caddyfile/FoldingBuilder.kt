@@ -54,7 +54,7 @@ class CaddyfilePropertyVisitor(private val descriptors: MutableList<FoldingDescr
     private fun visitComments(comments: Array<PsiComment>) {
         var i = 0
         while (i < comments.size) {
-            val comment = comments[i ++]
+            val comment = comments[i++]
 
             if (!comment.text.trim().startsWith(REGION_PREFIX)) {
                 continue

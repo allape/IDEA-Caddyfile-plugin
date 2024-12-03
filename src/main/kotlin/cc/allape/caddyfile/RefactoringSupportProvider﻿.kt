@@ -1,8 +1,7 @@
 package cc.allape.caddyfile
 
 import cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration
-import cc.allape.caddyfile.language.psi.CaddyfileSnippet
-import cc.allape.caddyfile.language.psi.CaddyfileSnippetDeclaration
+import cc.allape.caddyfile.language.psi.CaddyfileSnippetName
 import com.intellij.lang.refactoring.RefactoringSupportProvider
 import com.intellij.psi.PsiElement
 
@@ -12,8 +11,7 @@ internal class CaddyfileRefactoringSupportProvider : RefactoringSupportProvider(
     ): Boolean {
         return when (elementToRename) {
             is CaddyfileMatcherDeclaration -> true
-            is CaddyfileSnippetDeclaration -> true
-            is CaddyfileSnippet -> true
+            is CaddyfileSnippetName -> true
             else -> false
         }
     }

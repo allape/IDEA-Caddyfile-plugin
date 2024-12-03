@@ -1,7 +1,7 @@
 package cc.allape.caddyfile
 
 import cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration
-import cc.allape.caddyfile.language.psi.CaddyfileSnippetDeclaration
+import cc.allape.caddyfile.language.psi.CaddyfileSnippetName
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
@@ -11,7 +11,8 @@ class ElementFactory {
     companion object {
         private fun createFile(project: Project, text: String): CaddyfileFile {
             val name = "dummy.Caddyfile"
-            return PsiFileFactory.getInstance(project).createFileFromText(name, CaddyfileFileType.INSTANCE, text) as CaddyfileFile
+            return PsiFileFactory.getInstance(project)
+                .createFileFromText(name, CaddyfileFileType.INSTANCE, text) as CaddyfileFile
         }
 
         fun createMatcherDeclaration(project: Project, text: String): CaddyfileMatcherDeclaration {
@@ -21,11 +22,8 @@ class ElementFactory {
             return createFile(project, text).firstChild.firstChild as CaddyfileMatcherDeclaration
         }
 
-        fun createSnippetDeclaration(project: Project, text: String): CaddyfileSnippetDeclaration {
-            if (!text.startsWith("(") && !text.endsWith(")")) {
-                throw IllegalArgumentException("text of snippet declaration must start with `(` and end with `)`")
-            }
-            return createFile(project, text).firstChild.firstChild as CaddyfileSnippetDeclaration
+        fun createSnippetName(project: Project, text: String): CaddyfileSnippetName {
+            return createFile(project, "($text)").firstChild.firstChild.children[0] as CaddyfileSnippetName
         }
 
         fun createArg(project: Project, text: String): PsiElement {

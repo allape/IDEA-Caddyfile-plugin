@@ -2,8 +2,8 @@ package cc.allape.caddyfile
 
 import cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration
 import cc.allape.caddyfile.language.psi.CaddyfileProperty
-import cc.allape.caddyfile.language.psi.CaddyfileSnippet
 import cc.allape.caddyfile.language.psi.CaddyfileSnippetDeclaration
+import cc.allape.caddyfile.language.psi.CaddyfileSnippetName
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
@@ -11,7 +11,7 @@ import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 
-internal abstract class BaseReference(element: PsiElement) :
+internal abstract class BaseReference<T : PsiElement>(element: PsiElement) :
     PsiReferenceBase<PsiElement?>(element, TextRange(0, element.text.length)), PsiPolyVariantReference {
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
@@ -19,7 +19,7 @@ internal abstract class BaseReference(element: PsiElement) :
     }
 
     override fun resolve(): PsiElement? {
-        return getRefs().takeIf { it.size == 1 }?.get(0)
+        return getRefs().takeIf { it.size == 1 }?.firstOrNull()
     }
 
     override fun getVariants(): Array<Any> {
@@ -28,11 +28,11 @@ internal abstract class BaseReference(element: PsiElement) :
         }.toTypedArray()
     }
 
-    abstract fun getRefs(): List<PsiElement>
+    abstract fun getRefs(): List<T>
 }
 
-internal class CaddyfileMatcherReference(element: PsiElement) : BaseReference(element) {
-    override fun getRefs(): List<PsiElement> {
+internal class CaddyfileMatcherReference(element: PsiElement) : BaseReference<CaddyfileMatcherDeclaration>(element) {
+    override fun getRefs(): List<CaddyfileMatcherDeclaration> {
         val name = element.text
         return PsiTreeUtil.findChildrenOfType(element.containingFile, CaddyfileMatcherDeclaration::class.java).filter {
             it.text == name && it.parent is CaddyfileProperty
@@ -40,11 +40,12 @@ internal class CaddyfileMatcherReference(element: PsiElement) : BaseReference(el
     }
 }
 
-internal class CaddyfileSnippetReference(element: PsiElement) : BaseReference(element) {
-    private val name = "(${element.text})"
-    override fun getRefs(): List<PsiElement> {
-        return PsiTreeUtil.findChildrenOfType(element.containingFile, CaddyfileSnippetDeclaration::class.java).filter {
-            it.text == name
+internal class CaddyfileSnippetNameReference(element: PsiElement) :
+    BaseReference<CaddyfileSnippetName>(element) {
+    override fun getRefs(): List<CaddyfileSnippetName> {
+        val name = element.text
+        return PsiTreeUtil.findChildrenOfType(element.containingFile, CaddyfileSnippetName::class.java).filter {
+            it.text == name && it.parent is CaddyfileSnippetDeclaration
         }
     }
 }
@@ -66,12 +67,15 @@ internal class CaddyfileReferenceContributor : PsiReferenceContributor() {
         )
 
         registrar.registerReferenceProvider(
-            PlatformPatterns.psiElement(CaddyfileSnippet::class.java),
+            PlatformPatterns.psiElement(CaddyfileSnippetName::class.java),
             object : PsiReferenceProvider() {
                 override fun getReferencesByElement(
                     element: PsiElement, context: ProcessingContext
                 ): Array<PsiReference> {
-                    return arrayOf(CaddyfileSnippetReference(element))
+                    if (element.parent is CaddyfileSnippetDeclaration) {
+                        return emptyArray()
+                    }
+                    return arrayOf(CaddyfileSnippetNameReference(element))
                 }
             },
         )

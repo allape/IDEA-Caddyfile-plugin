@@ -63,7 +63,7 @@ COMMENT="#"[^\r\n]*
 }
 
 <SNIPPET> {
-    [^\s]+  { yybegin(ARG); return CaddyfileTypes.SNIPPET_NAME; }
+    [^\s]+  { yybegin(ARG); return CaddyfileTypes.SNIPPET_NAME_TEXT; }
 }
 
 <VARIABLE> {
@@ -133,7 +133,7 @@ COMMENT="#"[^\r\n]*
 
 <SNIPPET_DECLARATION> {
     "("           { return CaddyfileTypes.LB; }
-    [^\s\(\)]+    { return CaddyfileTypes.SNIPPET_NAME; }
+    [^\s\(\)]+    { return CaddyfileTypes.SNIPPET_NAME_TEXT; }
     ")"           { yybegin(YYINITIAL); return CaddyfileTypes.RB; }
 }
 

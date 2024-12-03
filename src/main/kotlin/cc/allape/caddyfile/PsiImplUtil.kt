@@ -1,8 +1,8 @@
 package cc.allape.caddyfile
 
-import cc.allape.caddyfile.language.psi.CaddyfileTypes
+import cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration
+import cc.allape.caddyfile.language.psi.CaddyfileSnippetName
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.elementType
 
 
 object CaddyfilePsiImplUtil {
@@ -14,17 +14,26 @@ object CaddyfilePsiImplUtil {
 
     @JvmStatic
     fun setName(element: PsiElement, newName: String?): PsiElement {
-        return when (element.elementType) {
-            CaddyfileTypes.MATCHER_DECLARATION -> {
-                val newEle = ElementFactory.createMatcherDeclaration(element.project, newName ?: "@matcher")
+        if (newName == null) {
+            return element
+        }
+
+        return when (element) {
+            is CaddyfileMatcherDeclaration -> {
+                if (!newName.startsWith("@")) {
+                    return element
+                }
+                val newEle = ElementFactory.createMatcherDeclaration(element.project, newName)
                 element.replace(newEle)
                 return newEle
             }
-            CaddyfileTypes.SNIPPET_DECLARATION -> {
-                val newEle = ElementFactory.createSnippetDeclaration(element.project, newName ?: "(snippet)")
+
+            is CaddyfileSnippetName -> {
+                val newEle = ElementFactory.createSnippetName(element.project, newName)
                 element.replace(newEle)
                 return newEle
             }
+
             else -> {
                 element
             }

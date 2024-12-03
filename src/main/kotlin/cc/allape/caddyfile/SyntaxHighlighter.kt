@@ -30,7 +30,7 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
                 return KEYWORD_KEYS
             }
 
-            CaddyfileTypes.SNIPPET_NAME, CaddyfileTypes.AT_MATCHER_NAME -> {
+            CaddyfileTypes.SNIPPET_NAME_TEXT, CaddyfileTypes.AT_MATCHER_NAME -> {
                 return LABEL_KEYS
             }
 
