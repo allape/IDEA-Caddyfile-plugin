@@ -29,11 +29,14 @@ COMMENT="#"[^\r\n]*
 %state MATCHER_TWO
 %state MATCHER_THR
 
+%state SNIPPET
+
 %state VARIABLE
 %state GLOBAL_VARIABLE
 
 %state DIRECTIVE
 %state MATCHER_DECLARATION
+%state SNIPPET_DECLARATION
 %state ARG
 
 %%
@@ -57,6 +60,10 @@ COMMENT="#"[^\r\n]*
 }
 <MATCHER_THR> {
     [^\s]+      { yybegin(ARG); return CaddyfileTypes.AT_MATCHER_NAME; }
+}
+
+<SNIPPET> {
+    [^\s]+  { yybegin(ARG); return CaddyfileTypes.SNIPPET_NAME; }
 }
 
 <VARIABLE> {
@@ -113,13 +120,21 @@ COMMENT="#"[^\r\n]*
     "uri"             { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
     "vars"            { yybegin(MATCHER); return CaddyfileTypes.DIRECTIVE; }
     // endregion
-    "@"         { yybegin(MATCHER_DECLARATION); yypushback(yylength()); }
-    [^\s\@\{]+  { yybegin(ARG); return CaddyfileTypes.DIRECTIVE; }
-    {CRLF}      { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+    "import"          { yybegin(SNIPPET); return CaddyfileTypes.DIRECTIVE; }
+    "@"               { yybegin(MATCHER_DECLARATION); yypushback(yylength()); }
+    "("               { yybegin(SNIPPET_DECLARATION); yypushback(yylength()); }
+    [^\s\@\{\(]+      { yybegin(ARG); return CaddyfileTypes.DIRECTIVE; }
+    {CRLF}            { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
 
 <MATCHER_DECLARATION> {
     [^\s]+        { yybegin(ARG); return CaddyfileTypes.AT_MATCHER_NAME; }
+}
+
+<SNIPPET_DECLARATION> {
+    "("           { return CaddyfileTypes.LB; }
+    [^\s\(\)]+    { return CaddyfileTypes.SNIPPET_NAME; }
+    ")"           { yybegin(YYINITIAL); return CaddyfileTypes.RB; }
 }
 
 <ARG> {

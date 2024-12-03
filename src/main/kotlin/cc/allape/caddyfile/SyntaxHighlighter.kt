@@ -26,14 +26,11 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey?> {
         when (tokenType) {
-            CaddyfileTypes.VARIABLE_NAME,
-            CaddyfileTypes.GLOBAL_VARIABLE_NAME,
-            CaddyfileTypes.DIRECTIVE
-            -> {
+            CaddyfileTypes.VARIABLE_NAME, CaddyfileTypes.GLOBAL_VARIABLE_NAME, CaddyfileTypes.DIRECTIVE -> {
                 return KEYWORD_KEYS
             }
 
-            CaddyfileTypes.AT_MATCHER_NAME -> {
+            CaddyfileTypes.SNIPPET_NAME, CaddyfileTypes.AT_MATCHER_NAME -> {
                 return LABEL_KEYS
             }
 
@@ -45,8 +42,7 @@ class CaddyfileSyntaxHighlighter : SyntaxHighlighterBase() {
                 return NUMBER_KEYS
             }
 
-            CaddyfileTypes.LCB,
-            CaddyfileTypes.RCB -> {
+            CaddyfileTypes.LB, CaddyfileTypes.RB, CaddyfileTypes.LCB, CaddyfileTypes.RCB -> {
                 return BRACKETS_KEYS
             }
 

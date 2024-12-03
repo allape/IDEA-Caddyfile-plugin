@@ -1,6 +1,7 @@
 package cc.allape.caddyfile
 
 import cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration
+import cc.allape.caddyfile.language.psi.CaddyfileSnippetDeclaration
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
@@ -18,6 +19,13 @@ class ElementFactory {
                 throw IllegalArgumentException("text of matcher declaration must start with `@`")
             }
             return createFile(project, text).firstChild.firstChild as CaddyfileMatcherDeclaration
+        }
+
+        fun createSnippetDeclaration(project: Project, text: String): CaddyfileSnippetDeclaration {
+            if (!text.startsWith("(") && !text.endsWith(")")) {
+                throw IllegalArgumentException("text of snippet declaration must start with `(` and end with `)`")
+            }
+            return createFile(project, text).firstChild.firstChild as CaddyfileSnippetDeclaration
         }
 
         fun createArg(project: Project, text: String): PsiElement {

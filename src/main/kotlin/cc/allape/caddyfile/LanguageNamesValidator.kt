@@ -10,7 +10,7 @@ class CaddyfileLanguageNamesValidator : NamesValidator {
     }
 
     override fun isIdentifier(name: String, project: Project): Boolean {
-        return name.startsWith("@")
+        return name.startsWith("@") || (name.startsWith("(") && name.endsWith(")"))
     }
 
 }

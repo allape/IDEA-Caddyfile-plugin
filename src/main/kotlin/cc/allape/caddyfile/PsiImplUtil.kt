@@ -16,7 +16,12 @@ object CaddyfilePsiImplUtil {
     fun setName(element: PsiElement, newName: String?): PsiElement {
         return when (element.elementType) {
             CaddyfileTypes.MATCHER_DECLARATION -> {
-                val newEle = ElementFactory.createMatcherDeclaration(element.project, newName ?: "@???")
+                val newEle = ElementFactory.createMatcherDeclaration(element.project, newName ?: "@matcher")
+                element.replace(newEle)
+                return newEle
+            }
+            CaddyfileTypes.SNIPPET_DECLARATION -> {
+                val newEle = ElementFactory.createSnippetDeclaration(element.project, newName ?: "(snippet)")
                 element.replace(newEle)
                 return newEle
             }

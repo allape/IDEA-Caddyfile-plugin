@@ -18,13 +18,13 @@ import com.intellij.psi.tree.TokenSet
 
 interface CaddyfileTokenSets {
     companion object {
-        val IDENTIFIERS: TokenSet = TokenSet.create(CaddyfileTypes.MATCHER_DECLARATION)
+        val IDENTIFIERS: TokenSet =
+            TokenSet.create(CaddyfileTypes.MATCHER_DECLARATION, CaddyfileTypes.SNIPPET_DECLARATION)
         val COMMENTS: TokenSet = TokenSet.create(CaddyfileTypes.COMMENT)
     }
 }
 
-class CaddyfileFile(viewProvider: FileViewProvider?) :
-    PsiFileBase(viewProvider!!, CaddyfileLanguage.INSTANCE) {
+class CaddyfileFile(viewProvider: FileViewProvider?) : PsiFileBase(viewProvider!!, CaddyfileLanguage.INSTANCE) {
     override fun getFileType(): FileType {
         return CaddyfileFileType.INSTANCE
     }

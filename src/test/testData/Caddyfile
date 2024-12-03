@@ -20,10 +20,12 @@ a {
 
 }
 
+(snippet) {
+
+}
+
 :80 {
-    a {
-        ${LOG}
-    }
+    import snippet
     basic_auth {
         bob 12345678
     }

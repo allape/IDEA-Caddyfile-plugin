@@ -1,0 +1,40 @@
+package cc.allape.caddyfile.element
+
+import cc.allape.caddyfile.language.psi.CaddyfileSnippetDeclaration
+import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.lang.ASTNode
+import com.intellij.openapi.util.TextRange
+import com.intellij.psi.AbstractElementManipulator
+import com.intellij.psi.PsiNameIdentifierOwner
+import com.intellij.psi.PsiReference
+import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.LocalSearchScope
+import com.intellij.psi.search.SearchScope
+
+interface CaddyfileSnippetNamedElement : PsiNameIdentifierOwner
+
+abstract class CaddyfileSnippetNamedElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
+    CaddyfileSnippetNamedElement {
+    override fun getReferences(): Array<PsiReference> {
+        return ReferenceProvidersRegistry.getReferencesFromProviders(this)
+    }
+
+    override fun getUseScope(): SearchScope {
+        return LocalSearchScope(containingFile)
+    }
+
+    override fun getResolveScope(): GlobalSearchScope {
+        return GlobalSearchScope.fileScope(containingFile)
+    }
+}
+
+class CaddyfileSnippetManipulator : AbstractElementManipulator<CaddyfileSnippetDeclaration>() {
+    override fun handleContentChange(
+        element: CaddyfileSnippetDeclaration,
+        range: TextRange,
+        newContent: String?
+    ): CaddyfileSnippetDeclaration {
+        return element.setName(newContent) as CaddyfileSnippetDeclaration
+    }
+}

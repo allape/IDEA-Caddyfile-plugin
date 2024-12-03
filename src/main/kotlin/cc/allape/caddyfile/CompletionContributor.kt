@@ -16,7 +16,7 @@ internal class CaddyfileCompletionContributor : CompletionContributor() {
                     resultSet: CompletionResultSet
                 ) {
                     for (directive in DIRECTIVES) {
-                        resultSet.addElement(LookupElementBuilder.create(directive))
+                        resultSet.addElement(LookupElementBuilder.create("$directive "))
                     }
                 }
             }

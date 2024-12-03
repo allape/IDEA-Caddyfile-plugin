@@ -25,15 +25,27 @@ matcher_declaration ::= AT_MATCHER_NAME {
   methods=[getName setName getNameIdentifier]
 }
 
+snippet_declaration ::= LB SNIPPET_NAME RB {
+  mixin="cc.allape.caddyfile.element.CaddyfileSnippetNamedElementImpl"
+  implements="cc.allape.caddyfile.element.CaddyfileSnippetNamedElement"
+  methods=[getName setName getNameIdentifier]
+}
+
 matcher ::= (matcher_one|matcher_two|matcher_thr)
 matcher_one ::= STAR
 matcher_two ::= SLASH ((TEXT|STAR) SLASH?)*
 matcher_thr ::= matcher_declaration
+
+snippet ::= SNIPPET_NAME {
+  mixin="cc.allape.caddyfile.element.CaddyfileSnippetNamedElementImpl"
+  implements="cc.allape.caddyfile.element.CaddyfileSnippetNamedElement"
+  methods=[getName setName getNameIdentifier]
+}
 
 variable ::= LCB VARIABLE_NAME RCB
 global_variable ::= LCB GLOBAL_VARIABLE_NAME RCB
 
 block ::= LCB (property|global_variable)* RCB
 
-property ::= (DIRECTIVE|matcher_declaration) matcher? (ARG|variable)* block?
+property ::= (DIRECTIVE|matcher_declaration|snippet_declaration) (matcher|snippet)? (ARG|variable)* block?
 
