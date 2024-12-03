@@ -16,11 +16,7 @@ class BraceTypedHandlerDelegate : TypedHandlerDelegate() {
         when (c) {
             '(' -> suffix = ")"
             '[' -> suffix = "]"
-            '{' -> {
-                if (offset - 2 >= 0 && document.text[offset - 2] == '$') {
-                    suffix = "}"
-                }
-            }
+            '{' -> suffix = "}"
         }
 
         if (suffix != "") {

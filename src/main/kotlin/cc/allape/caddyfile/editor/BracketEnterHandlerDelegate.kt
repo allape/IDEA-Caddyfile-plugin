@@ -1,14 +1,15 @@
 package cc.allape.caddyfile.editor
 
 import cc.allape.caddyfile.DEFAULT_SPACE_COUNT
-import cc.allape.caddyfile.language.psi.CaddyfileTypes
+import cc.allape.caddyfile.language.psi.CaddyfileBlock
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.Ref
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.elementType
+import com.intellij.refactoring.suggested.startOffset
 
 class BracketEnterHandlerDelegate : EnterHandlerDelegate {
     override fun preprocessEnter(
@@ -19,36 +20,30 @@ class BracketEnterHandlerDelegate : EnterHandlerDelegate {
         dataContext: DataContext,
         originalHandler: EditorActionHandler?
     ): EnterHandlerDelegate.Result {
-        val offset = editor.caretModel.offset - 1
-
-        if (offset <= 0) {
-            return EnterHandlerDelegate.Result.Continue
-        }
-
         val document = editor.document
         val text = document.text
+        val offset = editor.caretModel.offset
 
-        if (text[offset] == '{') {
-            val ele = file.findElementAt(offset)
+        val block = getBlock(file.findElementAt(offset)) ?: return EnterHandlerDelegate.Result.Continue
 
-            if (ele == null || ele.elementType != CaddyfileTypes.LCB) {
-                return EnterHandlerDelegate.Result.Continue
-            }
+        val lineNumber = document.getLineNumber(block.startOffset)
+        val line = text.substring(document.getLineStartOffset(lineNumber), document.getLineEndOffset(lineNumber))
 
-            val alreadyInPair = ele.parent?.text?.endsWith("}") == true
+        val leadingIndents = line.takeWhile { it == ' ' }
+        val defaultIndent = " ".repeat(DEFAULT_SPACE_COUNT)
 
-            val lineNumber = document.getLineNumber(offset)
-            val line = text.substring(document.getLineStartOffset(lineNumber), document.getLineEndOffset(lineNumber))
+        val newLine = "\n$leadingIndents$defaultIndent"
 
-            val spaces = "\n" + line.takeWhile { it == ' ' || it == '\t' }
-            val defaultSpaces = " ".repeat(DEFAULT_SPACE_COUNT)
+        var suffix = ""
 
-            document.insertString(offset + 1, "$spaces$defaultSpaces${if (alreadyInPair) "" else "$spaces}"}")
-            editor.caretModel.moveToOffset(offset + 1 + spaces.length + defaultSpaces.length)
-            return EnterHandlerDelegate.Result.Stop
+        if (offset < text.length && text[offset] == '}') {
+            suffix = "\n$leadingIndents"
         }
 
-        return EnterHandlerDelegate.Result.Continue
+        document.insertString(offset, "$newLine$suffix")
+        editor.caretModel.moveToOffset(offset + newLine.length)
+
+        return EnterHandlerDelegate.Result.Stop
     }
 
     override fun postProcessEnter(
@@ -57,5 +52,16 @@ class BracketEnterHandlerDelegate : EnterHandlerDelegate {
         dataContext: DataContext
     ): EnterHandlerDelegate.Result {
         return EnterHandlerDelegate.Result.Continue
+    }
+
+    private fun getBlock(ele: PsiElement?): CaddyfileBlock? {
+        var parent = ele?.parent
+        while (parent != null) {
+            if (parent is CaddyfileBlock) {
+                return parent
+            }
+            parent = parent.parent
+        }
+        return null
     }
 }
