@@ -7,7 +7,7 @@ import com.intellij.openapi.project.Project
 class CaddyfileLanguageNamesValidator : NamesValidator {
 
     override fun isKeyword(name: String, project: Project): Boolean {
-        return DIRECTIVES.contains(name)
+        return DIRECTIVES.find { it.name == name } != null
     }
 
     override fun isIdentifier(name: String, project: Project): Boolean {

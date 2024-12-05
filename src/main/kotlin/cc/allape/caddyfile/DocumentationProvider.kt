@@ -40,9 +40,19 @@ internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() 
             var comment = ""
 
             val dir = element.text
-            if (DIRECTIVES.contains(dir)) {
+            DIRECTIVES.find{it.name == dir}?.let {
                 val docURL = "https://caddyserver.com/docs/caddyfile/directives/${dir}"
-                comment = "<a href=\"$docURL\">$docURL</a>"
+                // language=html
+                comment = """
+                    <a href="$docURL">$docURL</a>
+                    <hr>
+                    <h1>${it.name}</h1>
+                    <div>${it.description}</div>
+                    <h2>Syntax</h2>
+                    <div>${it.syntax}</div>
+                    <h2>Examples</h2>
+                    <div>${it.examples}</div>
+                """.trimIndent()
             }
 
             val userComment = getUserComment(element)

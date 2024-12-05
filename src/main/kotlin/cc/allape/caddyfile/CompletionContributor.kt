@@ -22,7 +22,7 @@ internal class CaddyfileCompletionContributor : CompletionContributor() {
                 override fun addCompletions(
                     parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet
                 ) {
-                    DIRECTIVES.forEach { resultSet.addElement(LookupElementBuilder.create("$it ")) }
+                    DIRECTIVES.forEach { resultSet.addElement(LookupElementBuilder.create("${it.name} ")) }
                 }
             })
 
