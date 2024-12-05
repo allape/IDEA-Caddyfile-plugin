@@ -1,5 +1,7 @@
 package cc.allape.caddyfile
 
+import cc.allape.caddyfile.documentation.DIRECTIVES
+import cc.allape.caddyfile.documentation.PLACEHOLDERS
 import cc.allape.caddyfile.language.psi.CaddyfileMatcherDeclaration
 import cc.allape.caddyfile.language.psi.CaddyfileMatcherThr
 import cc.allape.caddyfile.language.psi.CaddyfileProperty

@@ -1,5 +1,6 @@
 package cc.allape.caddyfile
 
+import cc.allape.caddyfile.documentation.DIRECTIVES
 import com.intellij.lang.refactoring.NamesValidator
 import com.intellij.openapi.project.Project
 

@@ -1,5 +1,6 @@
 package cc.allape.caddyfile
 
+import cc.allape.caddyfile.documentation.DIRECTIVES
 import cc.allape.caddyfile.language.psi.CaddyfileTypes
 import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.openapi.editor.Editor
