@@ -5,8 +5,7 @@ See <a href="https://caddyserver.com/docs/caddyfile/directives/basic_auth#syntax
 for more information.
 <hr>
 Tools: <a href="https://github.com/patrickfav/bcrypt">https://github.com/patrickfav/bcrypt</a>
-<pre><code>
-// language=kotlin
+<pre><code lang="kotlin">
 BCrypt.withDefaults().hashToString(Random.nextInt(8, 15), password.toCharArray())
 </code></pre>
 <!-- tooltip end -->

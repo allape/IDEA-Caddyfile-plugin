@@ -86,8 +86,13 @@
         <editorFactoryDocumentListener implementation="cc.allape.caddyfile.editor.CaddyfileDocumentListener"/>
         <intentionAction>
             <language>Caddyfile</language>
-            <category>Caddyfile/password/hashing</category>
+            <category>Caddyfile/password/hash</category>
             <className>cc.allape.caddyfile.editor.action.HashPasswordIntentionAction</className>
+        </intentionAction>
+        <intentionAction>
+            <language>Caddyfile</language>
+            <category>Caddyfile/password/generate</category>
+            <className>cc.allape.caddyfile.editor.action.GenerateRandomPasswordIntentionAction</className>
         </intentionAction>
     </extensions>
 </idea-plugin>

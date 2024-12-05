@@ -1,0 +1,9 @@
+<html lang="en">
+<body>
+Create a URL-safe random password base on the same length of current password.
+<pre><code lang="kotlin">
+(1..password.length).map { Random.nextInt(CharSet.length) }.map(CharSet::get).joinToString("")
+</code></pre>
+<!-- tooltip end -->
+</body>
+</html>
