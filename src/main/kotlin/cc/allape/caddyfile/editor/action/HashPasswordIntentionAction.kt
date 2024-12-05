@@ -71,7 +71,7 @@ class HashPasswordIntentionAction : IntentionAction {
     }
 
     override fun getText(): String {
-        return "Hash to password"
+        return "Hash password"
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
