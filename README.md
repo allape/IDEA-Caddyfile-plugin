@@ -19,6 +19,20 @@ https://plugins.jetbrains.com/plugin/24642-caddyfile
 
 ## Known Issues
 
+- Global options block after any no-body directive will be interpolated as a directive block instead of a global block
+  - ```caddyfile
+    # global block
+    {
+        debug        
+    }
+    
+    try_files
+    
+    # should be a global block, but here in PSI tree it is a directive block of `try_files` above
+    {
+        debug
+    }
+    ```
 - Lack of testing, only tested with simple Caddyfiles
 - ICON file may violate legal issue
     - ICON file is copied from https://github.com/caddyserver/caddy/blob/master/README.md, and modified to remove text

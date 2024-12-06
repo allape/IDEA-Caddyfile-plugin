@@ -4,7 +4,7 @@ package cc.allape.caddyfile.documentation
 
 /**
  * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
- * @see ./httpheaders-documentation-generator.js
+ * @see ./http-headers-documentation-generator.js
  */
 val HTTP_HEADERS = mapOf(
     "WWW-Authenticate" to """<p>Defines the authentication method that should be used to access a resource.</p>""",

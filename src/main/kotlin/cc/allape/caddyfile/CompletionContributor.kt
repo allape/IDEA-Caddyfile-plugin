@@ -6,6 +6,7 @@ import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
 import com.intellij.util.ProcessingContext
 
 internal class CaddyfileCompletionContributor : CompletionContributor() {
@@ -18,7 +19,25 @@ internal class CaddyfileCompletionContributor : CompletionContributor() {
                 override fun addCompletions(
                     parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet
                 ) {
-                    DIRECTIVES.forEach { resultSet.addElement(LookupElementBuilder.create("${it.name} ")) }
+                    val ele = parameters.originalFile.findElementAt(parameters.offset - 1) ?: return
+                    val parentDir = ele.parent?.parent?.parent?.firstChild
+
+                    // global options
+                    if (ele.parent?.parent?.parent == parameters.originalFile) {
+                        parentDir?.takeIf { it.elementType == CaddyfileTypes.DIRECTIVE }?.text?.let {
+                            GLOBAL_SUB_DIRECTIVES[it]?.forEach { subdir ->
+                                resultSet.addElement(LookupElementBuilder.create("$subdir "))
+                            }
+                        }
+                        GLOBAL_DIRECTIVES.forEach { resultSet.addElement(LookupElementBuilder.create("$it ")) }
+                    } else {
+                        parentDir?.takeIf { it.elementType == CaddyfileTypes.DIRECTIVE }?.text?.let {
+                            SUB_DIRECTIVES[it]?.forEach { subdir ->
+                                resultSet.addElement(LookupElementBuilder.create("$subdir "))
+                            }
+                        }
+                        DIRECTIVES.forEach { resultSet.addElement(LookupElementBuilder.create("${it.name} ")) }
+                    }
                 }
             }
         )
@@ -73,7 +92,7 @@ internal class CaddyfileCompletionContributor : CompletionContributor() {
             }
         )
 
-        // http header completion
+        // arg completion
         extend(
             CompletionType.BASIC,
             PlatformPatterns.psiElement(CaddyfileTypes.ARG),
@@ -83,16 +102,32 @@ internal class CaddyfileCompletionContributor : CompletionContributor() {
                 ) {
                     val ele = parameters.originalFile.findElementAt(parameters.offset - 1) ?: return
 
-                    ele.prevSibling?.prevSibling?.text?.let {
-                        it.lowercase().let { text ->
-                            if (MIME_HEADERS.contains(text)) {
-                                COMMON_MIME.forEach { mime -> resultSet.addElement(LookupElementBuilder.create(mime)) }
-                                return
-                            }
+                    val prevArg = ele.prevSibling?.prevSibling
+
+                    if (prevArg != null) {
+                        val text = prevArg.text
+
+                        // fill MIME
+                        if (MIME_HEADERS.contains(text)) {
+                            COMMON_MIME.forEach { mime -> resultSet.addElement(LookupElementBuilder.create(mime)) }
+                            return
+                        }
+
+                        // try_files.policy
+                        // https://caddyserver.com/docs/caddyfile/directives/try_files#syntax
+                        if (text == "policy") {
+                            resultSet.addElement(LookupElementBuilder.create("first_exist"))
+                            resultSet.addElement(LookupElementBuilder.create("smallest_size"))
+                            resultSet.addElement(LookupElementBuilder.create("largest_size"))
+                            resultSet.addElement(LookupElementBuilder.create("most_recently_modified"))
+                            return
                         }
                     }
 
-                    if (ele.parent?.firstChild?.text?.contains("header") == true) {
+                    val dir = ele.parent?.firstChild
+
+                    // http header
+                    if (dir?.text?.contains("header") == true) {
                         HTTP_HEADERS.forEach {
                             resultSet.addElement(
                                 LookupElementBuilder.create("${it.key} ").withLookupString(it.key.lowercase())

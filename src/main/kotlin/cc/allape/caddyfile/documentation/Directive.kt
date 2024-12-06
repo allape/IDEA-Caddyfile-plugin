@@ -3033,3 +3033,201 @@ To set multiple variables, each converted to the appropriate scalar type:
     ),
 )
 
+val SUB_DIRECTIVES = mapOf(
+    "acme_server" to arrayOf(
+        "ca",
+        "lifetime",
+        "resolvers",
+        "challenges",
+        "allow_wildcard_names",
+        "allow",
+        "deny",
+    ),
+    "allow" to arrayOf(
+        "domains",
+        "ip_ranges",
+    ),
+    "deny" to arrayOf(
+        "domains",
+        "ip_ranges",
+    ),
+
+    "encode" to arrayOf(
+        "gzip",
+        "zstd",
+        "minimum_length",
+        "match",
+    ),
+    "match" to arrayOf(
+        "header",
+        "status",
+    ),
+
+    "error" to arrayOf(
+        "message",
+    ),
+
+    "file_server" to arrayOf(
+        "fs",
+        "root",
+        "hide",
+        "index",
+        "browse",
+        "precompressed",
+        "status",
+        "disable_canonical_uris",
+        "pass_thru",
+    ),
+    "browse" to arrayOf(
+        "reveal_symlinks",
+    ),
+
+    "forward_auth" to arrayOf(
+        "uri",
+        "copy_headers",
+    ),
+
+    "intercept" to arrayOf(
+        "replace_status",
+        "handle_response",
+    ),
+
+    "log" to arrayOf(
+        "hostnames",
+        "no_hostname",
+        "output",
+        "format",
+        "level",
+    ),
+
+    "map" to arrayOf(
+        "default",
+    ),
+
+    "metrics" to arrayOf(
+        "disable_openmetrics",
+    ),
+
+    "php_fastcgi" to arrayOf(
+        "root",
+        "split",
+        "index",
+        "try_files",
+        "env",
+        "resolve_root_symlink",
+        "capture_stderr",
+        "dial_timeout",
+        "read_timeout",
+        "write_timeout",
+    ),
+    "push" to arrayOf(
+        "headers",
+    ),
+
+    "request_body" to arrayOf(
+        "max_size",
+    ),
+
+    "respond" to arrayOf(
+        "body",
+        "close",
+    ),
+
+    "reverse_proxy" to arrayOf(
+        "reverse_proxy",
+        "to",
+        "dynamic",
+        "lb_policy",
+        "lb_retries",
+        "lb_try_duration",
+        "lb_try_interval",
+        "lb_retry_match",
+        "health_uri",
+        "health_port",
+        "health_interval",
+        "health_passes",
+        "health_fails	<num>",
+        "health_timeout",
+        "health_status",
+        "health_body",
+        "health_follow_redirects",
+        "health_headers",
+        "fail_duration",
+        "max_fails",
+        "unhealthy_status",
+        "unhealthy_latency",
+        "unhealthy_request_count",
+        "flush_interval",
+        "request_buffers",
+        "response_buffers",
+        "stream_timeout",
+        "stream_close_delay",
+        "trusted_proxies",
+        "header_up",
+        "header_down",
+        "method",
+        "rewrite",
+        "transport",
+        "replace_status",
+        "handle_response",
+    ),
+    "transport" to arrayOf(
+        "status",
+        "header",
+    ),
+    "handle_response" to arrayOf(
+        "copy_response",
+        "copy_response_headers",
+    ),
+    "copy_response" to arrayOf(
+        "status",
+    ),
+    "copy_response_headers" to arrayOf(
+        "include",
+        "exclude",
+    ),
+
+    "templates" to arrayOf(
+        "mime",
+        "between",
+        "root",
+    ),
+
+    "tls" to arrayOf(
+        "tls",
+        "protocols",
+        "ciphers",
+        "curves",
+        "alpn",
+        "load",
+        "ca",
+        "ca_root",
+        "key_type",
+        "dns",
+        "propagation_timeout",
+        "propagation_delay",
+        "dns_ttl",
+        "dns_challenge_override_domain",
+        "resolvers",
+        "eab",
+        "on_demand",
+        "reuse_private_keys",
+        "client_auth",
+        "issuer",
+        "get_certificate",
+        "insecure_secrets_log",
+    ),
+    "client_auth" to arrayOf(
+        "mode",
+        "trust_pool",
+        "verifier",
+    ),
+
+    "tracing" to arrayOf(
+        "span",
+    ),
+
+    "try_files" to arrayOf(
+        "policy",
+    ),
+)

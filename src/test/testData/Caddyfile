@@ -1,3 +1,11 @@
+{
+    debug
+}
+
+try_files {
+    policy 
+}
+
 # https://github.com/allape/IDEA-Caddyfile-plugin/issues/1
 a {
     a1 arg1 arg2
