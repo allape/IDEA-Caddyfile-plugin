@@ -35,6 +35,10 @@ a {
     basic_auth {
         bob O5wTeDsRNyreumNXGEHzQ6QW
     }
+    reverse_proxy {
+        header_up -Authorization
+        header_down -Authorization
+    }
 }
 
 
@@ -55,7 +59,7 @@ handle
 handle_errors
 handle_path
 header
-import
+import a
 intercept
 invoke
 log

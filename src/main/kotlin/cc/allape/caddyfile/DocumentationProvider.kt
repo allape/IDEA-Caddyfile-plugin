@@ -1,6 +1,8 @@
 package cc.allape.caddyfile
 
 import cc.allape.caddyfile.documentation.DIRECTIVES
+import cc.allape.caddyfile.documentation.DirectiveDocURLPrefix
+import cc.allape.caddyfile.documentation.MarcherDocURL
 import cc.allape.caddyfile.language.psi.CaddyfileTypes
 import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.openapi.editor.Editor
@@ -41,7 +43,7 @@ internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() 
 
             val dir = element.text
             DIRECTIVES.find{it.name == dir}?.let {
-                val docURL = "https://caddyserver.com/docs/caddyfile/directives/${dir}"
+                val docURL = "$DirectiveDocURLPrefix${dir}"
                 // language=html
                 comment = """
                     <a href="$docURL">$docURL</a>
@@ -71,7 +73,7 @@ internal class CaddyfileDocumentationProvider : AbstractDocumentationProvider() 
         if (element.elementType == CaddyfileTypes.MATCHER_DECLARATION) {
             return "<b>${element.text}</b>" +
                     "<br>${getUserComment(element)}" +
-                    "<br><a href=\"https://caddyserver.com/docs/caddyfile/matchers\">https://caddyserver.com/docs/caddyfile/matchers</a>"
+                    "<br><a href=\"$MarcherDocURL\">$MarcherDocURL</a>"
         }
 
         return null
