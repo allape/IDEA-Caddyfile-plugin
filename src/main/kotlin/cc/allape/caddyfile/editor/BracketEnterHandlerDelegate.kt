@@ -9,7 +9,6 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.refactoring.suggested.startOffset
 
 class BracketEnterHandlerDelegate : EnterHandlerDelegate {
     override fun preprocessEnter(
@@ -26,7 +25,7 @@ class BracketEnterHandlerDelegate : EnterHandlerDelegate {
 
         val block = getBlock(file.findElementAt(offset)) ?: return EnterHandlerDelegate.Result.Continue
 
-        val lineNumber = document.getLineNumber(block.startOffset)
+        val lineNumber = document.getLineNumber(block.textOffset)
         val line = text.substring(document.getLineStartOffset(lineNumber), document.getLineEndOffset(lineNumber))
 
         val leadingIndents = line.takeWhile { it == ' ' }
