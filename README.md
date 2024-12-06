@@ -18,7 +18,7 @@ https://plugins.jetbrains.com/plugin/24642-caddyfile
 
 ![documentation.png](screenshot/documentation.png)
 ![matcher-reference.png](screenshot/matcher-reference.png)
-![password-hashing.png](screenshot/password-hashing.png)
+![password-ops.png](screenshot/password-ops.png)
 
 ## Known Issues
 
