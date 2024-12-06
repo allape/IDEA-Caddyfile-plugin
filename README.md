@@ -8,8 +8,11 @@ https://plugins.jetbrains.com/plugin/24642-caddyfile
 
 ## Features
 
-- [x] `Find Usage` and `Go To Declaration` for matchers
-- [x] Add documentation dialog for directives and matchers
+- [x] Auto-completion for directives, sub-directives, matchers, snippets, placeholders
+- [x] `Find Usage` and `Go To Declaration` for matchers, snippets
+- [x] Add documentation dialog for directives, matchers, snippets
+- [ ] Multi-files support
+- [ ] `Find Usage` and `Go To Declaration` for custom variables with `vars` directive
 
 ## Screenshots
 
