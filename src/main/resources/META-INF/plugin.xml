@@ -26,6 +26,19 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
 
+    <actions>
+        <action id="cc.allape.caddyfile.execution.NewRunConfigurationAction"
+                class="cc.allape.caddyfile.execution.NewRunConfigurationAction"
+                text="New Caddyfile Run Configuration"
+                description="Create a new run config for Caddyfile">
+        </action>
+        <action id="cc.allape.caddyfile.execution.RunConfigurationAction"
+                class="cc.allape.caddyfile.execution.RunConfigurationAction"
+                text="Run Caddyfile Run-Configuration"
+                description="Run Caddyfile run-configuration">
+        </action>
+    </actions>
+
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
@@ -84,6 +97,9 @@
         <enterHandlerDelegate implementation="cc.allape.caddyfile.editor.BracketEnterHandlerDelegate"/>
         <typedHandler implementation="cc.allape.caddyfile.editor.BraceTypedHandlerDelegate"/>
         <editorFactoryDocumentListener implementation="cc.allape.caddyfile.editor.CaddyfileDocumentListener"/>
+        <configurationType implementation="cc.allape.caddyfile.execution.CaddyfileRunConfigurationType"/>
+        <runLineMarkerContributor implementationClass="cc.allape.caddyfile.CaddyfileRunLineMarkerContributor"
+                                  language="Caddyfile"/>
         <intentionAction>
             <language>Caddyfile</language>
             <category>Caddyfile/password/hash</category>
