@@ -1,8 +1,6 @@
 package cc.allape.caddyfile
 
-import cc.allape.caddyfile.execution.NewRunConfigurationAction
-import cc.allape.caddyfile.execution.RunConfigurationAction
-import cc.allape.caddyfile.execution.findCaddyfileRunConfiguration
+import cc.allape.caddyfile.execution.*
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
@@ -14,6 +12,8 @@ class CaddyfileRunLineMarkerContributor : DumbAware, RunLineMarkerContributor() 
         if (element !is CaddyfileFile) {
             return null
         }
+
+        var icon = AllIcons.Actions.Execute
 
         val actions: MutableList<AnAction> = mutableListOf()
 
@@ -29,8 +29,13 @@ class CaddyfileRunLineMarkerContributor : DumbAware, RunLineMarkerContributor() 
                 it.config = config
                 it
             })
+
+            getRunningProcess(element.project, config.configuration as CaddyfileRunConfiguration)?.let {
+                // FIXME not reloaded
+                icon = AllIcons.Actions.Restart
+            }
         }
 
-        return Info(AllIcons.Actions.Execute, actions.toTypedArray()) { "Run Caddyfile" }
+        return Info(icon, actions.toTypedArray()) { "Run Caddyfile" }
     }
 }

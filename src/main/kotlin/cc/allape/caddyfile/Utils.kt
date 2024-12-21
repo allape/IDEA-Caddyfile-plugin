@@ -4,6 +4,8 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.VirtualFile
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class Utils {
     companion object {
@@ -21,6 +23,10 @@ class Utils {
 
         fun getWorkingDir(): String {
             return getCurrentProject()?.basePath ?: ""
+        }
+
+        fun exists(filename: String): Boolean {
+            return Files.exists(Paths.get(filename))
         }
     }
 }

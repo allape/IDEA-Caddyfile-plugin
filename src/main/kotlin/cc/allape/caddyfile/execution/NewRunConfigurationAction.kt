@@ -1,11 +1,14 @@
 package cc.allape.caddyfile.execution
 
 import cc.allape.caddyfile.CaddyfileFile
+import com.intellij.execution.ExecutionManager
 import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.actions.EditRunConfigurationsAction
 import com.intellij.execution.executors.DefaultRunExecutor
+import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.runners.FakeRerunAction
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -29,7 +32,10 @@ class NewRunConfigurationAction : AnAction() {
             if (myCaddyfile == null) null else findCaddyfileRunConfiguration(project, myCaddyfile)
 
         if (found == null) {
-            val config = runManager.createConfiguration("Run Caddyfile", CaddyfileRunConfigurationType::class.java)
+            val config = runManager.createConfiguration(
+                "Run Caddyfile #${runManager.allConfigurationsList.size}",
+                CaddyfileRunConfigurationType::class.java
+            )
             val cc = config.configuration as CaddyfileRunConfiguration
             cc.workingDir = project.basePath ?: ""
             cc.caddyfile = myCaddyfile?.virtualFile?.path ?: ""
@@ -65,8 +71,18 @@ class RunConfigurationAction : AnAction() {
         val runManager = RunManager.getInstance(project)
 
         runManager.selectedConfiguration = config
+
+        getRunningProcess(project, config.configuration as CaddyfileRunConfiguration)?.let {
+            ApplicationManager.getApplication().invokeLater {
+                FakeRerunAction().actionPerformed(e)
+            }
+            return
+        }
+
         val executor = DefaultRunExecutor.getRunExecutorInstance()
-        ProgramRunnerUtil.executeConfiguration(config, executor)
+        ApplicationManager.getApplication().invokeLater {
+            ProgramRunnerUtil.executeConfiguration(config, executor)
+        }
     }
 }
 
@@ -83,4 +99,13 @@ fun findCaddyfileRunConfiguration(project: Project, caddyfile: CaddyfileFile?): 
             }
             return@find false
         }
+}
+
+fun getRunningProcess(project: Project, config: CaddyfileRunConfiguration): ProcessHandler? {
+    ExecutionManager.getInstance(project).getRunningProcesses().forEach {
+        if (it.getUserData(ProcessDataKey) == config.caddyfile) {
+            return it
+        }
+    }
+    return null
 }
