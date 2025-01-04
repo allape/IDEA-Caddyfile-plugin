@@ -1,5 +1,6 @@
 package cc.allape.caddyfile.editor
 
+import cc.allape.caddyfile.CaddyfileFileType
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -7,6 +8,10 @@ import com.intellij.psi.PsiFile
 
 class BraceTypedHandlerDelegate : TypedHandlerDelegate() {
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
+        if (file.fileType !is CaddyfileFileType) {
+            return Result.DEFAULT
+        }
+
         var suffix = ""
 
         val document = editor.document

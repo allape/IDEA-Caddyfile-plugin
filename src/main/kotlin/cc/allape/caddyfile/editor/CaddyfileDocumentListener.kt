@@ -1,5 +1,7 @@
 package cc.allape.caddyfile.editor
 
+import cc.allape.caddyfile.CaddyfileFileType
+import cc.allape.caddyfile.Utils
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.EditorFactory
@@ -10,6 +12,12 @@ import com.intellij.openapi.editor.event.DocumentListener
 class CaddyfileDocumentListener : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
         val document = event.document
+
+        val file = Utils.getCurrentOpenFile(document)
+        if (file == null || file.fileType !is CaddyfileFileType) {
+            return
+        }
+
         val text = document.text
         val oldText = event.oldFragment
         val newText = event.newFragment

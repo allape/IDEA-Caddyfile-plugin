@@ -1,5 +1,6 @@
 package cc.allape.caddyfile.editor
 
+import cc.allape.caddyfile.CaddyfileFileType
 import cc.allape.caddyfile.DEFAULT_SPACE_COUNT
 import cc.allape.caddyfile.language.psi.CaddyfileBlock
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
@@ -19,6 +20,10 @@ class BracketEnterHandlerDelegate : EnterHandlerDelegate {
         dataContext: DataContext,
         originalHandler: EditorActionHandler?
     ): EnterHandlerDelegate.Result {
+        if (file.fileType !is CaddyfileFileType) {
+            return EnterHandlerDelegate.Result.Continue
+        }
+
         val document = editor.document
         val text = document.text
         val offset = editor.caretModel.offset

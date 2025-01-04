@@ -94,9 +94,11 @@
         <lang.documentationProvider
                 language="Caddyfile"
                 implementationClass="cc.allape.caddyfile.CaddyfileDocumentationProvider"/>
+
         <enterHandlerDelegate implementation="cc.allape.caddyfile.editor.BracketEnterHandlerDelegate"/>
         <typedHandler implementation="cc.allape.caddyfile.editor.BraceTypedHandlerDelegate"/>
         <editorFactoryDocumentListener implementation="cc.allape.caddyfile.editor.CaddyfileDocumentListener"/>
+
         <configurationType implementation="cc.allape.caddyfile.execution.CaddyfileRunConfigurationType"/>
         <runLineMarkerContributor implementationClass="cc.allape.caddyfile.CaddyfileRunLineMarkerContributor"
                                   language="Caddyfile"/>
