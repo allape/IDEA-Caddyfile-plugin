@@ -22,6 +22,7 @@ https://plugins.jetbrains.com/plugin/24642-caddyfile
 
 ## Known Issues
 
+- Goland `Build #GO-243.22562.186` will produce an extra new line when pressing `Enter` after `{`
 - Global options block after any no-body directive will be interpolated as a directive block instead of a global block
   - ```caddyfile
     # global block

@@ -18,7 +18,7 @@ class BracketEnterHandlerDelegate : EnterHandlerDelegate {
         caretOffset: Ref<Int>,
         caretAdvance: Ref<Int>,
         dataContext: DataContext,
-        originalHandler: EditorActionHandler?
+        originalHandler: EditorActionHandler?,
     ): EnterHandlerDelegate.Result {
         if (file.fileType !is CaddyfileFileType) {
             return EnterHandlerDelegate.Result.Continue
@@ -53,9 +53,12 @@ class BracketEnterHandlerDelegate : EnterHandlerDelegate {
     override fun postProcessEnter(
         file: PsiFile,
         editor: Editor,
-        dataContext: DataContext
+        dataContext: DataContext,
     ): EnterHandlerDelegate.Result {
-        return EnterHandlerDelegate.Result.Continue
+        if (file.fileType !is CaddyfileFileType) {
+            return EnterHandlerDelegate.Result.Continue
+        }
+        return EnterHandlerDelegate.Result.Stop
     }
 
     private fun getBlock(ele: PsiElement?): CaddyfileBlock? {
