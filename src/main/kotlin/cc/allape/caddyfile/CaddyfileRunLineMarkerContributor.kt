@@ -1,6 +1,6 @@
 package cc.allape.caddyfile
 
-import cc.allape.caddyfile.execution.*
+import cc.allape.caddyfile.execution.NewRunConfigurationAction
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
@@ -13,23 +13,22 @@ class CaddyfileRunLineMarkerContributor : DumbAware, RunLineMarkerContributor() 
             return null
         }
 
-        var icon = AllIcons.Actions.Execute
-
         val actions: MutableList<AnAction> = mutableListOf()
-
-        val config = findCaddyfileRunConfiguration(element)
 
         actions.add(NewRunConfigurationAction().let {
             it.caddyfile = element
             it
         })
 
-        if (config != null) {
-            getRunningProcess(element.project, config.configuration as CaddyfileRunConfiguration)?.let {
-                icon = AllIcons.Actions.Restart
-            }
-        }
+//        Auto changing icon based on running status is too complex with many listeners, therefore I give up
+//        var icon = AllIcons.Actions.Execute
+//        val config = findCaddyfileRunConfiguration(element)
+//        if (config != null) {
+//            getRunningProcess(element.project, config.configuration as CaddyfileRunConfiguration)?.let {
+//                icon = AllIcons.Actions.Restart
+//            }
+//        }
 
-        return Info(icon, actions.toTypedArray()) { "Run Caddyfile" }
+        return Info(AllIcons.Actions.Execute, actions.toTypedArray()) { "Run Caddyfile" }
     }
 }
