@@ -102,6 +102,10 @@
         <configurationType implementation="cc.allape.caddyfile.execution.CaddyfileRunConfigurationType"/>
         <runLineMarkerContributor implementationClass="cc.allape.caddyfile.CaddyfileRunLineMarkerContributor"
                                   language="Caddyfile"/>
+        <multipleRunLocationsProvider
+                implementation="cc.allape.caddyfile.execution.CaddyfileMultipleRunLocationsProvider"/>
+        <runConfigurationProducer implementation="cc.allape.caddyfile.execution.CaddyfileRunConfigurationProducer"/>
+
         <intentionAction>
             <language>Caddyfile</language>
             <category>Caddyfile/password/hash</category>

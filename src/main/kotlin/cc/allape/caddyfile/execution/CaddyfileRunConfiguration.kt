@@ -129,6 +129,8 @@ open class CaddyfileRunConfiguration(
         const val ENV_VARS: String = "env-vars"
     }
 
+    var isFromContext: Boolean = false
+
     var caddyExec: String = "caddy"
 
     var subCommand: String = SubCommands.values.first()
