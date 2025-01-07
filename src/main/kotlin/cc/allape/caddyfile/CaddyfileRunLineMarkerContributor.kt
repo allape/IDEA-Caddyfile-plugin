@@ -19,17 +19,12 @@ class CaddyfileRunLineMarkerContributor : DumbAware, RunLineMarkerContributor() 
 
         val config = findCaddyfileRunConfiguration(element)
 
-        if (config == null) {
-            actions.add(NewRunConfigurationAction().let {
-                it.caddyfile = element
-                it
-            })
-        } else {
-            actions.add(RunConfigurationAction().let {
-                it.config = config
-                it
-            })
+        actions.add(NewRunConfigurationAction().let {
+            it.caddyfile = element
+            it
+        })
 
+        if (config != null) {
             getRunningProcess(element.project, config.configuration as CaddyfileRunConfiguration)?.let {
                 icon = AllIcons.Actions.Restart
             }

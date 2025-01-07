@@ -1,14 +1,11 @@
 package cc.allape.caddyfile.execution
 
 import cc.allape.caddyfile.CaddyfileFile
-import com.intellij.execution.ExecutionManager
-import com.intellij.execution.ProgramRunnerUtil
-import com.intellij.execution.RunManager
-import com.intellij.execution.RunnerAndConfigurationSettings
+import com.intellij.execution.*
 import com.intellij.execution.actions.EditRunConfigurationsAction
+import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.runners.FakeRerunAction
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -45,6 +42,7 @@ class NewRunConfigurationAction : AnAction() {
 
             runManager.addConfiguration(config)
             app.invokeLater {
+//                RunDialog.editConfiguration(project, config, "Run Caddyfile")
                 runManager.selectedConfiguration = config
                 app.invokeLater {
                     EditRunConfigurationsAction().actionPerformed(e)
@@ -81,19 +79,21 @@ class RunConfigurationAction : AnAction() {
         runManager.selectedConfiguration = config
 
         app.invokeLater {
-            getRunningProcess(project, config.configuration as CaddyfileRunConfiguration)?.let {
+            if (!restartRunningProcess(project, config)) {
                 app.invokeLater {
-                    FakeRerunAction().actionPerformed(e)
+                    ProgramRunnerUtil.executeConfiguration(config, getExecutor())
                 }
-                return@invokeLater
-            }
-
-            val executor = DefaultRunExecutor.getRunExecutorInstance()
-            app.invokeLater {
-                ProgramRunnerUtil.executeConfiguration(config, executor)
             }
         }
     }
+}
+
+fun getExecutor(): Executor {
+    return DefaultRunExecutor.getRunExecutorInstance()
+}
+
+fun getExecuteTarget(project: Project, config: RunConfiguration): ExecutionTarget {
+    return ExecutionTargetManager.getInstance(project).findTarget(config)
 }
 
 fun findCaddyfileRunConfiguration(caddyfile: CaddyfileFile?): RunnerAndConfigurationSettings? {
@@ -118,4 +118,13 @@ fun getRunningProcess(project: Project, config: CaddyfileRunConfiguration): Proc
         }
     }
     return null
+}
+
+fun restartRunningProcess(project: Project, config: RunnerAndConfigurationSettings): Boolean {
+    getRunningProcess(project, config.configuration as CaddyfileRunConfiguration)?.let {
+        ExecutionManager.getInstance(project)
+            .restartRunProfile(project, getExecutor(), getExecuteTarget(project, config.configuration), config, it)
+        return true
+    }
+    return false
 }
