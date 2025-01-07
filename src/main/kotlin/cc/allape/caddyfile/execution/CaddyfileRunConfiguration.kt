@@ -6,9 +6,7 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.configuration.EnvironmentVariablesTextFieldWithBrowseButton
 import com.intellij.execution.configurations.*
-import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessHandlerFactory
-import com.intellij.execution.process.ProcessTerminatedListener
+import com.intellij.execution.process.*
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
@@ -178,9 +176,20 @@ open class CaddyfileRunConfiguration(
                 val commandLine = GeneralCommandLine(baseCommand)
                 commandLine.environment.putAll(environmentVariables)
                 commandLine.setWorkDirectory(workingDir)
+
                 val processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(commandLine)
                 ProcessTerminatedListener.attach(processHandler)
                 processHandler.putUserData(ProcessDataKey, caddyfile)
+                processHandler.addProcessListener(object : ProcessAdapter() {
+                    override fun processTerminated(event: ProcessEvent) {
+                        Utils.reanalyze(caddyfile)
+                    }
+
+                    override fun startNotified(event: ProcessEvent) {
+                        Utils.reanalyze(caddyfile)
+                    }
+                })
+
                 return processHandler
             }
         }

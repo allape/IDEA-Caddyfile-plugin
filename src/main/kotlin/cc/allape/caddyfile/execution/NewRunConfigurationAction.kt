@@ -29,24 +29,30 @@ class NewRunConfigurationAction : AnAction() {
         val runManager = RunManager.getInstance(project)
 
         val found: RunnerAndConfigurationSettings? =
-            if (myCaddyfile == null) null else findCaddyfileRunConfiguration(project, myCaddyfile)
+            if (myCaddyfile == null) null else findCaddyfileRunConfiguration(myCaddyfile)
+
+        val app = ApplicationManager.getApplication()
 
         if (found == null) {
             val config = runManager.createConfiguration(
                 "Run Caddyfile #${runManager.allConfigurationsList.size}",
                 CaddyfileRunConfigurationType::class.java
             )
+
             val cc = config.configuration as CaddyfileRunConfiguration
             cc.workingDir = project.basePath ?: ""
             cc.caddyfile = myCaddyfile?.virtualFile?.path ?: ""
+
             runManager.addConfiguration(config)
-            runManager.selectedConfiguration = config
-            ApplicationManager.getApplication().invokeLater {
-                EditRunConfigurationsAction().actionPerformed(e)
+            app.invokeLater {
+                runManager.selectedConfiguration = config
+                app.invokeLater {
+                    EditRunConfigurationsAction().actionPerformed(e)
+                }
             }
         } else {
             runManager.selectedConfiguration = found
-            ApplicationManager.getApplication().invokeLater {
+            app.invokeLater {
                 RunConfigurationAction().let {
                     it.config = found
                     it
@@ -70,27 +76,31 @@ class RunConfigurationAction : AnAction() {
         val project = e.project ?: return
         val runManager = RunManager.getInstance(project)
 
+        val app = ApplicationManager.getApplication()
+
         runManager.selectedConfiguration = config
 
-        getRunningProcess(project, config.configuration as CaddyfileRunConfiguration)?.let {
-            ApplicationManager.getApplication().invokeLater {
-                FakeRerunAction().actionPerformed(e)
+        app.invokeLater {
+            getRunningProcess(project, config.configuration as CaddyfileRunConfiguration)?.let {
+                app.invokeLater {
+                    FakeRerunAction().actionPerformed(e)
+                }
+                return@invokeLater
             }
-            return
-        }
 
-        val executor = DefaultRunExecutor.getRunExecutorInstance()
-        ApplicationManager.getApplication().invokeLater {
-            ProgramRunnerUtil.executeConfiguration(config, executor)
+            val executor = DefaultRunExecutor.getRunExecutorInstance()
+            app.invokeLater {
+                ProgramRunnerUtil.executeConfiguration(config, executor)
+            }
         }
     }
 }
 
-fun findCaddyfileRunConfiguration(project: Project, caddyfile: CaddyfileFile?): RunnerAndConfigurationSettings? {
+fun findCaddyfileRunConfiguration(caddyfile: CaddyfileFile?): RunnerAndConfigurationSettings? {
     if (caddyfile == null) {
         return null
     }
-    val runManager = RunManager.getInstance(project)
+    val runManager = RunManager.getInstance(caddyfile.project)
     return runManager.getConfigurationSettingsList(CaddyfileRunConfigurationType::class.java)
         .find {
             if (it.configuration is CaddyfileRunConfiguration) {

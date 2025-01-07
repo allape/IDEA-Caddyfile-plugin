@@ -1,10 +1,13 @@
 package cc.allape.caddyfile
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiInvalidElementAccessException
@@ -13,7 +16,6 @@ import java.nio.file.Paths
 
 class Utils {
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun getCurrentProject(): Project? {
             val projects = ProjectManager.getInstance().openProjects
             for (project in projects) {
@@ -45,6 +47,21 @@ class Utils {
 
         fun exists(filename: String): Boolean {
             return Files.exists(Paths.get(filename))
+        }
+
+        fun reanalyze(filepath: String): Boolean {
+            val app = ApplicationManager.getApplication()
+            ProjectManager.getInstance().openProjects.forEach { project ->
+                FileEditorManager.getInstance(project).openFiles.find { it.path == filepath }?.let {
+                    app.runReadAction {
+                        it.findPsiFile(project)?.let { psiFile ->
+                            DaemonCodeAnalyzer.getInstance(project).restart(psiFile)
+                        }
+                    }
+                    return true
+                }
+            }
+            return false
         }
     }
 }

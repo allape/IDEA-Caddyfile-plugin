@@ -17,7 +17,7 @@ class CaddyfileRunLineMarkerContributor : DumbAware, RunLineMarkerContributor() 
 
         val actions: MutableList<AnAction> = mutableListOf()
 
-        val config = findCaddyfileRunConfiguration(element.project, element)
+        val config = findCaddyfileRunConfiguration(element)
 
         if (config == null) {
             actions.add(NewRunConfigurationAction().let {
@@ -31,7 +31,6 @@ class CaddyfileRunLineMarkerContributor : DumbAware, RunLineMarkerContributor() 
             })
 
             getRunningProcess(element.project, config.configuration as CaddyfileRunConfiguration)?.let {
-                // FIXME not reloaded
                 icon = AllIcons.Actions.Restart
             }
         }
