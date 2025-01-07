@@ -7,11 +7,13 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiInvalidElementAccessException
 import java.nio.file.Files
 import java.nio.file.Paths
 
 class Utils {
     companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
         fun getCurrentProject(): Project? {
             val projects = ProjectManager.getInstance().openProjects
             for (project in projects) {
@@ -25,8 +27,15 @@ class Utils {
         }
 
         fun getCurrentOpenFile(document: Document): PsiFile? {
-            return getCurrentProject()?.let {
-                PsiDocumentManager.getInstance(it).getPsiFile(document)
+            return try {
+                getCurrentProject()?.let {
+                    /**
+                     * @throws PsiInvalidElementAccessException
+                     */
+                    PsiDocumentManager.getInstance(it).getPsiFile(document)
+                }
+            } catch (e: PsiInvalidElementAccessException) {
+                null
             }
         }
 
