@@ -1,20 +1,22 @@
 package cc.allape.caddyfile.editor
 
 import cc.allape.caddyfile.CaddyfileFileType
-import cc.allape.caddyfile.Utils
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
+import com.intellij.testFramework.utils.vfs.getPsiFile
 
 
 class CaddyfileDocumentListener : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
         val document = event.document
+        val editor = EditorFactory.getInstance().getEditors(document).firstOrNull() ?: return
+        val project = editor.project ?: return
+        val file = editor.virtualFile?.getPsiFile(project) ?: return
 
-        val file = Utils.getCurrentOpenFile(document)
-        if (file == null || file.fileType !is CaddyfileFileType) {
+        if (file.fileType !is CaddyfileFileType) {
             return
         }
 
@@ -45,10 +47,8 @@ class CaddyfileDocumentListener : DocumentListener {
 
         if (shouldDeletePairedBrace) {
             ApplicationManager.getApplication().invokeLater {
-                EditorFactory.getInstance().getEditors(document).firstOrNull()?.project?.let {
-                    WriteCommandAction.runWriteCommandAction(it) {
-                        document.deleteString(offset, offset + 1)
-                    }
+                WriteCommandAction.runWriteCommandAction(project) {
+                    document.deleteString(offset, offset + 1)
                 }
             }
         }

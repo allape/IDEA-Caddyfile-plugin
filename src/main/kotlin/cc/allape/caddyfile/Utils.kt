@@ -2,15 +2,11 @@ package cc.allape.caddyfile
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findPsiFile
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiInvalidElementAccessException
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -26,19 +22,6 @@ class Utils {
                 }
             }
             return null
-        }
-
-        fun getCurrentOpenFile(document: Document): PsiFile? {
-            return try {
-                getCurrentProject()?.let {
-                    /**
-                     * @throws PsiInvalidElementAccessException
-                     */
-                    PsiDocumentManager.getInstance(it).getPsiFile(document)
-                }
-            } catch (e: PsiInvalidElementAccessException) {
-                null
-            }
         }
 
         fun getWorkingDir(): String {
