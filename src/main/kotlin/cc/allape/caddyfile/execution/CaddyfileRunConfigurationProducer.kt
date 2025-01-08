@@ -13,7 +13,7 @@ class CaddyfileRunConfigurationProducer : LazyRunConfigurationProducer<Caddyfile
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>,
     ): Boolean {
-        if (sourceElement.get().containingFile.fileType !is CaddyfileFileType) {
+        if (sourceElement.get()?.containingFile?.fileType !is CaddyfileFileType) {
             return false
         }
         configuration.isFromContext = true
