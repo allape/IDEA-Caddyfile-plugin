@@ -6,7 +6,7 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
-import com.intellij.testFramework.utils.vfs.getPsiFile
+import com.intellij.openapi.vfs.findPsiFile
 
 
 class CaddyfileDocumentListener : DocumentListener {
@@ -14,7 +14,7 @@ class CaddyfileDocumentListener : DocumentListener {
         val document = event.document
         val editor = EditorFactory.getInstance().getEditors(document).firstOrNull() ?: return
         val project = editor.project ?: return
-        val file = editor.virtualFile?.getPsiFile(project) ?: return
+        val file = editor.virtualFile?.findPsiFile(project) ?: return
 
         if (file.fileType !is CaddyfileFileType) {
             return
