@@ -1,5 +1,6 @@
 package cc.allape.caddyfile.execution
 
+import cc.allape.caddyfile.CaddyfileFileType
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
@@ -12,6 +13,9 @@ class CaddyfileRunConfigurationProducer : LazyRunConfigurationProducer<Caddyfile
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>,
     ): Boolean {
+        if (sourceElement.get().containingFile.fileType !is CaddyfileFileType) {
+            return false
+        }
         configuration.isFromContext = true
         configuration.name = "Run Caddyfile"
         configuration.caddyfile = sourceElement.get().containingFile.virtualFile.path
