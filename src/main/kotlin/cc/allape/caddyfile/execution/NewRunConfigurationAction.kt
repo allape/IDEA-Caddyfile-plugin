@@ -2,9 +2,9 @@ package cc.allape.caddyfile.execution
 
 import cc.allape.caddyfile.CaddyfileFile
 import com.intellij.execution.*
-import com.intellij.execution.actions.EditRunConfigurationsAction
 import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.executors.DefaultRunExecutor
+import com.intellij.execution.impl.RunDialog
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -40,23 +40,34 @@ class NewRunConfigurationAction : AnAction() {
             cc.workingDir = project.basePath ?: ""
             cc.caddyfile = myCaddyfile?.virtualFile?.path ?: ""
 
-            runManager.addConfiguration(config)
             app.invokeLater {
-//                RunDialog.editConfiguration(project, config, "Run Caddyfile")
-                runManager.selectedConfiguration = config
-                app.invokeLater {
-                    EditRunConfigurationsAction().actionPerformed(e)
+//            runManager.addConfiguration(config)
+//                app.invokeLater {
+//                    EditRunConfigurationsAction().actionPerformed(e)
+//                }
+                val ok = RunDialog.editConfiguration(project, config, "Run Caddyfile")
+                if (!ok) {
+                    return@invokeLater
                 }
+                runConfigNow(e, config)
             }
-        } else {
-            runManager.selectedConfiguration = found
-            app.invokeLater {
-                RunConfigurationAction().let {
-                    it.config = found
-                    it
-                }.actionPerformed(e)
-            }
+
+            return
         }
+
+        runConfigNow(e, found)
+    }
+}
+
+fun runConfigNow(e: AnActionEvent, config: RunnerAndConfigurationSettings) {
+    val project = e.project ?: return
+    val runManager = RunManager.getInstance(project)
+    runManager.selectedConfiguration = config
+    ApplicationManager.getApplication().invokeLater {
+        RunConfigurationAction().let {
+            it.config = config
+            it
+        }.actionPerformed(e)
     }
 }
 
