@@ -8,6 +8,7 @@ import com.intellij.execution.impl.RunDialog
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 
@@ -64,10 +65,10 @@ fun runConfigNow(e: AnActionEvent, config: RunnerAndConfigurationSettings) {
     val runManager = RunManager.getInstance(project)
     runManager.selectedConfiguration = config
     ApplicationManager.getApplication().invokeLater {
-        RunConfigurationAction().let {
+        ActionUtil.invokeAction(RunConfigurationAction().let {
             it.config = config
             it
-        }.actionPerformed(e)
+        }, e.dataContext, e.place, null, null)
     }
 }
 

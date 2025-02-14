@@ -261,6 +261,13 @@ class CaddyfileSettingsEditor : SettingsEditor<CaddyfileRunConfiguration>() {
     private val environmentVariables = EnvironmentVariablesTextFieldWithBrowseButton()
 
     init {
+// minimal version not support this
+//        val project = Utils.getCurrentProject();
+//        caddyExec.addBrowseFolderListener(
+//            project,
+//            FileChooserDescriptorFactory.createSingleFileDescriptor().withTitle("Select Caddy Executable"),
+//        )
+
         caddyExec.addBrowseFolderListener(
             "Select Caddy Executable", null, null, FileChooserDescriptorFactory.createSingleFileDescriptor()
         )
