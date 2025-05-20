@@ -159,3 +159,10 @@ redir https://www.example.com{uri}
 
 test_quoted_string 123 "1   5"
 test_quoted_string 123 "1    \"  \" 0" 123
+
+header {
+Access-Control-Allow-Origin "*"
+Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Access-Control-Allow-Headers "*"
+defer
+}

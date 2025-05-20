@@ -138,12 +138,12 @@ COMMENT="#"[^\r\n]*
 }
 
 <ARG> {
-    \"[^\n]+[^\\]\" { return CaddyfileTypes.ARG; }
-    [^\"\s{}]+      { return CaddyfileTypes.ARG; }
-    \{[^\s]         { yybegin(VARIABLE); yypushback(yylength()); }
-    \{\s            { yybegin(YYINITIAL); yypushback(yylength()-1); return CaddyfileTypes.LCB; }
-    #[^\n]*\n       { yybegin(YYINITIAL); return CaddyfileTypes.COMMENT; }
-    {CRLF}          { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+    \"([^\n\\\"]|\\[\"\\])+\" { return CaddyfileTypes.ARG; }
+    [^\"\s{}]+                { return CaddyfileTypes.ARG; }
+    \{[^\s]                   { yybegin(VARIABLE); yypushback(yylength()); }
+    \{\s                      { yybegin(YYINITIAL); yypushback(yylength()-1); return CaddyfileTypes.LCB; }
+    #[^\n]*\n                 { yybegin(YYINITIAL); return CaddyfileTypes.COMMENT; }
+    {CRLF}                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
 
 {WHITE_SPACE}+  { return TokenType.WHITE_SPACE; }
