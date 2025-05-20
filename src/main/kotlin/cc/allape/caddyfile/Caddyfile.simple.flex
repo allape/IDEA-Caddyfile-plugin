@@ -5,6 +5,7 @@ import cc.allape.caddyfile.language.psi.CaddyfileTypes;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.TokenType;
+import java.util.ArrayList;
 // DO NOT OPTIMIZE IMPORT
 
 %%
@@ -12,9 +13,26 @@ import com.intellij.psi.TokenType;
 %public %class CaddyfileLexer
 %implements FlexLexer
 %unicode
-//%{
-//    private boolean _globalVariable = false;
-//%}
+%{
+    private ArrayList<Integer> _prevStates = new ArrayList<Integer>();
+
+    private void beginWithMemo(int state) {
+        _prevStates.add(yystate());
+        yybegin(state);
+    }
+
+    private void recoverMemoState(int orState) {
+        if (_prevStates.isEmpty()) {
+            yybegin(orState);
+            return;
+        }
+        yybegin(_prevStates.remove(_prevStates.size() - 1));
+    }
+
+    private void recoverMemoState() {
+        recoverMemoState(YYINITIAL);
+    }
+%}
 %function advance
 %type IElementType
 %eof{  return;
@@ -33,6 +51,9 @@ COMMENT="#"[^\r\n]*
 
 %state VARIABLE
 %state GLOBAL_VARIABLE
+
+%state TEMPLATE_TEXT
+%state QUOTED_TEMPLATE_TEXT
 
 %state DIRECTIVE
 %state MATCHER_DECLARATION
@@ -68,7 +89,7 @@ COMMENT="#"[^\r\n]*
 
 <VARIABLE> {
     "{"        { return CaddyfileTypes.LCB; }
-    "}"        { yybegin(ARG); return CaddyfileTypes.RCB; }
+    "}"        { recoverMemoState(ARG); return CaddyfileTypes.RCB; }
     [^\s{}]+   { return CaddyfileTypes.VARIABLE_NAME; }
 }
 <GLOBAL_VARIABLE> {
@@ -77,13 +98,27 @@ COMMENT="#"[^\r\n]*
     [^\s{}]+   { return CaddyfileTypes.GLOBAL_VARIABLE_NAME; }
 }
 
+<TEMPLATE_TEXT> {
+    [^\s\"\{]+ { return CaddyfileTypes.TEXT; }
+    "{"        { beginWithMemo(VARIABLE); yypushback(yylength()); }
+    "\""       { beginWithMemo(QUOTED_TEMPLATE_TEXT); return CaddyfileTypes.QUOTE; }
+    \s         { recoverMemoState(); yypushback(yylength()); }
+}
+
+<QUOTED_TEMPLATE_TEXT> {
+    (\\\"|\\\\|[^\n\"\{]+)+ { return CaddyfileTypes.TEXT; }
+    "\""                    { recoverMemoState(); return CaddyfileTypes.QUOTE; }
+    "{"                     { beginWithMemo(VARIABLE); yypushback(yylength()); }
+    "\n"                    { yybegin(YYINITIAL); return CaddyfileTypes.TEXT; }
+}
+
 <YYINITIAL> {
-    [^\s{}#]+   { yybegin(DIRECTIVE); yypushback(yylength()); }
-    \{[^\s]     { yybegin(GLOBAL_VARIABLE); yypushback(yylength()); }
-    \{\s        { yybegin(YYINITIAL); yypushback(yylength() - 1); return CaddyfileTypes.LCB; }
-    "}"         { yybegin(YYINITIAL); return CaddyfileTypes.RCB; }
-    {COMMENT}   { return CaddyfileTypes.COMMENT; }
-    {CRLF}      { return TokenType.WHITE_SPACE; }
+    \{[^\s}]+}\s*\n         { yybegin(GLOBAL_VARIABLE); yypushback(yylength()); }
+    \{\s                    { yybegin(YYINITIAL); yypushback(yylength() - 1); return CaddyfileTypes.LCB; }
+    ([^\s}#]+|\"[^\s\"]+\") { yybegin(DIRECTIVE); yypushback(yylength()); }
+    "}"                     { yybegin(YYINITIAL); return CaddyfileTypes.RCB; }
+    {COMMENT}               { return CaddyfileTypes.COMMENT; }
+    {CRLF}                  { return TokenType.WHITE_SPACE; }
 }
 
 <DIRECTIVE> {
@@ -123,6 +158,8 @@ COMMENT="#"[^\r\n]*
     "import"          { yybegin(SNIPPET); return CaddyfileTypes.DIRECTIVE; }
     "@"               { yybegin(MATCHER_DECLARATION); yypushback(yylength()); }
     "("               { yybegin(SNIPPET_DECLARATION); yypushback(yylength()); }
+    "\""              { yybegin(ARG); beginWithMemo(QUOTED_TEMPLATE_TEXT); return CaddyfileTypes.QUOTE; }
+    "{"               { yybegin(ARG); beginWithMemo(TEMPLATE_TEXT); yypushback(yylength()); }
     [^\s\@\{\(]+      { yybegin(ARG); return CaddyfileTypes.DIRECTIVE; }
     {CRLF}            { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
@@ -138,13 +175,13 @@ COMMENT="#"[^\r\n]*
 }
 
 <ARG> {
-    \"([^\n\\\"]|\\[\"\\])+\" { return CaddyfileTypes.ARG; }
-    [^\"\s{}]+                { return CaddyfileTypes.ARG; }
-    \{[^\s]                   { yybegin(VARIABLE); yypushback(yylength()); }
-    \{\s                      { yybegin(YYINITIAL); yypushback(yylength()-1); return CaddyfileTypes.LCB; }
-    #[^\n]*\n                 { yybegin(YYINITIAL); return CaddyfileTypes.COMMENT; }
-    {CRLF}                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+    "\""       { beginWithMemo(QUOTED_TEMPLATE_TEXT); return CaddyfileTypes.QUOTE; }
+    [^\"\s{]   { beginWithMemo(TEMPLATE_TEXT); yypushback(yylength()); }
+    \{[^\s]    { beginWithMemo(TEMPLATE_TEXT); yypushback(yylength()); }
+    \{\s       { yybegin(YYINITIAL); yypushback(yylength()-1); return CaddyfileTypes.LCB; }
+    #[^\n]*\n  { yybegin(YYINITIAL); return CaddyfileTypes.COMMENT; }
+    {CRLF}     { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 }
 
-{WHITE_SPACE}+  { return TokenType.WHITE_SPACE; }
-[^]             { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }
+{WHITE_SPACE}+ { return TokenType.WHITE_SPACE; }
+[^]            { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }

@@ -1,5 +1,12 @@
+"{$CADDY_PROTOCOL:http}://s3.{$DEPLOYMENT_HOSTNAME}" {
+    reverse_proxy minio:9000 {
+        header_up host "minio:9000"
+    }
+}
+
 {$CADDY_PROTOCOL:http}://s3.{$DEPLOYMENT_HOSTNAME} {
-                          reverse_proxy minio:9000 {
-                              header_up host "minio:9000"
-                          }
-                      }
+    reverse_proxy minio:9000 {
+        header_up host "minio:9000"
+        header Con
+    }
+}

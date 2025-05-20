@@ -38,10 +38,18 @@ matcher_one ::= STAR
 matcher_two ::= SLASH ((TEXT|STAR) SLASH?)*
 matcher_thr ::= matcher_declaration
 
+//variable ::= LCB VARIABLE_NAME FALLBACK? RCB
 variable ::= LCB VARIABLE_NAME RCB
 global_variable ::= LCB GLOBAL_VARIABLE_NAME RCB
 
+base_template_text ::= (TEXT|variable)
+quoted_template_text ::= QUOTE base_template_text* QUOTE
+
+template_text ::= (base_template_text+|quoted_template_text)
+
 block ::= LCB (property|global_variable)* RCB
 
-property ::= (DIRECTIVE|matcher_declaration|snippet_declaration) (matcher|snippet_name)? (ARG|variable)* block?
+arg ::= template_text
+
+property ::= (DIRECTIVE|template_text|matcher_declaration|snippet_declaration) (matcher|snippet_name)? arg* block?
 
