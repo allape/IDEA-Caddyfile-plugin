@@ -1,0 +1,4 @@
+:8080 {
+    dir arg1    arg2 "arg3"
+    dir "arg1" "{arg2}" "arg3"
+}

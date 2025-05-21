@@ -37,9 +37,16 @@ https://plugins.jetbrains.com/plugin/24642-caddyfile
         debug
     }
     ```
+- ARG is ambiguous
+  - ```caddyfile
+    :8080 {
+        # in PSI tree, `arg1 {arg2}` is treat as a single ARG
+        dir arg1 {arg2} "arg3"
+        # quoting makes it unambiguous
+        dir "arg1" "{arg2}" "arg3"
+    }
+    ```
 - Lack of testing, only tested with simple Caddyfiles
-- ICON file may violate legal issue
-    - ICON file is copied from https://github.com/caddyserver/caddy/blob/master/README.md, and modified to remove text
 
 ## Dev
 

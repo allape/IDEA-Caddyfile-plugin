@@ -13,11 +13,19 @@ fun getPasswordArg(editor: Editor?, file: PsiFile?): PsiElement? {
     }
 
     var ele = file.findElementAt(editor.caretModel.offset)
+    if (ele == null) {
+        return null
+    }
 
-    if (ele?.elementType == TokenType.WHITE_SPACE) {
-        val prevProperty = ele?.prevSibling
-        if (prevProperty?.elementType == CaddyfileTypes.PROPERTY) {
-            ele = prevProperty?.lastChild
+    when (ele.elementType) {
+        TokenType.WHITE_SPACE -> {
+            val prevProperty = ele.prevSibling
+            if (prevProperty?.elementType == CaddyfileTypes.PROPERTY) {
+                ele = prevProperty.lastChild
+            }
+        }
+        CaddyfileTypes.TEXT -> {
+            ele = ele.parent?.parent?.parent
         }
     }
 
@@ -37,6 +45,10 @@ fun getPasswordArg(editor: Editor?, file: PsiFile?): PsiElement? {
     val property = ele.parent
     val block = property?.parent
     val topProperty = block?.parent
+
+    println(ele.elementType)
+    println(property?.elementType)
+    println(topProperty?.firstChild?.text)
 
     if (
         ele.elementType != CaddyfileTypes.ARG ||
