@@ -4,3 +4,5 @@ header {
     Access-Control-Allow-Headers "*"
     defer
 }
+
+header Access-Control-Allow-Headers "*"
