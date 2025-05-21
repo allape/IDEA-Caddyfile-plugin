@@ -46,10 +46,6 @@ fun getPasswordArg(editor: Editor?, file: PsiFile?): PsiElement? {
     val block = property?.parent
     val topProperty = block?.parent
 
-    println(ele.elementType)
-    println(property?.elementType)
-    println(topProperty?.firstChild?.text)
-
     if (
         ele.elementType != CaddyfileTypes.ARG ||
         property?.elementType != CaddyfileTypes.PROPERTY ||
