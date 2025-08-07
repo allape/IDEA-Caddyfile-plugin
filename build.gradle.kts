@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "cc.allape"
-version = "0.6.0-beta.1"
+version = "0.7.0-beta.1"
 
 repositories {
     mavenCentral()
@@ -57,7 +57,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("232")
-        untilBuild.set("251.*")
+        untilBuild.set("252.*")
     }
 
     signPlugin {
