@@ -7,8 +7,6 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.common.AbstractBlock
 
-const val DEFAULT_SPACE_COUNT = 4
-
 open class CaddyfileBlock(
     node: ASTNode, wrap: Wrap?, alignment: Alignment?,
     private val spacingBuilder: SpacingBuilder,
@@ -48,7 +46,7 @@ open class CaddyfileBlock(
             CaddyfileTypes.GLOBAL_VARIABLE,
             CaddyfileTypes.VARIABLE -> {
                 if (this.isSubProperty()) {
-                    return Indent.getIndent(Indent.Type.NORMAL, DEFAULT_SPACE_COUNT, false, false)
+                    return Indent.getNormalIndent()
                 }
             }
             CaddyfileTypes.RCB -> {
@@ -66,7 +64,7 @@ open class CaddyfileBlock(
 
     override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
         return if (isSubProperty()) {
-            ChildAttributes(Indent.getIndent(Indent.Type.NORMAL, DEFAULT_SPACE_COUNT, false, false), null)
+            ChildAttributes(Indent.getNormalIndent(), null)
         } else {
             ChildAttributes(Indent.getIndent(Indent.Type.NONE, false, false), null)
         }
