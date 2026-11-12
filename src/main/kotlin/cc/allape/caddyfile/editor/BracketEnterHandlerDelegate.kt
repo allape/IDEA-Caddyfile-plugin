@@ -1,8 +1,8 @@
 package cc.allape.caddyfile.editor
 
 import cc.allape.caddyfile.CaddyfileFileType
-import cc.allape.caddyfile.DEFAULT_SPACE_COUNT
 import cc.allape.caddyfile.language.psi.CaddyfileBlock
+import com.intellij.application.options.CodeStyle
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
@@ -33,10 +33,19 @@ class BracketEnterHandlerDelegate : EnterHandlerDelegate {
         val lineNumber = document.getLineNumber(block.textOffset)
         val line = text.substring(document.getLineStartOffset(lineNumber), document.getLineEndOffset(lineNumber))
 
-        val leadingIndents = line.takeWhile { it == ' ' }
-        val defaultIndent = " ".repeat(DEFAULT_SPACE_COUNT)
+        val leadingIndents = line.takeWhile { it == ' ' || it == '\t' }
 
-        val newLine = "\n$leadingIndents$defaultIndent"
+        val indentOptions = CodeStyle.getIndentOptions(file)
+        val indentSize = indentOptions.INDENT_SIZE.coerceAtLeast(0)
+        val tabSize = indentOptions.TAB_SIZE.coerceAtLeast(1)
+
+        val newIndent = if (indentOptions.USE_TAB_CHARACTER) {
+            "\t".repeat(indentSize / tabSize) + " ".repeat(indentSize % tabSize)
+        } else {
+            " ".repeat(indentSize)
+        }
+
+        val newLine = "\n$leadingIndents$newIndent"
 
         var suffix = ""
 
