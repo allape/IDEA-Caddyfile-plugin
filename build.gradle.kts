@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "cc.allape"
-version = "0.7.0-beta.1"
+version = "0.7.1-beta.1"
 
 repositories {
     mavenCentral()
